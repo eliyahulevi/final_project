@@ -16,12 +16,12 @@ C:\Apache\db-derby-10.15.2.0-bin\bin> setEmbeddedCP.bat
 
 Derby DB (Embedded form):
 1.	Download binaries from: http://db.apache.org/derby/releases/release-10_15_2_0.cgi. For windows download the file: db-derby-10.15.2.0-bin.zip
-2.	Create a directory named c:/apache-derby-10.15.2.0
+2.	Create a directory named c:/apache-derby-10.15.2.0, let's call it DERBY_DIR
 3.	Unzip files from step #1 into that directory.
-4.	Set variable DERBY_INSTALL: in cmd type set DERBY_INSTALL=C:\Apache\db-derby-10.15.2.0-bin 	(the created directory after step #3)
+4.	In cmd type set DERBY_INSTALL=C:\Apache\db-derby-10.15.2.0-bin 	(the created directory after step #3)
 5.	In cmd type: set CLASSPATH=%DERBY_INSTALL%\lib\derby.jar;%DERBY_INSTALL%\lib\derbytools.jar;
 6.	Im cmd type: cd %DERBY_INSTALL%\bin
-7.	Execute this file (simply type this its name) setEmbeddedCP.bat
+7.	Execute this file (simply type its name) setEmbeddedCP.bat
 8.	Verify Derby: in cmd type: java org.apache.derby.tools.sysinfo. You should get the following:
 ------------------ Java Information ------------------
 Java Version:    9
@@ -83,5 +83,6 @@ eclipse ee:
 
 apache tomcat (server):
 1. download "Code" binaries from here https://tomcat.apache.org/download-10.cgi
-2. extract to directory of your choice
+2. extract to directory of your choice, call it TOMCAT_DIR
+3. copy ALL files in DERBY_DIR to TOMCAT_DIR
 
