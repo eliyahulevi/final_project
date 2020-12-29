@@ -2,5 +2,20 @@
   <welcome-file-list>  
    <welcome-file>index.html</welcome-file>  
    <welcome-file>default.html</welcome-file>  
-  </welcome-file-list>  
+  </welcome-file-list> 
+  
+  <!--
+  	<servlet>
+    	<servlet-name>LoginServlet</servlet-name>
+    	<servlet-class>webapp.servlets.LoginServlet</servlet-class>
+    	<load-on-startup>0</load-on-startup>  
+  	</servlet>
+
+
+  	<servlet-mapping>
+    	<servlet-name>LoginServlet</servlet-name>
+    	<url-pattern>/Login</url-pattern>
+  	</servlet-mapping>
+  	-->
+  	 
 </web-app>  
