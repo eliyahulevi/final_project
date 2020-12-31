@@ -5,6 +5,8 @@ package database;
 
 import java.sql.Statement;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 /**
@@ -47,5 +49,27 @@ public class DB
 	{
 		
 	}
+	
+	public void createUsersTable()
+	{
+		try 
+		{
+			if (!this.connection.isClosed())
+			{
+				this.statement = this.connection.prepareStatement(CREATE_USERS_TABLE);
+				ResultSet rs = this.statement.executeQuery(CREATE_USERS_TABLE);
+				if (rs == null)
+				{
+					System.out.println("could not create USERS table");
+				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 }

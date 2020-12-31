@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSessionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import database.DB;
+
 /**
  * Application Lifecycle Listener implementation class Listener
  *
@@ -20,13 +22,12 @@ public class Listener implements ServletContextListener, HttpSessionListener
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
 	String dbURL = "jdbc:derby:" + dbName + ";create=true";
 	Connection conn;
+	DB db;
 
     /**
      * Default constructor. 
      */
-    public Listener() {
-      
-    }
+    public Listener() {}
     
 	/**
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
@@ -37,8 +38,13 @@ public class Listener implements ServletContextListener, HttpSessionListener
         try 
         {
 			Class.forName(driverURL);
-			conn = DriverManager.getConnection(dbURL);			
-			System.out.println("data base created: " + dbName);
+			conn = DriverManager.getConnection(dbURL);		
+			if (!conn.isClosed())
+			{
+				db.createUsersTable();
+				System.out.println("data base created: " + dbName);	
+			}
+			
 		} 
         catch (Exception e) 
         {
