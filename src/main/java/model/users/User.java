@@ -1,19 +1,69 @@
 package model.users;
 
+import appConstants.AppConstants;
+
 public class User 
 {
-	String name;
-	String email;
-	String phone;
-	String address;
+	private String name;
+	private String email;
+	private String phone;
+	private String address;
+	private String password; 
 	int Age;
 	
 	public User() {}
-	public User(String name, String email, String address)
+	public User(String name, String password, String email, String address)
+	{
+		this.setName(name);
+		this.setEmail(email);
+		this.setAddress(address); 
+		this.setPassword(password);
+	}
+	
+	
+	
+	/*
+	 * getters-setters *
+	 */
+	public String getName() 
+	{
+		return name;
+	}
+	public void setName(String name) 
 	{
 		this.name = name;
+	}
+	public String getEmail() 
+	{
+		return email;
+	}
+	public void setEmail(String email) 
+	{
 		this.email = email;
-		this.address = address; 
+	}
+	public String getPhone() 
+	{
+		return phone;
+	}
+	public void setPhone(String phone) 
+	{
+		this.phone = phone;
+	}
+	public String getAddress() 
+	{
+		return address;
+	}
+	public void setAddress(String address) 
+	{
+		this.address = address;
+	}
+	public String getPassword() 
+	{
+		return password;
+	}
+	public void setPassword(String password) 
+	{
+		this.password = password;
 	}
 	
 }
