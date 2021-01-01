@@ -43,7 +43,6 @@ public class DB
 	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE CHANNEL("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION(500)"
-			+ ""
 			+ ")";
 	public String insertUser = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
 	public String selectaLLUser = 	"SELECT * FROM USERS";
@@ -74,7 +73,7 @@ public class DB
 					result = this.statement.executeUpdate(tables[index]);  
 					if (result == 0)
 					{
-						System.out.println("could not create USERS table");
+						System.out.println("could not create table: " + tables[index]);
 					}
 				}
 
