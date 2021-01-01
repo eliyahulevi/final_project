@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import database.DB;
 
@@ -34,6 +35,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
      */
     public void contextInitialized(ServletContextEvent sce)  
     { 
+    	
         System.out.println("context initialized..");
         try 
         {
@@ -41,7 +43,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
 			conn = DriverManager.getConnection(dbURL);		
 			if (!conn.isClosed())
 			{
-				db.createUsersTable();
+				this.db = new DB(conn);
 				System.out.println("data base created: " + dbName);	
 			}
 			
@@ -50,6 +52,17 @@ public class Listener implements ServletContextListener, HttpSessionListener
         {
 			e.printStackTrace();
 		}
+        finally
+        {
+        	try 
+        	{
+				this.conn.close();
+			} 
+        	catch (SQLException e) 
+        	{
+				e.printStackTrace();
+			}
+        }
     }
 	/**
      * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
