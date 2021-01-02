@@ -22,7 +22,6 @@ public class User
 	}
 	
 	
-	
 	/*
 	 * getters-setters *
 	 */

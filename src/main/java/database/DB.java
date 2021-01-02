@@ -17,6 +17,7 @@ import model.users.*;
  */
 public class DB 
 {
+	String dbName = "ClientsDB";
 	String dbURL;
 	String[] TABLES_STR  = {"USERS","MESSAGES"};
 	PreparedStatement prepStatement;
@@ -26,6 +27,13 @@ public class DB
 	User user = new User();
 	
 	//sql statements
+	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
+			+ "                 FROM INFORMATION_SCHEMA.TABLES "
+			+ "                 WHERE TABLE_SCHEMA = 'TheSchema' "
+			+ "                 AND  TABLE_NAME = 'TheTable'))"
+			+ "BEGIN "
+			+ "    --Do Stuff\r\n"
+			+ "END";
 	public final String CREATE_USERS_TABLE = "CREATE TABLE USERS(" 
 			+ "USERNAME varchar(30),"
 			+ "PASSWORD varchar(8),"
@@ -49,19 +57,25 @@ public class DB
 	public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	
 	/**
-	 * constructor *
+	 * constructors *
 	 */
-	// default 
 	public DB() {}
 	public DB(Connection conn)
 	{
+		init(conn); 
+	}
+	public DB(Connection conn, String name)
+	{
+		this.dbName = name;
+		init(conn); 
+	}
+	private void init(Connection conn) {
 		this.connection = conn;
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
-		this.insertUser(user); 
-	}
-	
-	private void  createExampleUser()
+		this.insertUser(user);
+	}	
+	private void createExampleUser()
 	{
 		this.user.setName("israel israeli");
 		this.user.setNickName("israelite");
@@ -114,8 +128,7 @@ public class DB
 			e.printStackTrace();
 		}
 	}
-	
-	
+		
 	/*
 	 *  getters-=setters *
 	 */
