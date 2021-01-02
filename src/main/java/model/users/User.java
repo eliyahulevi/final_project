@@ -5,6 +5,7 @@ import appConstants.AppConstants;
 public class User 
 {
 	private String name;
+	private String nickName;
 	private String email;
 	private String phone;
 	private String address;
@@ -64,6 +65,12 @@ public class User
 	public void setPassword(String password) 
 	{
 		this.password = password;
+	}
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 	
 }

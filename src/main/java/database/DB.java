@@ -9,9 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-enum TABLES {users, messages};
-
-
+import model.users.*;
 
 /**
  * @author shahar
@@ -25,15 +23,17 @@ public class DB
 	Statement statement;
 	Connection connection;
 	ResultSet rs;
+	User user = new User();
 	
 	//sql statements
 	public final String CREATE_USERS_TABLE = "CREATE TABLE USERS(" 
-			+ "USERNAME varchar(10),"
+			+ "USERNAME varchar(30),"
 			+ "PASSWORD varchar(8),"
-			+ "NICKNAME varchar(20),"
-			+ "DESCRIPTION varchar(50),"
+			+ "NICKNAME varchar(30),"
+			+ "ADDRESS varchar(50),"
 			+ "PHOTO varchar(100),"
-			+ "PRIMARY KEY(USERNAME))";
+			+ "PRIMARY KEY(USERNAME)"
+			+ ")";
 	public final String CREATE_MESSAGE_TABLE = "CREATE TABLE MESSAGE("
 			+ "PHOTO varchar(100) PRIMARY KEY,"
 			+ "NICKNAME varchar(20),"
@@ -42,11 +42,11 @@ public class DB
 			+ "REPLYABLE char)"; 
 	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE CHANNEL("
 			+ "NAME varchar(30),"
-			+ "DESCRIPTION(500)"
+			+ "DESCRIPTION varchar(500)"
 			+ ")";
-	public String insertUser = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
-	public String selectaLLUser = 	"SELECT * FROM USERS";
-	public String selectUser = 		"SELECT * FROM USERS WHERE USERNAME=?";
+	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
+	public String SELECT_USER = 		"SELECT * FROM USERS";
+	public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	
 	/**
 	 * constructor *
@@ -56,12 +56,24 @@ public class DB
 	public DB(Connection conn)
 	{
 		this.connection = conn;
+		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
+		this.insertUser(user); 
 	}
 	
+	private void  createExampleUser()
+	{
+		this.user.setName("israel israeli");
+		this.user.setNickName("israelite");
+		this.user.setAddress("1501 Yemmen road, Yemmen");
+		this.user.setEmail("israel@gmail.com");
+		this.user.setPassword("1234");
+		this.user.setPhone("050-55555351");
+	}
 	private void createTables()
 	{
-		int result;
+		int result = 0;
+		String[] tables_str = {"USERS", "MESSAGES", "CHANNELS" };
 		String[] tables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE };
 		try 
 		{
@@ -71,12 +83,8 @@ public class DB
 				for (int index = 0; index < tables.length; index++)
 				{
 					result = this.statement.executeUpdate(tables[index]);  
-					if (result == 0)
-					{
-						System.out.println("could not create table: " + tables[index]);
-					}
+					System.out.println("create table: " + tables_str[index]);
 				}
-
 			}
 		} 
 		catch (SQLException e) 
@@ -85,6 +93,28 @@ public class DB
 		}
 	}
 
+	/*
+	 *  add a new user
+	 */
+	public void insertUser(User user) 
+	{
+		try 
+		{
+			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
+			state.setString(1, user.getName());			//name
+			state.setString(2, user.getPassword());		//email
+			state.setString(3, user.getNickName());		//phone
+			state.setString(4, user.getAddress());		//address
+			state.setString(5, user.getAddress());		//photo
+			//state.setString(6, user.getName());			//password
+			state.executeUpdate();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	
 	/*
 	 *  getters-=setters *
