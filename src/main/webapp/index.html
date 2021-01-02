@@ -13,28 +13,82 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   
 </head>
+
+	
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
 
+
+	
 <nav class="navbar navbar-default navbar-fixed-top">
+
+	<table class="table table-hover">
+  	<thead>
+    <tr>
+      <th scope="col">
+      	    <div class="navbar-header">
+      			<a class="navbar-brand" href="#myPage">Logo</a>
+   			</div>
+      </th>
+      <th scope="col">
+      	<div class="collapse navbar-collapse" id="myNavbar">
+      		<ul class="nav navbar-nav navbar-right">
+        		<li><a href="#about">ABOUT</a></li>
+        		<li><a href="#services">SERVICES</a></li>
+        		<li><a href="#portfolio">PORTFOLIO</a></li>
+        		<li><a href="#pricing">PRICING</a></li>
+        		<li><a href="#contact">CONTACT</a></li>
+      		</ul>
+      	</div>
+      </th>
+      
+      <th scope="col">
+      	<ul class="nav navbar-nav navbar-right">
+			<li>
+				<a href="#sign-in-Modal" data-toggle="modal" data-target="#sign-in-Modal">sign in</a>
+			</li>
+		</ul>
+      </th>
+      
+    </tr>
+  	</thead>
+  			<tbody>
+  
+ 			 </tbody>
+  	</table>
+  
   <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="#myPage">Logo</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#about">ABOUT</a></li>
-        <li><a href="#services">SERVICES</a></li>
-        <li><a href="#portfolio">PORTFOLIO</a></li>
-        <li><a href="#pricing">PRICING</a></li>
-        <li><a href="#contact">CONTACT</a></li>
-      </ul>
+
+
+  <!-- sign-in Modal -->
+  <div class="modal fade" id="sign-in-Modal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Sign-in form</h4>
+        </div>
+        <div class="modal-body">
+        	<form action="/Login" method="post"> 
+		      	<input type="text" placeholder="Username" name="username"> 
+		    	<input type="text" placeholder="Password" name="psw">
+		    	<button type="submit">Submit</button> 
+		    </form> 
+        </div>
+<!--         <div class="modal-footer"> -->
+<!--           <button type="button" class="btn btn-default" data-dismiss="modal">submit</button> -->
+<!--         </div> -->
+      </div>
+      
     </div>
   </div>
+
+     
+  </div>
+  
+  
+
 </nav>
 
 <div class="jumbotron text-center">

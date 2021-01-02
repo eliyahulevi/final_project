@@ -5,6 +5,7 @@ package database;
 
 import java.sql.Statement;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +26,7 @@ public class DB
 	Connection connection;
 	ResultSet rs;
 	User user = new User();
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS" };
 	
 	//sql statements
 	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
@@ -34,7 +36,7 @@ public class DB
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
-	public final String CREATE_USERS_TABLE = "CREATE TABLE USERS(" 
+	public final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[0] + "("  
 			+ "USERNAME varchar(30),"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
@@ -42,13 +44,13 @@ public class DB
 			+ "PHOTO varchar(100),"
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
-	public final String CREATE_MESSAGE_TABLE = "CREATE TABLE MESSAGE("
+	public final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
 			+ "PHOTO varchar(100) PRIMARY KEY,"
 			+ "NICKNAME varchar(20),"
 			+ "TIME timestamp,"
 			+ "CONTENT varchar(500),"
 			+ "REPLYABLE char)"; 
-	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE CHANNEL("
+	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
@@ -62,15 +64,22 @@ public class DB
 	public DB() {}
 	public DB(Connection conn)
 	{
-		init(conn); 
+		this.connection = conn;
+		try {
+			//if (!doesExist())
+				init();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 	public DB(Connection conn, String name)
 	{
 		this.dbName = name;
-		init(conn); 
+		init(); 
 	}
-	private void init(Connection conn) {
-		this.connection = conn;
+	private void init() {
+		
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
 		this.insertUser(user);
@@ -87,17 +96,24 @@ public class DB
 	private void createTables()
 	{
 		int result = 0;
-		String[] tables_str = {"USERS", "MESSAGES", "CHANNELS" };
+		ResultSet rs;
+		
 		String[] tables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE };
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
 			{
 				this.statement = this.connection.createStatement();
+				DatabaseMetaData dbmd = this.connection.getMetaData();
+				
 				for (int index = 0; index < tables.length; index++)
 				{
-					result = this.statement.executeUpdate(tables[index]);  
-					System.out.println("create table: " + tables_str[index]);
+					rs = dbmd.getTables(null, null, tables_str[index], null);
+					if (!rs.next())
+					{
+						result = this.statement.executeUpdate(tables[index]);
+						System.out.println("create table: " + tables_str[index]);
+					}	
 				}
 			}
 		} 
