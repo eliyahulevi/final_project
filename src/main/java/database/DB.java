@@ -5,6 +5,7 @@ package database;
 
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.Date;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -39,7 +40,7 @@ public class DB
 			+ "    --Do Stuff\r\n"
 			+ "END";
 	public final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[0] + "("  
-			+ "USERNAME varchar(30),"
+			+ "USERNAME varchar(40),"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
 			+ "ADDRESS varchar(50),"
@@ -132,14 +133,12 @@ public class DB
 	 */
 	public void insertUser(User user) 
 	{
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-		String date = simpleDateFormat.format(new Date());
+		LocalTime date = LocalTime.now();
+		
 		try 
 		{
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName() + date);	//name
+			state.setString(1, user.getName() + date.toString());	//name
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
 			state.setString(4, user.getAddress());		//address
