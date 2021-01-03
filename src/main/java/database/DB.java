@@ -4,6 +4,8 @@
 package database;
 
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -65,11 +67,12 @@ public class DB
 	public DB(Connection conn)
 	{
 		this.connection = conn;
-		try {
-			//if (!doesExist())
-				init();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		try 
+		{
+			init();
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		} 
 	}
@@ -95,10 +98,9 @@ public class DB
 	}
 	private void createTables()
 	{
-		int result = 0;
 		ResultSet rs;
 		
-		String[] tables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE };
+		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE };
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
@@ -106,14 +108,16 @@ public class DB
 				this.statement = this.connection.createStatement();
 				DatabaseMetaData dbmd = this.connection.getMetaData();
 				
-				for (int index = 0; index < tables.length; index++)
+				for (int index = 0; index < createTables.length; index++)
 				{
 					rs = dbmd.getTables(null, null, tables_str[index], null);
 					if (!rs.next())
 					{
-						result = this.statement.executeUpdate(tables[index]);
+						this.statement.executeUpdate(createTables[index]);
 						System.out.println("create table: " + tables_str[index]);
-					}	
+					}
+					else
+						System.out.println("table: " + tables_str[index] + " exists");
 				}
 			}
 		} 
@@ -128,10 +132,14 @@ public class DB
 	 */
 	public void insertUser(User user) 
 	{
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+		String date = simpleDateFormat.format(new Date());
 		try 
 		{
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName());			//name
+			state.setString(1, user.getName() + date);	//name
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
 			state.setString(4, user.getAddress());		//address
