@@ -7,12 +7,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DB;
+
 /**
  * Servlet implementation class RegisterServlet
  */
 @WebServlet("/RegisterServlet")
-public class RegisterServlet extends HttpServlet {
+public class RegisterServlet extends HttpServlet 
+{
 	private static final long serialVersionUID = 1L;
+	DB db;
        
     /**
      * @see HttpServlet#HttpServlet()
