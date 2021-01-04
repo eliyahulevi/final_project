@@ -1,5 +1,5 @@
 installations:
-source: https://db.apache.org/derby/papers/DerbyTut/install_software.html
+-------------
 
 apache-tomcat (server):
 1. download the apache-tomcat.zip file
