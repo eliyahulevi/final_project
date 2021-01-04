@@ -1,6 +1,9 @@
 installations:
 -------------
 
+IMPORTANAT: WHEREVER xxx_DIR IS MENTIONED IT DOES NOT MEAN LITERALY, JUST THE REFERENCE IN FUTURE USE
+		MEANING THE ACTUAL DIR COULD BE FOR EXAMPLE "c:\apache-derby-10.1.4"
+
 apache-tomcat (server):
 1. download the apache-tomcat.zip file
 2. extract to directory of your choice, call it TOMCAT_DIR, this dir will be required in eclipse->servers
@@ -14,7 +17,7 @@ apache-maven (build tool for java projects)
 apache-derby (DB Embedded form):
 1.	Download apache-derby.zip file and extract to directory of your choice, call it DERBY_DIR
 2.	Unzip files from step #1 into that directory.
-3.	In cmd type set DERBY_INSTALL=C:\Apache\db-derby-10.15.2.0-bin 	(the created directory after step #3)
+3.	In cmd type set DERBY_INSTALL=DERBY_DIR\bin 	(the created directory after step #3)
 4.	In cmd type: set CLASSPATH=%DERBY_INSTALL%\lib\derby.jar;%DERBY_INSTALL%\lib\derbytools.jar;
 5.	Im cmd type: cd %DERBY_INSTALL%\bin
 6.	Execute this file (simply type its name) setEmbeddedCP.bat
