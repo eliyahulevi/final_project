@@ -93,5 +93,9 @@ eclipse ee:
 1. download from here: https://www.eclipse.org/downloads/packages/ and run. 
 2. Choose second tab (eclipse for IDE..)
 
+apache-maven:
+1. add maven to path: in cmd type set=%path%;MAVEN_DIR\bin
+2. verify path contains that directory
+
 
 
