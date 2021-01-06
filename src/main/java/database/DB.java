@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,11 @@ import model.users.*;
 public class DB 
 {
 	String dbName = "ClientsDB";
-	String dbURL;
+	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
+	String dbURL = "jdbc:derby:" + dbName + ";create=true";
+
+
+
 	String[] TABLES_STR  = {"USERS","MESSAGES"};
 	PreparedStatement prepStatement;
 	Statement statement;
@@ -64,7 +69,23 @@ public class DB
 	/**
 	 * constructors *
 	 */
-	public DB() {}
+	public DB() 
+	{
+        try 
+        {
+			Class.forName(driverURL);
+			connection = DriverManager.getConnection(dbURL);		
+			if (!connection.isClosed())
+			{
+				//this.db = new DB(connection);
+				System.out.println("data base created: " + dbName);	
+			}
+        }
+        catch(SQLException | ClassNotFoundException e)
+        {
+        	e.printStackTrace();
+        }
+	}
 	public DB(Connection conn)
 	{
 		this.connection = conn;
@@ -127,7 +148,45 @@ public class DB
 			e.printStackTrace();
 		}
 	}
-
+	private void connect()
+	{
+        try 
+        {
+			Class.forName(driverURL);
+			connection = DriverManager.getConnection(dbURL);		
+			if (!connection.isClosed())
+			{
+				System.out.println("connected to database: " + dbName);	
+			}
+        }
+        catch(SQLException | ClassNotFoundException e)
+        {
+        	e.printStackTrace();
+        }
+	}
+	private void disConnect() 
+	{
+		try 
+		{
+			if (!this.connection.isClosed())
+			{
+				try 
+				{
+					this.connection.close();
+					System.out.println("closing connection..");
+				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/*
 	 *  add a new user
 	 */
@@ -137,6 +196,10 @@ public class DB
 		
 		try 
 		{
+			// connect to db
+			if (this.connection.isClosed())
+				connect();
+			// insert user			
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
 			state.setString(1, user.getName() + date.toString());	//name
 			state.setString(2, user.getPassword());		//email
@@ -145,6 +208,10 @@ public class DB
 			state.setString(5, user.getAddress());		//photo
 			//state.setString(6, user.getName());			//password
 			state.executeUpdate();
+			System.out.println("user " + user.getName() + " added");
+			//disconnect
+			if (!this.connection.isClosed())
+				disConnect();
 		} 
 		catch (SQLException e) 
 		{

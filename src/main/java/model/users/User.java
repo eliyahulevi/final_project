@@ -13,12 +13,13 @@ public class User
 	int Age;
 	
 	public User() {}
-	public User(String name, String password, String email, String address)
+	public User(String name, String password, String nickName, String email, String address)
 	{
 		this.setName(name);
 		this.setEmail(email);
 		this.setAddress(address); 
 		this.setPassword(password);
+		this.setNickName(nickName);
 	}
 	
 	
