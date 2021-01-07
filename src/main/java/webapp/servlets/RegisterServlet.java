@@ -1,6 +1,8 @@
 package webapp.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,16 +35,7 @@ public class RegisterServlet extends HttpServlet
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		
-		String name = request.getParameter("name");
-		String password = request.getParameter("password");
-		String nickName = request.getParameter("nick-name");
-		String email = request.getParameter("email");
-		String address = request.getParameter("address");
-		
-		User user = new User(name, password, nickName, email, address);
-		db.insertUser(user);
-		
+		//response.sendRedirect("/index.html");
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
@@ -52,7 +45,15 @@ public class RegisterServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 
-		doGet(request, response);
+		String name = request.getParameter("name");
+		String password = request.getParameter("password");
+		String nickName = request.getParameter("nick-name");
+		String email = request.getParameter("email");
+		String address = request.getParameter("address");
+		
+		User user = new User(name, password, nickName, email, address);
+		db.insertUser(user);
+		this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);
 	}
 
 }
