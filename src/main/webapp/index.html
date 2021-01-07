@@ -13,6 +13,7 @@
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="javascript/login.js"></script>
   
 </head>
 
@@ -73,10 +74,10 @@
 				    </div>
 	
 				    <!-- Login Form -->
-				    <form action="LoginServlet2">
-					      <input type="text" id="name" class="fadeIn second" name="register" placeholder="login">
-					      <input type="text" id="password" class="fadeIn third" name="register" placeholder="password">
-					      <input type="submit" class="fadeIn fourth" value="Log In">
+				    <form> <!-- action="LoginServlet2" method="post" --> 
+					      <input type="text" id="sign-in-model-name" class="fadeIn second" name="register" placeholder="login">
+					      <input type="text" id="sign-in-model-password" class="fadeIn third" name="register" placeholder="password">
+					      <input type="submit" class="fadeIn fourth" value="Log In" onclick=login() >
 				    </form>
 	
 				    <!-- Remind Passowrd -->
@@ -121,6 +122,9 @@
   </div>
   
 </nav>
+
+
+
 
 <div class="jumbotron text-center">
   <h1>Company</h1> 

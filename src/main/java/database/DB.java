@@ -1,12 +1,10 @@
 /**
- * 
+ *  source:" https://docs.oracle.com/javase/tutorial/jdbc/basics/processingsqlstatements.html 
  */
 package database;
 
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.util.Date;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -17,7 +15,7 @@ import java.sql.SQLException;
 import model.users.*;
 
 /**
- * @author shahar
+ * @author shahar *
  *
  */
 public class DB 
@@ -63,28 +61,29 @@ public class DB
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
 	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
-	public String SELECT_USER = 		"SELECT * FROM USERS";
-	public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
+	public String SELECT_USERS = 		"SELECT * FROM USERS";
+	//public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
+	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	
 	/**
 	 * constructors *
 	 */
 	public DB() 
 	{
-        try 
-        {
-			Class.forName(driverURL);
-			connection = DriverManager.getConnection(dbURL);		
-			if (!connection.isClosed())
-			{
-				//this.db = new DB(connection);
-				System.out.println("data base created: " + dbName);	
-			}
-        }
-        catch(SQLException | ClassNotFoundException e)
-        {
-        	e.printStackTrace();
-        }
+//        try 
+//        {
+//			Class.forName(driverURL);
+//			connection = DriverManager.getConnection(dbURL);		
+//			if (!connection.isClosed())
+//			{
+//				//this.db = new DB(connection);
+//				System.out.println("data base created: " + dbName);	
+//			}
+//        }
+//        catch(SQLException | ClassNotFoundException e)
+//        {
+//        	e.printStackTrace();
+//        }
 	}
 	public DB(Connection conn)
 	{
@@ -164,7 +163,7 @@ public class DB
         	e.printStackTrace();
         }
 	}
-	private void disConnect() 
+	private void disconnect() 
 	{
 		try 
 		{
@@ -208,17 +207,51 @@ public class DB
 			state.setString(5, user.getAddress());		//photo
 			//state.setString(6, user.getName());			//password
 			state.executeUpdate();
-			System.out.println("user " + user.getName() + " added");
-			//disconnect
-			if (!this.connection.isClosed())
-				disConnect();
+			System.out.println("user " + user.getName() + " added");				
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			//disconnect
+			disconnect();
+		}
 	}
-		
+	
+	/*
+	 *  find user
+	 */
+	public boolean userExist(String name, String password)
+	{
+		boolean result = false;
+		ResultSet res = null;
+				
+		try 
+		{
+			this.connect();
+			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			state.setString(1, name);			//name
+			state.setString(2, password);		//password
+			res = state.executeQuery();
+			//TODO: erase after debug!!
+			if (res != null)
+				System.out.println("user found");
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+		}
+				
+		result =  (res != null) ? true: false;
+		return result;
+	}
+	
 	/*
 	 *  getters-=setters *
 	 */
