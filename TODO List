@@ -1,0 +1,7 @@
+1. add "empty field" error handeling in registration AND sign in forms
+2. add "new order" form to front-end
+3. add "new order" hadeling to back-end
+4. create list of users
+5. upload images relating to the project and not generic ones
+6. change dbURL and driverURL and more parameters from hard coded to parameters in web.xml file
+7. improve UI
