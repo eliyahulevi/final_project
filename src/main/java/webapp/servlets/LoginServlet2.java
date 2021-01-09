@@ -58,12 +58,7 @@ public class LoginServlet2 extends HttpServlet
 			 {
 				 values  = getValues(line);
 			 }
-		 } 
-		 catch (Exception e) { /*report an error*/ }
-		
-		 try 
-		 {
-			int res = 0;
+			 
 			boolean bool = false;
 			String name = values[0];
 			String password = values[1];
@@ -74,14 +69,18 @@ public class LoginServlet2 extends HttpServlet
 				response.getWriter().write("1");
 			else
 				response.getWriter().write("0");
-				
 		 } 
-		 catch (Exception e) 
-		 {
-		  // crash and burn
-		  throw new IOException("Error parsing JSON request string");
-		 }
 		 
+		 catch (Exception e) 
+		 { 
+			 e.printStackTrace(); 
+		 }
+		 finally 
+		 {
+			 // return to main page
+			 this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);
+		 }
+
 
 	}
 	
