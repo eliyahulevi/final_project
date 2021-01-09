@@ -5,19 +5,28 @@ function login(){
 	
 	var name = document.getElementById("sign-in-model-name").value;
 	var password = document.getElementById("sign-in-model-password").value;
-	url = "LoginServlet2"; 
-	//alert("name:" + name + " password:" + password);
+	var requestString = 'name=' + name + ',password=' + password;
+	alert("requestString:" + requestString);
+	
 	var xhr = new XMLHttpRequest();
+	xhr.open('POST', 'LoginServlet2', true);
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(requestString);	
 	xhr.onreadystatechange = function() {
+	
 		if (xhr.readyState == 4) {
+			
 			var data = xhr.responseText;
-			var response = "";
-			if (data == 1) response = "hello" + name;
-			else response = "unknown user";
-			alert(response);
+			alert("response from servlet: " + data);
+			//var response = ""; 
+			if (data == "1")  helloUser(name);			
 		}
 	}
 	
-    xhr.open('POST', 'LoginServlet2', true);
-    xhr.send(name, password);
+
+}
+
+function helloUser(name){
+	alert(name);
+	document.getElementById('sign-in-div').InnerHTML = "hello" + name;
 }

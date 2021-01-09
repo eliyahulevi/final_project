@@ -4,7 +4,10 @@
 
 package webapp.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Enumeration;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,14 +48,55 @@ public class LoginServlet2 extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int res = 0;
-		boolean bool = false;
-		String name = request.getParameter("name");
-		String password = request.getParameter("password");
-		bool = db.userExist(name, password); 
-		res = (bool == true) ? 1 : 0;
-		System.out.println("user found in servlet:" + res);		
-		response.getWriter().write(res);
+		 StringBuffer jb = new StringBuffer();
+		 String line = null;
+		 String[] values = null;
+		 try 
+		 {
+			 BufferedReader reader = request.getReader();
+			 while ((line = reader.readLine()) != null)
+			 {
+				 values  = getValues(line);
+			 }
+		 } 
+		 catch (Exception e) { /*report an error*/ }
+		
+		 try 
+		 {
+			int res = 0;
+			boolean bool = false;
+			String name = values[0];
+			String password = values[1];
+		
+			System.out.println("in servlet: name " + name + " password " + password);
+			bool = db.findUser(name, password); 
+			if (bool)
+				response.getWriter().write("1");
+			else
+				response.getWriter().write("0");
+				
+		 } 
+		 catch (Exception e) 
+		 {
+		  // crash and burn
+		  throw new IOException("Error parsing JSON request string");
+		 }
+		 
+
+	}
+	
+	private String[] getValues(String line)
+	{
+		String[] results = new String[5];
+		
+		String[] pairs = line.split(",");
+		for(int i = 0; i < pairs.length; i++)
+		{
+			results[i] = pairs[i].split("=")[1];
+			System.out.println("value=" + results[i]);
+		}
+		
+		return results;
 	}
 
 }

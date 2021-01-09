@@ -45,14 +45,15 @@
       </th>
       
       <th scope="col">
-      	
-      	<ul class="nav navbar-nav navbar-right">
-			<li><a href="#sign-in-Modal" data-toggle="modal" data-target="#sign-in-Modal">sign in</a> </li>
-		</ul>
+      	<div id="sign-in-div">
+  			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#sign-in-Modal" data-toggle="modal" data-target="#sign-in-Modal">sign in</a> </li>
+			</ul>
 		
-		<ul class="nav navbar-nav navbar-right">
-			<li><a href="#sign-in-Modal" data-toggle="modal" data-target="#register-Modal">register</a> </li>
-		</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#sign-in-Modal" data-toggle="modal" data-target="#register-Modal">register</a> </li>
+			</ul>
+      	</div>
       </th>
       
     </tr>
@@ -74,8 +75,8 @@
 				    </div>
 	
 				    <!-- Login Form -->
-				    <form> <!-- action="LoginServlet2" method="post" --> 
-					      <input type="text" id="sign-in-model-name" class="fadeIn second" name="register" placeholder="login">
+				    <form  id="sign-in-form"> 
+					      <input type="text" id="sign-in-model-name" class="fadeIn second" name="register" placeholder="user name">
 					      <input type="text" id="sign-in-model-password" class="fadeIn third" name="register" placeholder="password">
 					      <input type="submit" class="fadeIn fourth" value="Log In" onclick=login() >
 				    </form>

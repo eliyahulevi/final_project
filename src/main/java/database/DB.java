@@ -223,21 +223,28 @@ public class DB
 	/*
 	 *  find user
 	 */
-	public boolean userExist(String name, String password)
+	public boolean findUser(String name, String password)
 	{
 		boolean result = false;
 		ResultSet res = null;
 				
 		try 
 		{
+			System.out.println("in db searching for user " + name + " with password " + password);
 			this.connect();
 			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
 			state.setString(2, password);		//password
 			res = state.executeQuery();
-			//TODO: erase after debug!!
-			if (res != null)
+			
+			if (res.next())
+			{
+				//TODO: erase after debug!!
 				System.out.println("user found");
+				result = true;
+			}
+			else
+				result = false;
 		} 
 		catch (SQLException e) 
 		{
@@ -248,7 +255,6 @@ public class DB
 			this.disconnect();
 		}
 				
-		result =  (res != null) ? true: false;
 		return result;
 	}
 	
