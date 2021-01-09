@@ -1,5 +1,6 @@
 package webapp.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -42,18 +43,56 @@ public class RegisterServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-
-		String name = request.getParameter("name");
-		String password = request.getParameter("password");
-		String nickName = request.getParameter("nick-name");
-		String email = request.getParameter("email");
-		String address = request.getParameter("address");
 		
-		System.out.println(name);
+		 String line = null;
+		 String[] values = null;
+		 try 
+		 {
+			 BufferedReader reader = request.getReader();
+			 while ((line = reader.readLine()) != null)
+			 {
+				 values  = getValues(line, 5);
+			 }
+			 
+			boolean bool = false;
+			String name = values[0];
+			String password = values[1];
+			String nickName = values[2];
+			String email = values[3];
+			String address = values[4];
 		
-		User user = new User(name, password, nickName, email, address);
-		db.insertUser(user);
-		this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);
+			User user = new User(name, password, nickName, email, address);
+			db.insertUser(user);
+			if (bool)
+				response.getWriter().write("1");
+			else
+				response.getWriter().write("0");
+		 } 
+		 
+		 catch (Exception e) 
+		 { 
+			 e.printStackTrace(); 
+		 }
+		
+	 	finally
+	 	{
+	 		this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);	
+	 	}
+		
+	}
+	
+	public static String[] getValues(String line, int numberOfValues)
+	{
+		String[] results = new String[numberOfValues];
+		
+		String[] pairs = line.split(",");
+		for(int i = 0; i < pairs.length; i++)
+		{
+			results[i] = pairs[i].split("=")[1];
+			System.out.println("value=" + results[i]);
+		}
+		
+		return results;
 	}
 
 }

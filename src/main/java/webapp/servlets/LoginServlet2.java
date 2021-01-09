@@ -6,15 +6,15 @@ package webapp.servlets;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import database.DB;
-import model.users.*;
+
 
 /**
  * Servlet implementation class LoginServlet2
@@ -56,7 +56,7 @@ public class LoginServlet2 extends HttpServlet
 			 BufferedReader reader = request.getReader();
 			 while ((line = reader.readLine()) != null)
 			 {
-				 values  = getValues(line);
+				 values  = getValues(line, 2);
 			 }
 			 
 			boolean bool = false;
@@ -84,9 +84,10 @@ public class LoginServlet2 extends HttpServlet
 
 	}
 	
-	private String[] getValues(String line)
+
+	public static String[] getValues(String line, int numberOfValues)
 	{
-		String[] results = new String[5];
+		String[] results = new String[numberOfValues];
 		
 		String[] pairs = line.split(",");
 		for(int i = 0; i < pairs.length; i++)

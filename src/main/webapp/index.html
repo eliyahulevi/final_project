@@ -14,6 +14,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="javascript/login.js"></script>
+  <script src="javascript/register.js"></script>
   
 </head>
 
@@ -60,7 +61,7 @@
   	</thead>
   		<tbody></tbody>
   	</table>
-  
+  <!-- 
   <div class="container">
 	  <!-- sign-in Modal -->
 	  <div class="modal fade" id="sign-in-Modal" role="dialog">
@@ -92,6 +93,7 @@
 	  </div>  
   </div>
   
+  
     <div class="container">
 	  <!-- register Modal -->
 	  <div class="modal fade" id="register-Modal" role="dialog">
@@ -107,13 +109,13 @@
 	
 				    <!-- Login Form -->
 				    <h4>New User</h4>
-				    <form action="RegisterServlet" method="post"> 
-				      <input type="text" id="name" class="fadeIn second" name="register" placeholder="name">
-				      <input type="text" id="password" class="fadeIn second" name="register" placeholder="password">
-				      <input type="text" id="nick-name" class="fadeIn second" name="register" placeholder="nick name">
-				      <input type="text" id="email" class="fadeIn second" name="register" placeholder="email">
-				      <input type="text" id="address" class="fadeIn second" name="register" placeholder="address">
-				      <input type="submit" class="fadeIn fourth" value="submit" data-dimiss="modal">
+				    <form method="post">   
+				      <input type="text" id="reg-name" class="fadeIn second" name="register" placeholder="name" required>
+				      <input type="text" id="reg-password" class="fadeIn second" name="register" placeholder="password" required>
+				      <input type="text" id="reg-nick-name" class="fadeIn second" name="register" placeholder="nick name" required>
+				      <input type="text" id="reg-email" class="fadeIn second" name="register" placeholder="email" required>
+				      <input type="text" id="reg-address" class="fadeIn second" name="register" placeholder="address" required>
+				      <input type="submit" class="fadeIn fourth" value="submit" onclick=regNewUser() >
 				    </form>
 	
 				</div>
@@ -414,6 +416,21 @@ $(document).ready(function(){
     });
   });
 })
+
+function click(){
+	
+	alert();
+	// get users info from form
+	var name = document.getElementById("reg-name").value;
+	var password = document.getElementById("reg-password").value;
+	var nickname = document.getElementById("reg-nick-name").value;
+	var email = document.getElementById("reg-email").value;
+	var address = document.getElementById("reg-address").value;
+	var requestString = 'name=' + name + ',password=' + password + ",nickname=" + nickname + ",email=" + email + ",address=" + address;
+	alert("request String:" + requestString);
+	
+}
+
 </script>
 
 </body>
