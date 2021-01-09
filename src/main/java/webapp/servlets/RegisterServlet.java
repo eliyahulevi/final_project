@@ -49,6 +49,8 @@ public class RegisterServlet extends HttpServlet
 		String email = request.getParameter("email");
 		String address = request.getParameter("address");
 		
+		System.out.println(name);
+		
 		User user = new User(name, password, nickName, email, address);
 		db.insertUser(user);
 		this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);

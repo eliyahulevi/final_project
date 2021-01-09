@@ -196,8 +196,7 @@ public class DB
 		try 
 		{
 			// connect to db
-			if (this.connection.isClosed())
-				connect();
+			connect();
 			// insert user			
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
 			state.setString(1, user.getName() + date.toString());	//name
