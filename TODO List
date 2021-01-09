@@ -5,3 +5,4 @@
 5. upload images relating to the project and not generic ones
 6. change dbURL and driverURL and more parameters from hard coded to parameters in web.xml file
 7. improve UI
+8. fix installation manual
