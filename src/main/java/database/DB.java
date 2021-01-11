@@ -14,12 +14,21 @@ import java.sql.SQLException;
 
 import model.users.*;
 
+import appConstants.*;
+
 /**
  * @author shahar *
  *
  */
 public class DB 
 {
+	//did you mean this?
+	//AppConstansImp const_names = new AppConstansImp();
+	//AppConstansImp const_names = new AppConstansImp();
+	//String dbName = const_names.Get_dbName();
+	//String driverURL = const_names.Get_driverURL();
+	//String dbURL = const_names.Get_dbURL();
+
 	String dbName = "ClientsDB";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
 	String dbURL = "jdbc:derby:" + dbName + ";create=true";
