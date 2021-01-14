@@ -1,8 +1,16 @@
-1. add "empty field" error handeling in registration AND sign in forms
-2. add "new order" form to front-end
-3. add "new order" hadeling to back-end
-4. create list of users
-5. upload images relating to the project and not generic ones
-6. change dbURL and driverURL and more parameters from hard coded to parameters in web.xml file
-7. improve UI
-8. fix installation manual
+TASK:                                                                                          PRIORITY (1 LOWEST-->5 HIGHEST):                   STATE:
+-----                                                                                          --------------------------------                   ------
+1. add "empty field" error handeling in registration AND sign in forms                                  |     4                                   
+2. add "new order" form to front-end                                                                    |     5
+3. add "new order" hadeling to back-end                                                                 |     5
+4. create list of users in the UI                                                                       |     4
+5. upload images relating to the project and not generic ones                                           |     2                                    DONE
+6. change dbURL and driverURL and more parameters from hard coded to parameters in web.xml file         |     2                                    DONE
+7. improve UI                                                                                           |     3
+8. fix installation manual                                                                              |     2
+9. add order class                                                                                      |     5
+10. add product class                                                                                   |     5
+11. add ordering servlet to handle new orders                                                           |     5
+12. add insert, find and update queries for order                                                       |     5
+13. add insert, find, update and delete queries for product                                             |     5
+
