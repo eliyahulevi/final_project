@@ -52,7 +52,7 @@
 			</ul>
 		
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#sign-in-Modal" data-toggle="modal" data-target="#register-Modal">register</a> </li>
+				<li><a href="#register-Modal" data-toggle="modal" data-target="#register-Modal">register</a> </li>
 			</ul>
       	</div>
       </th>
@@ -371,6 +371,11 @@
   </div>
 </div>
 
+
+
+<input type="button" value="create register page" onclick="change_page_to_register_test()"/>
+<input type="button" value="create login page" onclick="change_page_to_login_test()"/>
+
 <!-- Image of location/map -->
 <img src="/w3images/map.jpg" class="w3-image w3-greyscale-min" style="width:100%">
 
@@ -430,6 +435,14 @@ function click(){
 	alert("request String:" + requestString);
 	
 }
+
+function change_page_to_register_test(){
+	  window.location.href = "register_test.html";
+	} 
+	
+function change_page_to_login_test(){
+	  window.location.href = "login_test.html";
+	} 
 
 </script>
 
