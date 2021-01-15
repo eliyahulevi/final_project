@@ -41,7 +41,7 @@ public class DB
 	Connection connection;
 	ResultSet rs;
 	User user = new User();
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS" };
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS" };
 	
 	//sql statements
 	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
@@ -64,15 +64,24 @@ public class DB
 			+ "NICKNAME varchar(20),"
 			+ "TIME timestamp,"
 			+ "CONTENT varchar(500),"
-			+ "REPLYABLE char)"; 
+			+ "REPLYABLE char)";
+
 	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
+	public final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
+			+ "CATALOG int PRIMARY KEY,"
+			+ "TYPE int,"
+			+ "PRICE float(6,2),"
+			+ "LENGTH float(6,1),"
+			+ "COLOR varchar(10))"; 
+	
 	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_USERS = 		"SELECT * FROM USERS";
 	//public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	
 	/**
 	 * constructors *
@@ -115,7 +124,7 @@ public class DB
 		
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
-		this.insertUser(user);
+		//this.insertUser(user);
 	}	
 	private void createExampleUser()
 	{
@@ -130,7 +139,7 @@ public class DB
 	{
 		ResultSet rs;
 		
-		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE };
+		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE };
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
