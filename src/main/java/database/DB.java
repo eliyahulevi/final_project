@@ -41,7 +41,7 @@ public class DB
 	Connection connection;
 	ResultSet rs;
 	User user = new User();
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS" };
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" };
 	
 	//sql statements
 	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
@@ -71,17 +71,32 @@ public class DB
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
 	public final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
-			+ "CATALOG int PRIMARY KEY,"
+			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE int,"
 			+ "PRICE float(6,2),"
 			+ "LENGTH float(6,1),"
 			+ "COLOR varchar(10))"; 
+	public final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
+			+ "ORDER_ID int PRIMARY KEY,"
+			+ "DATE varchar(20),"
+			+ "SHIPADDREDD varchar(100),"
+			+ "STATUS int," 
+			+ "CUSTOMERNAME varchar(100),"
+			+ "COLOR varchar(10))"; 
+	public final String CREATE_ORDER_PRODUCT_TABLE = "CREATE TABLE " + tables_str[5] + "("
+			+ "ORDER_ID int FOREIGN KEY,"
+			+ "PRODUCT_ID int FOREIGN KEY,"
+			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
+		    + "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),"
+		    + "UNIQUE (PRODUCT_ID, ORDER_ID)"
+			+ ")"; 
 	
 	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_USERS = 		"SELECT * FROM USERS";
 	//public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
+	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT=?"; 
 	
 	/**
 	 * constructors *
