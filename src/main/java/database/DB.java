@@ -5,6 +5,8 @@ package database;
 
 import java.sql.Statement;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -12,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import model.product.AlternativeProduct;
 import model.users.*;
 
 import appConstants.*;
@@ -91,12 +94,20 @@ public class DB
 		    + "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	
+	//public final String CREATE_ALT_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
+	//		+ "ORDER_ID int PRIMARY KEY,"
+	//		+ "USERNAME varchar(50)" //?
+	//		+ "TYPE varchar(10)
+	//		+ "LENGTH int"
+	//		+ "QUANTITY int";
+	
 	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_USERS = 		"SELECT * FROM USERS";
 	//public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT=?"; 
+	//public String SELECT_ORDER = 		"SELECT * FROM ORDERS WHERE ORDER_ID=?";
 	
 	/**
 	 * constructors *
@@ -288,6 +299,47 @@ public class DB
 		}
 				
 		return result;
+	}
+	
+	public AlternativeProduct getOrder(int orderID) {
+		AlternativeProduct result = new AlternativeProduct();
+		ResultSet res = null;
+		try 
+		{
+			System.out.println("in db searching for order id " + orderID);
+			this.connect();
+			PreparedStatement state = this.connection.prepareStatement(SELECT_ORDER);
+			state.setInt(1, orderID);
+			res = state.executeQuery();
+			
+			List<ArrayList<Integer>> list_of_order = new ArrayList<ArrayList<Integer>>();
+			while (res.next())
+			{
+				ArrayList<Integer> temp = new ArrayList<Integer>();
+				temp.add(res.getInt(4));//length
+				temp.add(rs.getInt(5));//quantity
+				list_of_order.add(temp);
+			}
+			
+			result.setList_of_order(list_of_order);
+			//maybe need to do it before the while loop
+			result.setCustomerName(rs.getString(2));
+			result.setOrderID(rs.getInt(1));
+			result.setType_of_lumber(rs.getString(3));
+			
+			
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+		}
+
+		return result;
+		
 	}
 	
 	/*
