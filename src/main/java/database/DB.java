@@ -287,9 +287,12 @@ public class DB
 			
 			if (res.next())
 			{
-				//TODO: erase after debug!!
-				System.out.println("user found");
-				result = true;
+				// TODO: erase after debug!!
+				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
+				{
+					System.out.println("user " + name + "  found"); 
+					result = true;
+				}
 			}
 			else
 				result = false;

@@ -78,7 +78,7 @@ public class LoginServlet2 extends HttpServlet
 		 finally 
 		 {
 			 // return to main page
-			 this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);
+			 //this.getServletContext().getRequestDispatcher("/index.html").forward(request, response);
 		 }
 
 

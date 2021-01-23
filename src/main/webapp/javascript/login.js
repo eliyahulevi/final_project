@@ -17,9 +17,10 @@ function login(){
 		if (xhr.readyState == 4) {
 			
 			var data = xhr.responseText;
-			//alert("response from servlet: " + data);
+			alert("response from servlet: " + data);
 			//var response = ""; 
-			if (data == "1")  helloUser(name);			
+			if (data == "1")  helloUser(name);	
+			else alert("no user found!");		
 		}
 	}
 	
@@ -28,5 +29,5 @@ function login(){
 
 function helloUser(name){
 	alert(name);
-	document.getElementById('sign-in-div').InnerHTML = "hello" + name;
+	window.location.replace("/final-project/user_page.html");
 }
