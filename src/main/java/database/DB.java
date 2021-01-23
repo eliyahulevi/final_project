@@ -87,11 +87,11 @@ public class DB
 			+ "CUSTOMERNAME varchar(100),"
 			+ "COLOR varchar(10))"; 
 	public final String CREATE_ORDER_PRODUCT_TABLE = "CREATE TABLE " + tables_str[5] + "("
-			+ "ORDER_ID int FOREIGN KEY,"
-			+ "PRODUCT_ID int FOREIGN KEY,"
+			+ "ORDER_ID int,"
+			+ "PRODUCT_ID int,"
 			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
-		    + "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),"
-		    + "UNIQUE (PRODUCT_ID, ORDER_ID)"
+		    + "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
+		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	
 	//public final String CREATE_ALT_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
@@ -165,7 +165,12 @@ public class DB
 	{
 		ResultSet rs;
 		
-		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE, CREATE_ORDER_PRODUCT_TABLE };
+		String[] createTables = {	CREATE_USERS_TABLE, 
+									CREATE_MESSAGE_TABLE, 
+									CREATE_CHANNEL_TABLE, 
+									CREATE_PRODUCT_TABLE,
+									CREATE_ORDER_TABLE,
+									CREATE_ORDER_PRODUCT_TABLE };
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
