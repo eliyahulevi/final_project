@@ -76,8 +76,8 @@ public class DB
 	public final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
 			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE int,"
-			+ "PRICE float(6,2),"
-			+ "LENGTH float(6,1),"
+			+ "PRICE float(10),"
+			+ "LENGTH float(10),"
 			+ "COLOR varchar(10))"; 
 	public final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
@@ -165,7 +165,7 @@ public class DB
 	{
 		ResultSet rs;
 		
-		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE };
+		String[] createTables = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE, CREATE_ORDER_PRODUCT_TABLE };
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
