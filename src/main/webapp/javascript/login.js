@@ -14,11 +14,8 @@ function login(){
     xhr.send(requestString);	
 	xhr.onreadystatechange = function() {
 	
-		if (xhr.readyState == 4) {
-			
+		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
-			alert("response from servlet: " + data);
-			//var response = ""; 
 			if (data == "1")  helloUser(name);	
 			else alert("no user found!");		
 		}
