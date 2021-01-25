@@ -21,6 +21,15 @@ public class User
 		this.setPassword(password);
 		this.setNickName(nickName);
 	}
+	public User(String name, String password, String nickName, String email, String address, String phone)
+	{
+		this.setName(name);
+		this.setEmail(email);
+		this.setAddress(address); 
+		this.setPassword(password);
+		this.setNickName(nickName);
+		this.setPhone(phone); 
+	}
 	
 	
 	/*

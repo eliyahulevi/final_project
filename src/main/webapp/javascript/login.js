@@ -1,6 +1,8 @@
 /**
  *  handle login functionality
  */
+
+	
 function login(){
 	
 	var name = document.getElementById("sign-in-model-name").value;
@@ -16,7 +18,11 @@ function login(){
 	
 		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
-			if (data == "1")  helloUser(name);	
+			if (data != "") {
+			 helloUser(data);
+			 document.getElementById("user-name").InnerHTML = "name";
+			 alert(document.getElementById("user-name").innerHTML);
+			 }	
 			else alert("no user found!");		
 		}
 	}
@@ -27,4 +33,5 @@ function login(){
 function helloUser(name){
 	alert(name);
 	window.location.replace("/final-project/user_page.html");
+	
 }

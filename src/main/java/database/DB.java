@@ -18,6 +18,9 @@ import model.product.AlternativeProduct;
 import model.users.*;
 
 import appConstants.*;
+import org.json.simple.JSONValue;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author shahar *
@@ -150,11 +153,11 @@ public class DB
 		
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
-		//this.insertUser(user);
+		this.insertUser(this.user);
 	}	
 	private void createExampleUser()
 	{
-		this.user.setName("israel israeli");
+		this.user.setName("israel");
 		this.user.setNickName("israelite");
 		this.user.setAddress("1501 Yemmen road, Yemmen");
 		this.user.setEmail("israel@gmail.com");
@@ -248,7 +251,7 @@ public class DB
 			connect();
 			// insert user			
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName() + date.toString());	//name
+			state.setString(1, user.getName()); // + date.toString());	name
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
 			state.setString(4, user.getAddress());		//address
@@ -308,7 +311,62 @@ public class DB
 				
 		return result;
 	}
+	public String findUser1(String name, String password)
+	{
+		String result = "";
+		ResultSet res = null;
+				
+		try 
+		{
+			System.out.println("in db searching for user " + name + " with password " + password);
+			this.connect();
+			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			state.setString(1, name);			//name
+			state.setString(2, password);		//password
+			res = state.executeQuery();
+			
+			if (res.next())
+			{
+				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
+				{
+					User user = new User(res.getString(1), res.getString(2), res.getString(3), res.getString(4), res.getString(5) );
+					return user2JSON(user);
+				}
+			}
+			else
+				result = "";
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+		}
+				
+		return result;
+	}
 	
+	/*
+	/ user to JSON format 
+	*/
+	private String user2JSON(User user)
+	{
+		String result = "";
+		
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("username", user.getName());
+		map.put("password", user.getPassword());
+		map.put("nickname", user.getNickName());
+		map.put("email", user.getEmail());
+		map.put("phone", user.getPhone());
+		map.put("address", user.getAddress());
+		
+		result = JSONValue.toJSONString(map);
+		return result;
+	}
+
 	public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;

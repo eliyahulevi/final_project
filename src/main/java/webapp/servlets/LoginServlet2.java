@@ -6,7 +6,8 @@ package webapp.servlets;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import database.DB;
-
+import org.json.simple.JSONValue;
 
 /**
  * Servlet implementation class LoginServlet2
@@ -32,6 +33,7 @@ public class LoginServlet2 extends HttpServlet
     {
         super();
         db = new DB();
+        
     }
 
 	/**
@@ -51,6 +53,8 @@ public class LoginServlet2 extends HttpServlet
 		 StringBuffer jb = new StringBuffer();
 		 String line = null;
 		 String[] values = null;
+		 Map<String,String> map = new HashMap<String,String>();
+		 
 		 try 
 		 {
 			 BufferedReader reader = request.getReader();
@@ -64,11 +68,8 @@ public class LoginServlet2 extends HttpServlet
 			String password = values[1];
 		
 			System.out.println("in servlet: name " + name + " password " + password);
-			bool = db.findUser(name, password); 
-			if (bool)
-				response.getWriter().write("1");
-			else
-				response.getWriter().write("0");
+			String user = db.findUser1(name, password); 
+			response.getWriter().write(user);			
 		 } 
 		 
 		 catch (Exception e) 

@@ -2,6 +2,8 @@
  *  handles registration of a new user/wjatever
  */
 
+
+
 function regNewUser(){
 	
 	// get users info from form
@@ -11,7 +13,7 @@ function regNewUser(){
 	var email = document.getElementById("reg-email").value;
 	var address = document.getElementById("reg-address").value;
 	var requestString = 'name=' + name + ',password=' + password + ",nickname=" + nickname + ",email=" + email + ",address=" + address;
-	//alert("requestString:" + requestString);
+	alert("requestString:" + requestString);
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'RegisterServlet', true);
@@ -28,4 +30,7 @@ function regNewUser(){
 		}
 	}
 }
+
+
+
 

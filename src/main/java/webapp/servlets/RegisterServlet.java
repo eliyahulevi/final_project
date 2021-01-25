@@ -60,6 +60,7 @@ public class RegisterServlet extends HttpServlet
 			String nickName = values[2];
 			String email = values[3];
 			String address = values[4];
+			//String phone = values[5];
 		
 			User user = new User(name, password, nickName, email, address);
 			db.insertUser(user);
@@ -84,12 +85,12 @@ public class RegisterServlet extends HttpServlet
 	public static String[] getValues(String line, int numberOfValues)
 	{
 		String[] results = new String[numberOfValues];
-		
 		String[] pairs = line.split(",");
+		
 		for(int i = 0; i < pairs.length; i++)
 		{
 			results[i] = pairs[i].split("=")[1];
-			System.out.println("value=" + results[i]);
+			System.out.println("value=" + results[i]);	
 		}
 		
 		return results;
