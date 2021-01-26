@@ -19,19 +19,19 @@ function login(){
 		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
 			if (data != "") {
-			 helloUser(data);
-			 document.getElementById("user-name").InnerHTML = "name";
-			 alert(document.getElementById("user-name").innerHTML);
-			 }	
+				helloUser(data);
+			}	
 			else alert("no user found!");		
 		}
 	}
-	
-
 }
+
 
 function helloUser(name){
 	alert(name);
+	sessionStorage.setItem('label', name);
 	window.location.replace("/final-project/user_page.html");
 	
 }
+
+
