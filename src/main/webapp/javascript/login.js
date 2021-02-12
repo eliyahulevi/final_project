@@ -1,4 +1,4 @@
-/**
+ /**
  *  handle login functionality
  */
 
@@ -28,7 +28,7 @@ function login(){
 
 
 function helloUser(name){
-	alert(name);
+	//alert(name);
 	sessionStorage.setItem('label', name);
 	window.location.replace("/final-project/user_page.html");
 	
