@@ -1,5 +1,7 @@
 /**
- *  source:" https://docs.oracle.com/javase/tutorial/jdbc/basics/processingsqlstatements.html 
+ *  sources:
+ 	statements :  		https://docs.oracle.com/javase/tutorial/jdbc/basics/processingsqlstatements.html 
+	SQL error codes:  	https://db.apache.org/derby/docs/10.4/ref/rrefexcept71493.html 
  */
 package database;
 
@@ -35,6 +37,9 @@ public class DB
 	//String driverURL = const_names.Get_driverURL();
 	//String dbURL = const_names.Get_dbURL();
 
+	boolean firstTime = true;
+	
+	
 	String dbName = "ClientsDB";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
 	String dbURL = "jdbc:derby:" + dbName + ";create=true";
@@ -51,9 +56,9 @@ public class DB
 	
 	//sql statements
 	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
-			+ "                 FROM INFORMATION_SCHEMA.TABLES "
-			+ "                 WHERE TABLE_SCHEMA = 'TheSchema' "
-			+ "                 AND  TABLE_NAME = 'TheTable'))"
+			+ "FROM INFORMATION_SCHEMA.TABLES "
+			+ "WHERE TABLE_SCHEMA = 'TheSchema' "
+			+ "AND  TABLE_NAME = 'TheTable'))"
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
@@ -63,6 +68,7 @@ public class DB
 			+ "NICKNAME varchar(30),"
 			+ "ADDRESS varchar(50),"
 			+ "PHOTO varchar(100),"
+			+ "DESCRIPTION varchar(200),"
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
 	public final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
@@ -104,9 +110,8 @@ public class DB
 	//		+ "LENGTH int"
 	//		+ "QUANTITY int";
 	
-	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
+	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
 	public String SELECT_USERS = 		"SELECT * FROM USERS";
-	//public String SELECT_USERS = 		"SELECT * FROM USERS WHERE USERNAME=?";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT=?"; 
@@ -117,20 +122,7 @@ public class DB
 	 */
 	public DB() 
 	{
-//        try 
-//        {
-//			Class.forName(driverURL);
-//			connection = DriverManager.getConnection(dbURL);		
-//			if (!connection.isClosed())
-//			{
-//				//this.db = new DB(connection);
-//				System.out.println("data base created: " + dbName);	
-//			}
-//        }
-//        catch(SQLException | ClassNotFoundException e)
-//        {
-//        	e.printStackTrace();
-//        }
+
 	}
 	public DB(Connection conn)
 	{
@@ -149,11 +141,17 @@ public class DB
 		this.dbName = name;
 		init(); 
 	}
-	private void init() {
-		
+	
+	/*
+	 *	 private methods	
+	 */
+	private void init() 
+	{
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
-		this.insertUser(this.user);
+		if (this.isEmpty("USERS"))
+			this.insertUser(this.user, true);
+		this.firstTime = false;
 	}	
 	private void createExampleUser()
 	{
@@ -163,6 +161,7 @@ public class DB
 		this.user.setEmail("israel@gmail.com");
 		this.user.setPassword("1234");
 		this.user.setPhone("050-55555351");
+		this.user.setDescription("Joey doesn't share food!!");
 	}
 	private void createTables()
 	{
@@ -237,32 +236,68 @@ public class DB
 			e.printStackTrace();
 		}
 	}
+	private boolean isEmpty(String tabelName)
+	{
+		int count = 0;
+		boolean result = true;
+		String queryString = "SELECT * FROM " + tabelName;
+		ResultSet rs;
+		
+		this.connect();
+		try 
+		{
+			PreparedStatement state = this.connection.prepareStatement(queryString);
+			rs = state.executeQuery();
+			while ( rs.next() ) 
+				count++;
+			result = count > 0 ? false : true;
+			
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		this.disconnect();
+		
+		System.out.println("tabel " + tabelName + " has " + count + " records");
+		return result;
+	}
+	
 	
 	/*
-	 *  add a new user
+	 *  insert a new user 
 	 */
-	public void insertUser(User user) 
+	public void insertUser(User user, boolean first) 
 	{
+		String dateString = "";
 		LocalTime date = LocalTime.now();
-		
+		if (!first)
+			dateString = date.toString(); 
+				
 		try 
 		{
 			// connect to db
 			connect();
 			// insert user			
 			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName()); // + date.toString());	name
+			state.setString(1, user.getName() + dateString);	
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
 			state.setString(4, user.getAddress());		//address
-			state.setString(5, user.getAddress());		//photo
-			//state.setString(6, user.getName());			//password
+			state.setString(5, user.getPhoto());		//photo
+			state.setString(6, user.getDescription());	//password
 			state.executeUpdate();
 			System.out.println("user " + user.getName() + " added");				
 		} 
 		catch (SQLException e) 
 		{
-			e.printStackTrace();
+			if (e.getSQLState() == "42X55")
+				System.out.println("error >> need to update table");
+			else if(e.getSQLState() == "23505")
+				System.out.println("warning > user alerady exist");
+			else
+				e.printStackTrace();
 		}
 		finally
 		{
@@ -272,7 +307,7 @@ public class DB
 	}
 	
 	/*
-	 *  find user
+	 *  find user 
 	 */
 	public boolean findUser(String name, String password)
 	{

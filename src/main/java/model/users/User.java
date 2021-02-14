@@ -10,6 +10,7 @@ public class User
 	private String phone;
 	private String address;
 	private String password; 
+	private String description = "";
 	int Age;
 	
 	public User() {}
@@ -21,7 +22,7 @@ public class User
 		this.setPassword(password);
 		this.setNickName(nickName);
 	}
-	public User(String name, String password, String nickName, String email, String address, String phone)
+	public User(String name, String password, String nickName, String email, String address, String phone, String... description )
 	{
 		this.setName(name);
 		this.setEmail(email);
@@ -29,6 +30,7 @@ public class User
 		this.setPassword(password);
 		this.setNickName(nickName);
 		this.setPhone(phone); 
+		this.setDescription(description[0]);
 	}
 	
 	
@@ -80,6 +82,16 @@ public class User
 	}
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getPhoto() {
+		// TODO figure this out
+		return null;
 	}
 	
 }

@@ -63,7 +63,7 @@ public class RegisterServlet extends HttpServlet
 			//String phone = values[5];
 		
 			User user = new User(name, password, nickName, email, address);
-			db.insertUser(user);
+			db.insertUser(user, false);
 			if (bool)
 				response.getWriter().write("1");
 			else
