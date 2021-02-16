@@ -30,7 +30,7 @@ function login(){
 function helloUser(name){
 	//alert(name);
 	sessionStorage.setItem('label', name);
-	window.location.replace("/final-project/user_page.html");
+	window.location.replace("/final-project/user_page1.html");
 	
 }
 
