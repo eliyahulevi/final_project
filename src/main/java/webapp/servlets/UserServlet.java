@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import database.DB;
-import com.google.code.gson; 
+import com.google.gson.Gson; 
 
 /**
  * Servlet implementation class UserServlet
