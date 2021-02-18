@@ -10,17 +10,11 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	<script src="javascript/user.js"></script>
-	<script>
-		$(document).ready(function(){
-		  $("#myBtn").click(function(){
-		    $("#myModal").modal();
-		  });
-		});
-</script>
+
 
 </head>
 
-<body onload="onload()">
+<body onload="">
 
 <!-- navigation bar -->
 <div class="container">
@@ -154,7 +148,10 @@
 	<!-- /orders -->
 	
 	<!-- comments -->
-	<p id="comments" ><h3 style="display:inline;color:#1F618D">Comments</h3><a data-target="#myModal" data-toggle="modal" href="#myModal"> new</a></p>
+	<p id="comments" ><h3 style="display:inline;color:#1F618D">Comments</h3>
+		<a data-target="#send-Message-Modal" data-toggle="modal" href="#send-Message-Modal"> user(send message)</a>
+		<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
+	</p>
 	<div class="container">
 		
 		
@@ -170,26 +167,32 @@
 	<!-- /personal detail -->
 	
 	
-  	  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
+	<!-- Modal user(send message) -->
+ 	<div class="modal fade" id="send-Message-Modal" role="dialog" onload="foo()">
+	    <div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title">Modal Header</h4>
+	        </div>
+	        <div class="modal-body">
+	          <p>user</p>
+	            <select name="cars" id="cars">
+					<option value="volvo">Volvo</option>
+					<option value="saab">Saab</option>
+					<option value="opel">Opel</option>
+					<option value="audi">Audi</option>
+				</select>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	      </div>
+	      
+	    </div>
+	</div>
 	
 </div>
 

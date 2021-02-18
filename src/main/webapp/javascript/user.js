@@ -2,6 +2,11 @@
  * 	handles user page functionality
  */
 
+$(document).ready(function(){
+  $("#send-Message-Modal").on('show.bs.modal', function(){
+    loadUsers();
+  });
+}); 
 
 function myFunction(){	
 	alert("page loaded");
@@ -18,4 +23,24 @@ function myFunction(){
 function loadUserPage(user){
 	sessionStorage.getItem('user');
 	alert(user);
+}
+
+function loadUsers(){
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', 'UserServlet', true);
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(requestString);	
+	xhr.onreadystatechange = function() {
+	
+		if (xhr.readyState == 4) {	
+			var count;		
+			var array = xhr.responseText;
+			if ((count = Object.keys(array).length) > 0) 
+			{
+				 
+			}	
+			else alert("no user found!");		
+		}
+	}
+
 }

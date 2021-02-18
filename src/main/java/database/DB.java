@@ -112,6 +112,7 @@ public class DB
 	
 	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
 	public String SELECT_USERS = 		"SELECT * FROM USERS";
+	public String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT=?"; 
@@ -266,9 +267,37 @@ public class DB
 	
 	
 	/*
+	 *  get all users 
+	 */
+	public List<String> getUsersNames()
+	{
+		List<String> result = null;
+		ResultSet rs;
+		
+		try
+		{
+			this.connect();
+			PreparedStatement statement =  this.connection.prepareStatement(SELECT_USERS_NAMES);
+			rs = statement.executeQuery();
+			while(rs.next())
+			{
+				String name = rs.getString(0); 
+				result.add(name);
+			}
+			this.disconnect();
+		}
+		catch( Exception e)
+		{
+			
+		}
+		
+		return result;
+	}
+	
+	/*
 	 *  insert a new user 
 	 */
-	public void insertUser(User user, boolean first) 
+ 	public void insertUser(User user, boolean first) 
 	{
 		String dateString = "";
 		LocalTime date = LocalTime.now();
