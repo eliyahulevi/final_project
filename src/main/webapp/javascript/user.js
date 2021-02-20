@@ -36,11 +36,18 @@ function loadUsers(){
 			
 			var count;		
 			var data = xhr.responseText;
-			var obj = JSON.parse(data);
- 			alert(obj.length);	
-			if ( obj.length > 0) 
+			var array = JSON.parse(data);
+ 				
+			if ( (count = array.length) > 0) 
 			{
-				 alert(obj);	
+				var selectList = document.getElementById("cars");
+				alert(array.length);
+				for (var i = 0; i < count; i++) {
+					var option = document.createElement("option");
+			    	option.value = array[i];
+			    	option.text = array[i];
+			    	selectList.appendChild(option);
+				}
 			}	
 			else alert("no user found!");		
 			
