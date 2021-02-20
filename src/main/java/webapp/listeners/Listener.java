@@ -20,6 +20,7 @@ import database.DB;
 public class Listener implements ServletContextListener, HttpSessionListener 
 {
 	String dbName = "ClientsDB";
+	String dbPath = "C:\\databases\\";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
 	String dbURL = "jdbc:derby:" + dbName + ";create=true";
 	Connection conn;

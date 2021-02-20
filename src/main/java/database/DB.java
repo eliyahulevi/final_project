@@ -41,20 +41,21 @@ public class DB
 	
 	
 	String dbName = "ClientsDB";
+	String dbPath = "C:\\\\databases\\\\";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
-	String dbURL = "jdbc:derby:" + dbName + ";create=true";
-
-
-
+	String dbURL = "jdbc:derby:" + dbPath + dbName + ";create=true";
 	String[] TABLES_STR  = {"USERS","MESSAGES"};
+	User user = new User();
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" };
+	
 	PreparedStatement prepStatement;
 	Statement statement;
 	Connection connection;
 	ResultSet rs;
-	User user = new User();
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" };
+	Map<String, String> map;
 	
 	//sql statements
+	public final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
 	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
 			+ "FROM INFORMATION_SCHEMA.TABLES "
 			+ "WHERE TABLE_SCHEMA = 'TheSchema' "
@@ -115,8 +116,9 @@ public class DB
 	public String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
 	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT=?"; 
-	//public String SELECT_ORDER = 		"SELECT * FROM ORDERS WHERE ORDER_ID=?";
+	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?"; 
+	
+	String[] queryString = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE, CREATE_ORDER_TABLE, CREATE_ORDER_PRODUCT_TABLE };
 	
 	/**
 	 * constructors *
@@ -148,6 +150,14 @@ public class DB
 	 */
 	private void init() 
 	{
+		int count = 0;
+		this.map = new HashMap<String, String>();
+		for(String s: this.tables_str)
+		{
+			this.map.put(s, queryString[count]); 
+			System.out.println("tabel: " + s + " has query "+ queryString[count]);
+			count++;
+		}
 		this.createExampleUser(); 		// debug use only!!
 		this.createTables();
 		if (this.isEmpty("USERS"))
@@ -192,6 +202,21 @@ public class DB
 					else
 						System.out.println("table: " + tables_str[index] + " exists");
 				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	private void createTable(String createTableQuery)
+	{
+		try 
+		{
+			if (this.connection != null && !this.connection.isClosed())
+			{
+				this.statement = this.connection.createStatement();
+				this.statement.executeUpdate(createTableQuery);
 			}
 		} 
 		catch (SQLException e) 
@@ -256,6 +281,10 @@ public class DB
 		} 
 		catch (SQLException e) 
 		{
+			if(e.getSQLState() == "42X05")
+			{
+				this.createTable(queryString); 
+			}
 			e.printStackTrace();
 		}
 		
@@ -321,10 +350,14 @@ public class DB
 		} 
 		catch (SQLException e) 
 		{
-			if (e.getSQLState() == "42X55")
+			if (e.getSQLState() == "42X05")
+			{
 				System.out.println("error >> need to update table");
+				this.createTable(CREATE_USERS_TABLE);
+				this.insertUser(user, first);
+			}
 			else if(e.getSQLState() == "23505")
-				System.out.println("warning > user alerady exist");
+				System.out.println("warning >> user alerady exist");
 			else
 				e.printStackTrace();
 		}
