@@ -22,7 +22,7 @@ function myFunction(){
 
 function loadUserPage(user){
 	sessionStorage.getItem('user');
-	alert(user);
+	//alert(user);
 }
 
 function loadUsers(){
@@ -40,7 +40,7 @@ function loadUsers(){
  				
 			if ( (count = array.length) > 0) 
 			{
-				var selectList = document.getElementById("cars");
+				var selectList = document.getElementById("users");
 				alert(array.length);
 				for (var i = 0; i < count; i++) {
 					var option = document.createElement("option");
