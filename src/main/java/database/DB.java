@@ -249,7 +249,7 @@ public class DB
 				try 
 				{
 					this.connection.close();
-					System.out.println("closing connection..");
+					System.out.println("disconnect from database: " + dbName);
 				} 
 				catch (SQLException e) 
 				{
@@ -300,7 +300,7 @@ public class DB
 	 */
 	public List<String> getUsersNames()
 	{
-		List<String> result = null;
+		List<String> result = new ArrayList<String>();
 		ResultSet rs;
 		
 		try
@@ -310,14 +310,18 @@ public class DB
 			rs = statement.executeQuery();
 			while(rs.next())
 			{
-				String name = rs.getString(0); 
+				System.out.println(rs.getString(1));
+				String name = rs.getString(1); 
 				result.add(name);
 			}
-			this.disconnect();
 		}
 		catch( Exception e)
 		{
-			
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
 		}
 		
 		return result;

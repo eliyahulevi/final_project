@@ -29,17 +29,21 @@ function loadUsers(){
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(requestString);	
+    xhr.send();	
 	xhr.onreadystatechange = function() {
-	
-		if (xhr.readyState == 4) {	
+		
+		if (xhr.readyState == 4) {
+			
 			var count;		
-			var array = xhr.responseText;
-			if ((count = Object.keys(array).length) > 0) 
+			var data = xhr.responseText;
+			var obj = JSON.parse(data);
+ 			alert(obj.length);	
+			if ( obj.length > 0) 
 			{
-				 
+				 alert(obj);	
 			}	
 			else alert("no user found!");		
+			
 		}
 	}
 

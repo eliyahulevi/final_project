@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import database.DB;
-import com.google.gson.Gson; 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement; 
 
 /**
  * Servlet implementation class UserServlet
@@ -44,8 +45,25 @@ public class UserServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<String> list = db.getUsersNames();
-		String json = new Gson().toJson(list);
-		response.getWriter().write(json);
+		try
+		{
+			String json = "";
+			if( list.size() > 0)
+			{
+				json = new Gson().toJson(list);
+				System.out.println(list);
+			}
+			
+			response.getWriter().write(json);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			
+		}
 	}
 
 }
