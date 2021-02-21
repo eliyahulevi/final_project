@@ -30,6 +30,7 @@ function loadUserPage(user){
 }
 
 function loadUsers(){
+	var selectList = document.getElementById("users");
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -39,11 +40,14 @@ function loadUsers(){
 			var count;		
 			var data = xhr.responseText;
 			var array = JSON.parse(data);
- 				
+
 			if ( (count = array.length) > 0) 
 			{
-				var selectList = document.getElementById("users");
 				for (var i = 0; i < count; i++) {
+					selectList.options[i] = null;
+				}
+				for (var i = 0; i < count; i++) {
+					selectList.options[i] = null;
 					var option = document.createElement("option");
 			    	option.value = array[i];
 			    	option.text = array[i];
