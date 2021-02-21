@@ -1,5 +1,9 @@
 /**
- * 	handles user page functionality
+ * 	handles user page functionality according to msg code from userservlet.
+ *	the messages codes are as follows:
+ *	0x0000 - load registered users into "send message" modal
+ *	0x0001 - send the message the user typed in
+ *	0x0002 -  
  */
 
 $(document).ready(function(){
@@ -29,7 +33,7 @@ function loadUsers(){
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send();	
+    xhr.send(JSON.stringify({code: 0x0000}) );	
 	xhr.onreadystatechange = function() {	
 		if (xhr.readyState == 4) {			
 			var count;		
@@ -46,17 +50,19 @@ function loadUsers(){
 			    	selectList.appendChild(option);
 				}
 			}	
-			else alert("no user found!");					
+			else alert("no users found!");					
 		}
 	}
 }
 
 function sendMessage(){
 	var msg = document.getElementById("msg");
-	
+	var usrs = document.getElementById("users");
+	var usr = usrs.options[usrs.selectedIndex].text;
+	alert(JSON.stringify([0x0001, usr, msg.value]));
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(0x0001 + " " + msg.value);	
-    alert("0x0001 " + msg.value);
+    xhr.send(JSON.stringify({code: 0x0001, user: usr, message: msg.value}));	
+    
 }
