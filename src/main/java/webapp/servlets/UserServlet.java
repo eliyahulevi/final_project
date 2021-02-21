@@ -1,7 +1,10 @@
 package webapp.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +46,31 @@ public class UserServlet extends HttpServlet
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		 StringBuffer jb = new StringBuffer();
+		 String line = null;
+		 
+		 try 
+		 {
+			 BufferedReader reader = request.getReader();
+			 if ((line = reader.readLine()) != null)
+			 {
+				 System.out.println(line);
+				 if (line.startsWith ("1"))
+				 {
+					 System.out.println("got the msg " + line);
+				 }
+				 else
+					 System.out.println("no request");
+			 }
+			 			
+		 }
+		 catch(Exception e)
+		 {
+			 e.printStackTrace();
+		 }
+		 /*
 		List<String> list = db.getUsersNames();
 		try
 		{
@@ -64,6 +91,7 @@ public class UserServlet extends HttpServlet
 		{
 			
 		}
+		*/
 	}
 
 }

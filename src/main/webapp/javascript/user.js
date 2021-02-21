@@ -30,10 +30,8 @@ function loadUsers(){
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send();	
-	xhr.onreadystatechange = function() {
-		
-		if (xhr.readyState == 4) {
-			
+	xhr.onreadystatechange = function() {	
+		if (xhr.readyState == 4) {			
 			var count;		
 			var data = xhr.responseText;
 			var array = JSON.parse(data);
@@ -41,7 +39,6 @@ function loadUsers(){
 			if ( (count = array.length) > 0) 
 			{
 				var selectList = document.getElementById("users");
-				alert(array.length);
 				for (var i = 0; i < count; i++) {
 					var option = document.createElement("option");
 			    	option.value = array[i];
@@ -49,9 +46,17 @@ function loadUsers(){
 			    	selectList.appendChild(option);
 				}
 			}	
-			else alert("no user found!");		
-			
+			else alert("no user found!");					
 		}
 	}
+}
 
+function sendMessage(){
+	var msg = document.getElementById("msg");
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', 'UserServlet', true);
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(0x0001 + " " + msg.value);	
+    alert("0x0001 " + msg.value);
 }
