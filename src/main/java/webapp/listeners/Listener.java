@@ -1,5 +1,9 @@
 package webapp.listeners;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -12,6 +16,9 @@ import java.sql.SQLException;
 
 import database.DB;
 
+//import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
+
+
 /**
  * Application Lifecycle Listener implementation class Listener
  *
@@ -22,7 +29,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
 	String dbName = "ClientsDB";
 	String dbPath = "C:\\databases\\";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
-	String dbURL = "jdbc:derby:" + dbName + ";create=true";
+	String dbURL = "";
 	Connection conn;
 	DB db;
 
@@ -38,13 +45,23 @@ public class Listener implements ServletContextListener, HttpSessionListener
     { 
     	
         System.out.println("context initialized..");
+
         try 
         {
+	        //ServletContext cntx = sce.getServletContext();
+			Context context = new InitialContext();
+			Context env = (Context) context.lookup("java:comp/env");
+			String dbPath = (String)env.lookup("DB-NAME");
+			//BasicDataSource ds = (BasicDataSource)context.lookup(
+			//		cntx.getInitParameter("DB_DATASOURCE") /*+ AppConstants.OPEN*/);
+
+			System.out.println("parameter value: " + dbPath);
 			Class.forName(driverURL);
+			dbURL = "jdbc:derby:" + dbPath + ";create=true";
 			conn = DriverManager.getConnection(dbURL);		
 			if (!conn.isClosed())
 			{
-				this.db = new DB(conn);
+				this.db = new DB(conn, dbPath);
 				System.out.println("data base created: " + dbName);	
 			}
 			
@@ -52,6 +69,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
         catch (Exception e) 
         {
 			e.printStackTrace();
+			System.exit(1);
 		}
         finally
         {

@@ -39,11 +39,11 @@ public class DB
 
 	boolean firstTime = true;
 	
-	
+	private static String dbPath = "";
 	String dbName = "ClientsDB";
-	String dbPath = "C:\\\\databases\\\\";
+	//String dbPath = "C:\\\\databases\\\\";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
-	String dbURL = "jdbc:derby:" + dbPath + dbName + ";create=true";
+	String dbURL = "";
 	String[] TABLES_STR  = {"USERS","MESSAGES"};
 	User user = new User();
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" };
@@ -139,9 +139,9 @@ public class DB
 			e.printStackTrace();
 		} 
 	}
-	public DB(Connection conn, String name)
+	public DB(Connection conn, String path)
 	{
-		this.dbName = name;
+		DB.dbPath = path;
 		init(); 
 	}
 	
@@ -152,6 +152,7 @@ public class DB
 	{
 		int count = 0;
 		this.map = new HashMap<String, String>();
+		this.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, queryString[count]); 
@@ -229,7 +230,10 @@ public class DB
         try 
         {
 			Class.forName(driverURL);
+			this.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
+			System.out.println("database url: " + dbURL);	
 			connection = DriverManager.getConnection(dbURL);		
+			
 			if (!connection.isClosed())
 			{
 				System.out.println("connected to database: " + dbName);	
@@ -282,8 +286,9 @@ public class DB
 		catch (SQLException e) 
 		{
 			if(e.getSQLState() == "42X05")
-			{
-				this.createTable(queryString); 
+			{ 
+				String query = (String)this.map.get(tabelName);
+				this.createTable(query); 
 			}
 			e.printStackTrace();
 		}

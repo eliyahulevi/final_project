@@ -3,5 +3,31 @@
    <welcome-file>index.html</welcome-file>  
    <welcome-file>default.html</welcome-file>  
   </welcome-file-list> 
-  	 
+  <context-param>
+    <param-name>DB_DATASOURCE</param-name>
+    <param-value>ClientsDB</param-value>
+  </context-param>
+  <context-param>
+    <param-name>DB_NAME</param-name>
+    <param-value>ClientsDB</param-value>
+  </context-param>
+  
+  <resource-ref>
+    <description>Clients Database</description>
+    <res-ref-name>/DB_DATASOURCE</res-ref-name>
+    <!--res-type>ClientsDB/res-type -->
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-ref>
+    <description>Users Database Shutdown</description>
+    <res-ref-name>jdbc/UsersDatasourceShutdown</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  
+  <env-entry>
+  	<env-entry-name>DB-NAME</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>C://final_project//ClientsDB</env-entry-value> 
+  </env-entry>
 </web-app>  
