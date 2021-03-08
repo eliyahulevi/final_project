@@ -41,7 +41,6 @@ public class DB
 	
 	private static String dbPath = "";
 	String dbName = "ClientsDB";
-	//String dbPath = "C:\\\\databases\\\\";
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
 	String dbURL = "";
 	String[] TABLES_STR  = {"USERS","MESSAGES"};
@@ -159,16 +158,16 @@ public class DB
 			System.out.println("tabel: " + s + " has query "+ queryString[count]);
 			count++;
 		}
-		this.createExampleUser(); 		// debug use only!!
+		this.createAdmin(); 		
 		this.createTables();
 		if (this.isEmpty("USERS"))
 			this.insertUser(this.user, true);
 		this.firstTime = false;
 	}	
-	private void createExampleUser()
+	private void createAdmin()
 	{
-		this.user.setName("israel");
-		this.user.setNickName("israelite");
+		this.user.setName("admin");
+		this.user.setNickName("administrator");
 		this.user.setAddress("1501 Yemmen road, Yemmen");
 		this.user.setEmail("israel@gmail.com");
 		this.user.setPassword("1234");
@@ -231,7 +230,7 @@ public class DB
         {
 			Class.forName(driverURL);
 			this.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
-			System.out.println("database url: " + dbURL);	
+			//System.out.println("database url: " + dbURL);	
 			connection = DriverManager.getConnection(dbURL);		
 			
 			if (!connection.isClosed())
@@ -292,10 +291,12 @@ public class DB
 			}
 			e.printStackTrace();
 		}
-		
-		this.disconnect();
-		
-		System.out.println("tabel " + tabelName + " has " + count + " records");
+		finally
+		{
+			this.disconnect();
+			System.out.println("tabel " + tabelName + " has " + count + " records");
+		}
+
 		return result;
 	}
 	
