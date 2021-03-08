@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+.messages-icon{
+	width:4%;
+	float: left;
+}
+
 body{
     margin-top:20px;
     color: #1a202c;
