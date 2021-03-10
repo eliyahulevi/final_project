@@ -26,11 +26,8 @@ import database.DB;
 @WebListener
 public class Listener implements ServletContextListener, HttpSessionListener 
 {
-	String dbName = "ClientsDB";
-	String dbPath = "C:\\databases\\";
+
 	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
-	String dbURL = "";
-	Connection conn;
 	DB db;
 
     /**
@@ -51,10 +48,11 @@ public class Listener implements ServletContextListener, HttpSessionListener
 
 			Context context = new InitialContext();
 			Context env = (Context) context.lookup("java:comp/env");
-			String dbPath = (String)env.lookup("DB-NAME");
-			System.out.println("parameter value: " + dbPath);			// TODO: erase after debug
-			this.db = new DB(driverURL, dbPath);
-			System.out.println("data base created: " + dbName);			// TODO: erase after debug
+			String dbPath = (String)env.lookup("DB-PATH");
+			String dbName = (String)env.lookup("DB-NAME");
+			System.out.println("database full path: " +  dbPath + dbName );		// TODO: erase after debug
+			this.db = new DB(driverURL, dbPath + dbName);
+			System.out.println("data base created: " + dbName);					// TODO: erase after debug
 			
 		} 
         catch (Exception e) 

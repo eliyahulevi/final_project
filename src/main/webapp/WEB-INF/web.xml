@@ -26,8 +26,13 @@
   </resource-ref>
   
   <env-entry>
-  	<env-entry-name>DB-NAME</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>final_project//ClientsDB</env-entry-value> 
+  		<env-entry-name>DB-NAME</env-entry-name>
+    	<env-entry-type>java.lang.String</env-entry-type>
+    	<env-entry-value>ClientsDB</env-entry-value> 
+  </env-entry>
+	<env-entry>
+  		<env-entry-name>DB-PATH</env-entry-name>
+    	<env-entry-type>java.lang.String</env-entry-type>
+    	<env-entry-value>C://final_project//</env-entry-value> 
   </env-entry>
 </web-app>  
