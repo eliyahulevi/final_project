@@ -48,22 +48,13 @@ public class Listener implements ServletContextListener, HttpSessionListener
 
         try 
         {
-	        //ServletContext cntx = sce.getServletContext();
+
 			Context context = new InitialContext();
 			Context env = (Context) context.lookup("java:comp/env");
 			String dbPath = (String)env.lookup("DB-NAME");
-			//BasicDataSource ds = (BasicDataSource)context.lookup(
-			//		cntx.getInitParameter("DB_DATASOURCE") /*+ AppConstants.OPEN*/);
-
-			System.out.println("parameter value: " + dbPath);
-			Class.forName(driverURL);
-			dbURL = "jdbc:derby:" + dbPath + ";create=true";
-			conn = DriverManager.getConnection(dbURL);		
-			if (!conn.isClosed())
-			{
-				this.db = new DB(conn, dbPath);
-				System.out.println("data base created: " + dbName);	
-			}
+			System.out.println("parameter value: " + dbPath);			// TODO: erase after debug
+			this.db = new DB(driverURL, dbPath);
+			System.out.println("data base created: " + dbName);			// TODO: erase after debug
 			
 		} 
         catch (Exception e) 
@@ -73,6 +64,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
 		}
         finally
         {
+        /*
         	try 
         	{
 				this.conn.close();
@@ -81,6 +73,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
         	{
 				e.printStackTrace();
 			}
+		*/
         }
     }
 	/**

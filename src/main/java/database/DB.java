@@ -39,13 +39,14 @@ public class DB
 
 	boolean firstTime = true;
 	
-	private static String dbPath = "";
-	String dbName = "ClientsDB";
-	String driverURL = "org.apache.derby.jdbc.EmbeddedDriver";
-	String dbURL = "";
-	String[] TABLES_STR  = {"USERS","MESSAGES"};
-	User user = new User();
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" };
+	static String dbURL = "";
+	static String dbPath = "";
+	static String dbName = "";
+	static String driverURL = "";
+	
+	
+	User user;
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES"};
 	
 	PreparedStatement prepStatement;
 	Statement statement;
@@ -54,15 +55,15 @@ public class DB
 	Map<String, String> map;
 	
 	//sql statements
-	public final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
-	public final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
+	private final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
+	private final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
 			+ "FROM INFORMATION_SCHEMA.TABLES "
 			+ "WHERE TABLE_SCHEMA = 'TheSchema' "
 			+ "AND  TABLE_NAME = 'TheTable'))"
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
-	public final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[0] + "("  
+	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[0] + "("  
 			+ "USERNAME varchar(40),"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
@@ -71,35 +72,42 @@ public class DB
 			+ "DESCRIPTION varchar(200),"
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
-	public final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
+	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
 			+ "PHOTO varchar(100) PRIMARY KEY,"
 			+ "NICKNAME varchar(20),"
 			+ "TIME timestamp,"
 			+ "CONTENT varchar(500),"
 			+ "REPLYABLE char)";
 
-	public final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
+	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
-	public final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
+	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
 			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE int,"
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
 			+ "COLOR varchar(10))"; 
-	public final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
+	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
 			+ "DATE varchar(20),"
 			+ "SHIPADDREDD varchar(100),"
 			+ "STATUS int," 
 			+ "CUSTOMERNAME varchar(100),"
 			+ "COLOR varchar(10))"; 
-	public final String CREATE_ORDER_PRODUCT_TABLE = "CREATE TABLE " + tables_str[5] + "("
+	private final String CREATE_ORDER_PRODUCT_TABLE = "CREATE TABLE " + tables_str[5] + "("
 			+ "ORDER_ID int,"
 			+ "PRODUCT_ID int,"
 			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
 		    + "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
+		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
+			+ ")"; 
+	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[6] + "("
+			+ "IMAGE_ID int PRIMARY KEY,"
+			+ "IMG BLOB"
+			//+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
+		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	
@@ -110,14 +118,23 @@ public class DB
 	//		+ "LENGTH int"
 	//		+ "QUANTITY int";
 	
-	public String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
-	public String SELECT_USERS = 		"SELECT * FROM USERS";
-	public String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
-	public String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-	public String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	public String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?"; 
+	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
+	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
+	private String SELECT_USERS = 		"SELECT * FROM USERS";
+	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
+	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
+	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?"; 
 	
-	String[] queryString = {CREATE_USERS_TABLE, CREATE_MESSAGE_TABLE, CREATE_CHANNEL_TABLE, CREATE_PRODUCT_TABLE, CREATE_ORDER_TABLE, CREATE_ORDER_PRODUCT_TABLE };
+	String[] queryString = {CREATE_USERS_TABLE, 
+							CREATE_MESSAGE_TABLE, 
+							CREATE_CHANNEL_TABLE, 
+							CREATE_PRODUCT_TABLE, 
+							CREATE_ORDER_TABLE, 
+							CREATE_ORDER_PRODUCT_TABLE,
+							CREATE_IMAGES_TABLE };
+
+	
 	
 	/**
 	 * constructors *
@@ -143,6 +160,12 @@ public class DB
 		DB.dbPath = path;
 		init(); 
 	}
+	public DB(String driverURL, String path)
+	{
+		this.driverURL = driverURL;
+		DB.dbPath = path;
+		init();
+	}
 	
 	/*
 	 *	 private methods	
@@ -151,18 +174,32 @@ public class DB
 	{
 		int count = 0;
 		this.map = new HashMap<String, String>();
-		this.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
+		DB.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
+		this.user = new User();
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, queryString[count]); 
 			System.out.println("tabel: " + s + " has query "+ queryString[count]);
 			count++;
 		}
-		this.createAdmin(); 		
-		this.createTables();
-		if (this.isEmpty("USERS"))
-			this.insertUser(this.user, true);
-		this.firstTime = false;
+		try 
+		{
+			Class.forName(driverURL);
+			this.createAdmin(); 		
+			this.createTables();
+			if (this.isEmpty("USERS"))
+				this.insertUser(this.user, true);
+		} 
+		catch 
+		(ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.firstTime = false;	
+		}
+		
 	}	
 	private void createAdmin()
 	{
@@ -228,17 +265,15 @@ public class DB
 	{
         try 
         {
-			Class.forName(driverURL);
-			this.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
-			//System.out.println("database url: " + dbURL);	
-			connection = DriverManager.getConnection(dbURL);		
+			System.out.println("database url: " + DB.dbURL);	
+			connection = DriverManager.getConnection(DB.dbURL);		
 			
 			if (!connection.isClosed())
 			{
-				System.out.println("connected to database: " + dbName);	
+				System.out.println("connected to database: " + DB.dbName);	
 			}
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException e)
         {
         	e.printStackTrace();
         }
@@ -247,7 +282,7 @@ public class DB
 	{
 		try 
 		{
-			if (!this.connection.isClosed())
+			if (this.connection != null && !this.connection.isClosed())
 			{
 				try 
 				{
@@ -275,11 +310,18 @@ public class DB
 		this.connect();
 		try 
 		{
-			PreparedStatement state = this.connection.prepareStatement(queryString);
-			rs = state.executeQuery();
-			while ( rs.next() ) 
-				count++;
-			result = count > 0 ? false : true;
+			if(this.connection != null)
+			{
+				PreparedStatement state = this.connection.prepareStatement(queryString);
+				rs = state.executeQuery();
+				while ( rs.next() ) 
+					count++;
+				result = count > 0 ? false : true;
+			}
+			else
+			{
+				System.out.println("no connection to DB");
+			}
 			
 		} 
 		catch (SQLException e) 
@@ -513,6 +555,32 @@ public class DB
 
 		return result;
 		
+	}
+	
+	public byte[] getImage(String name)
+	{
+		int length = 10;
+		byte[] result = new byte[length];
+		Statement statement;
+		ResultSet rs;
+		try 
+		{
+			statement = (Statement)this.connection.createStatement();
+			rs = statement.executeQuery(SELECT_IMAGE);
+			this.connect();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+		}
+		
+		
+		
+		return result;
 	}
 	
 	/*
