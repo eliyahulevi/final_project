@@ -1,16 +1,48 @@
-/**
- * 	handles user page functionality according to msg code from userservlet.
+/******* 	handles user page messages ********************
+ *
  *	the messages codes are as follows:
  *	0x0000 - load registered users into "send message" modal
  *	0x0001 - send the message the user typed in
- *	0x0002 -  
- */
+ *	0x0002 - uploap images  
+ ********************************************************/
+
+$("#file").change( function(){
+	change(this)
+});
 
 $(document).ready(function(){
   $("#send-Message-Modal").on('show.bs.modal', function(){
     loadUsers();
   });
 }); 
+
+function change(input){
+	alert("change");
+}
+
+
+function drop(event){
+    event.stopPropagation();
+    event.preventDefault();
+    
+    var parent = document.getElementById("output");
+    var files = event.dataTransfer.files;
+    var file = files[0];
+	var reader = new FileReader();
+	
+	alert(file.name);
+  	
+    reader.onload = function (event) {
+    	var image = new Image();
+    	image.src = (event.target.result);
+    	parent.appendChild(image);
+      };
+
+    reader.readAsDataURL(file);
+    alert(file);
+	//Document.getElementById("output").appendChild(image);
+	
+}
 
 function myFunction(){	
 	alert("page loaded");
