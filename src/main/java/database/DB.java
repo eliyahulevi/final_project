@@ -162,7 +162,7 @@ public class DB
 	}
 	public DB(String driverURL, String path)
 	{
-		this.driverURL = driverURL;
+		DB.driverURL = driverURL;
 		DB.dbPath = path;
 		init();
 	}
@@ -184,14 +184,14 @@ public class DB
 		}
 		try 
 		{
-			Class.forName(driverURL);
+			//Class.forName(driverURL);
 			this.createAdmin(); 		
 			this.createTables();
 			if (this.isEmpty("USERS"))
 				this.insertUser(this.user, true);
 		} 
 		catch 
-		(ClassNotFoundException e) 
+		(Exception e) 
 		{
 			e.printStackTrace();
 		}
@@ -265,15 +265,17 @@ public class DB
 	{
         try 
         {
+        	Class.forName(DB.driverURL);
 			System.out.println("database url: " + DB.dbURL);	
-			connection = DriverManager.getConnection(DB.dbURL);		
-			
-			if (!connection.isClosed())
-			{
+			if (this.connection == null)
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else if (this.connection.isClosed())
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else
 				System.out.println("connected to database: " + DB.dbName);	
-			}
+			
         }
-        catch(SQLException e)
+        catch(SQLException | ClassNotFoundException e)
         {
         	e.printStackTrace();
         }
