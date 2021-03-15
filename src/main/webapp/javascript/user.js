@@ -29,8 +29,6 @@ function drop(event){
     var files = event.dataTransfer.files;
     var file = files[0];
 	var reader = new FileReader();
-	
-	alert(file.name);
   	
     reader.onload = function (event) {
     	var image = new Image();
@@ -39,9 +37,6 @@ function drop(event){
       };
 
     reader.readAsDataURL(file);
-    alert(file);
-	//Document.getElementById("output").appendChild(image);
-	
 }
 
 function myFunction(){	
