@@ -6,17 +6,24 @@
  *	0x0002 - uploap images  
  ********************************************************/
 
-$("#file").change( function(){
-	change(this)
-});
-
 $(document).ready(function(){
   $("#send-Message-Modal").on('show.bs.modal', function(){
     loadUsers();
   });
+  
 }); 
 
+function onChange(input){
+	var url = $(input).val();
+	var file = input.files[0];
+	var parent = document.getElementById("output");	
+	var reader = new FileReader();
+    reader.onload = function (event) {
+				    	parent.appendChild(createCheckedImage(event.target.result));
+				    };
 
+    reader.readAsDataURL(file);
+}
 
 function drop(event){
     event.stopPropagation();
