@@ -1,10 +1,11 @@
-/******* 	handles user page messages ********************
+/********************** 	handles user page messages ***************************
  *
  *	the messages codes are as follows:
  *	0x0000 - load registered users into "send message" modal
  *	0x0001 - send the message the user typed in
  *	0x0002 - uploap images  
- ********************************************************/
+ *
+ ********************************************************************************/
 
 
 $(document).ready(function(){
@@ -14,21 +15,41 @@ $(document).ready(function(){
   
 });
 
+
+/*********************************************************************************
+*	this function iterate over all images, checked if chosen and sent to server
+*********************************************************************************/
 function upload(){
-	alert("TODO: add uploading functionality");
+	
+	var output = document.getElementById("output");
+	var images = output.children;
+	
+	for (var i = 0; i < images.length; i++) {
+		var image = images[i];
+		if(image.checked == true){
+			alert("checked");
+		}	
+	}
+	//alert("TODO: add uploading functionality");
 }
 
 function cancel(){
 	alert("TODO: add cancel functionality");
 }
 
-
+/*********************************************************************************
+*	this function simply shows the hidden elements to allow images upload
+*********************************************************************************/
 function showFileLoad(){
 	document.getElementById("file-upload-area").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
 } 
 
+
+/*********************************************************************************
+*	this function does the same as the following but for 'browsing option'
+*********************************************************************************/
 function onChange(input){
 	var url = $(input).val();
 	var file = input.files[0];
@@ -41,6 +62,12 @@ function onChange(input){
     reader.readAsDataURL(file);
 }
 
+
+/*********************************************************************************
+*	this function handles the drop event of the files upload element,
+*	simply places the chosen images in the output element
+*
+*********************************************************************************/
 function drop(event){
     event.stopPropagation();
     event.preventDefault();
@@ -59,6 +86,17 @@ function drop(event){
     reader.readAsDataURL(file);
 }
 
+
+/*********************************************************************************
+*	this function creates the following div structure:
+*	that will hold a checkbox element with image
+*						<div>
+*							<checkbox/>
+*							<label>
+*								<img/>
+*							</label>
+*						</div>
+*********************************************************************************/
 function createCheckedImage(source){
 	
 	var id = Math.floor(Math.random() * 100); 
@@ -93,6 +131,10 @@ function loadUserPage(user){
 	//alert(user);
 }
 
+/*********************************************************************************
+*	this function loads registered user from db and add to the list of users
+*	to choose from while sending a new message 
+*********************************************************************************/
 function loadUsers(){
 	var selectList = document.getElementById("users");
 	var xhr = new XMLHttpRequest();
