@@ -14,9 +14,19 @@ $(document).ready(function(){
   
 });
 
+function upload(){
+	alert("TODO: add uploading functionality");
+}
+
+function cancel(){
+	alert("TODO: add cancel functionality");
+}
+
+
 function showFileLoad(){
 	document.getElementById("file-upload-area").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
+	document.getElementById("cancel-file-btn").style.display = "block";
 } 
 
 function onChange(input){
