@@ -8,6 +8,11 @@
  ********************************************************************************/
 
 
+
+/*********************************************************************************
+*	this function binds the on.show event of the send message modal to fire up
+*	the loadUsers function, in order to populate the users list
+*********************************************************************************/
 $(document).ready(function(){
   $("#send-Message-Modal").on('show.bs.modal', function(){
     loadUsers();
@@ -20,19 +25,25 @@ $(document).ready(function(){
 *	this function iterate over all images, checked if chosen and sent to server
 *********************************************************************************/
 function upload(){
-		
+	let arr = [];
 	var images = document.getElementById("output").getElementsByTagName("input");
 	for (var i=0; i<images.length; i++) {
   		if( images[i].checked == Boolean(true) ){
-  			alert("true at:" + i);
+  			arr.push(images[i]);
+  			//alert("array at:" + i + " = " + images[i]);
   		}
 	}
-
+	sendImages(arr);
 }
 
+
+/*********************************************************************************
+*	this function resets the images chosen
+*********************************************************************************/
 function cancel(){
 	alert("TODO: add cancel functionality");
 }
+
 
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow images upload
@@ -128,6 +139,7 @@ function loadUserPage(user){
 	//alert(user);
 }
 
+
 /*********************************************************************************
 *	this function loads registered user from db and add to the list of users
 *	to choose from while sending a new message 
@@ -162,6 +174,34 @@ function loadUsers(){
 							 }
 }
 
+
+/*********************************************************************************
+*	this function sends a image(s) to the server 
+*********************************************************************************/
+function sendImages(images){
+	
+	var msg = ("image");
+	var usrs = document.getElementById("users");
+	var usr = ""; //usrs.options[usrs.selectedIndex].text;
+	
+	for( var i = 0; i < images.length; i++){
+	alert();
+		data = JSON.stringify({image: images[i]});
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'UserServlet', true);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	    xhr.send(JSON.stringify({code: 0x0002, user: usr, data}));	
+	}
+	//JSON.stringify([0x0001, usr, msg.value]);
+
+    
+}
+
+
+/*********************************************************************************
+*	this function sends a new message to user: usr 
+*********************************************************************************/
 function sendMessage(){
 	var msg = document.getElementById("msg");
 	var usrs = document.getElementById("users");
