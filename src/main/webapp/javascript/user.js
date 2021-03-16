@@ -6,12 +6,18 @@
  *	0x0002 - uploap images  
  ********************************************************/
 
+
 $(document).ready(function(){
   $("#send-Message-Modal").on('show.bs.modal', function(){
     loadUsers();
   });
   
-}); 
+});
+
+function showFileLoad(){
+	alert("show");
+	document.getElementById("file-upload-area").style.display = "block";
+} 
 
 function onChange(input){
 	var url = $(input).val();
