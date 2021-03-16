@@ -16,9 +16,6 @@ $(document).ready(function(){
   });
 }); 
 
-function change(input){
-	alert("change");
-}
 
 
 function drop(event){
@@ -31,25 +28,41 @@ function drop(event){
 	var reader = new FileReader();
   	
     reader.onload = function (event) {
-    	var image = new Image();
-    	image.src = (event.target.result);
-    	parent.appendChild(image);
-      };
+				    	var image = new Image();
+				    	image.src = (event.target.result);
+				    	parent.appendChild(createCheckedImage(image.src));
+				    };
 
     reader.readAsDataURL(file);
 }
 
-function myFunction(){	
-	alert("page loaded");
-	var name = sessionStorage.getItem('label', name);
-	var obj = JSON.parse(name);
-	//alert(name);
-	document.getElementById("name-user-page-body").innerHTML = obj.username;
-	document.getElementById("nickname-user-page-body").innerHTML = obj.nickname;
-	document.getElementById("email-user-page-body").innerHTML = obj.email;
-	document.getElementById("phone-user-page-body").innerHTML = obj.phone;
-	document.getElementById("address-user-page-body").innerHTML = obj.address;
+function createCheckedImage(source){
+	
+	var id = Math.floor(Math.random() * 100); 
+	var newDiv = document.createElement("div");
+	var newImg = document.createElement("img");
+	var newLbl = document.createElement("label");
+	var newCheckbox = document.createElement("input");
+	
+	newCheckbox.setAttribute("type", "checkbox");
+	newCheckbox.setAttribute("class", "custom-control-input");
+	newCheckbox.setAttribute("id", id);
+	
+	newImg.setAttribute("alt", "#");
+	newImg.setAttribute("class", "img-fluid");
+	newImg.setAttribute("src", source);
+	
+	newLbl.setAttribute("class", "custom-control-label");
+	newLbl.setAttribute("for", id);
+	newLbl.appendChild(newImg);
+	alert();
+	newDiv.setAttribute("class", "custom-control custom-checkbox image-checkbox");
+	newDiv.appendChild(newCheckbox);
+	newDiv.appendChild(newLbl);
+
+	return newDiv;
 }
+
 
 function loadUserPage(user){
 	sessionStorage.getItem('user');
@@ -63,27 +76,27 @@ function loadUsers(){
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send(JSON.stringify({code: 0x0000}) );	
 	xhr.onreadystatechange = function() {	
-		if (xhr.readyState == 4) {			
-			var count;		
-			var data = xhr.responseText;
-			var array = JSON.parse(data);
-
-			if ( (count = array.length) > 0) 
-			{
-				for (var i = 0; i < count; i++) {
-					selectList.options[i] = null;
-				}
-				for (var i = 0; i < count; i++) {
-					selectList.options[i] = null;
-					var option = document.createElement("option");
-			    	option.value = array[i];
-			    	option.text = array[i];
-			    	selectList.appendChild(option);
-				}
-			}	
-			else alert("no users found!");					
-		}
-	}
+								if (xhr.readyState == 4) {			
+									var count;		
+									var data = xhr.responseText;
+									var array = JSON.parse(data);
+						
+									if ( (count = array.length) > 0) 
+									{
+										for (var i = 0; i < count; i++) {
+											selectList.options[i] = null;
+										}
+										for (var i = 0; i < count; i++) {
+											selectList.options[i] = null;
+											var option = document.createElement("option");
+									    	option.value = array[i];
+									    	option.text = array[i];
+									    	selectList.appendChild(option);
+										}
+									}	
+									else alert("no users found!");					
+								}
+							 }
 }
 
 function sendMessage(){
