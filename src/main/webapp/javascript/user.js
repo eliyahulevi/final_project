@@ -80,6 +80,7 @@ function createCheckedImage(source){
 	newLbl.appendChild(newImg);
 	
 	newDiv.setAttribute("class", "custom-control custom-checkbox image-checkbox");
+	newDiv.setAttribute("style", "display:inline-block");
 	newDiv.appendChild(newCheckbox);
 	newDiv.appendChild(newLbl);
 
