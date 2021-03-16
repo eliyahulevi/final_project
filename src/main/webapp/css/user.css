@@ -1,10 +1,5 @@
 @charset "UTF-8";
 
-p.ex1 {
-  border: 1px solid red; 
-  padding-right: 10px;
-  float:right;
-}
 
 .thumb{
   border: 1px solid #ddd; /* Gray border */

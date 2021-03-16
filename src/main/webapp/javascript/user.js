@@ -15,8 +15,8 @@ $(document).ready(function(){
 });
 
 function showFileLoad(){
-	alert("show");
 	document.getElementById("file-upload-area").style.display = "block";
+	document.getElementById("upload-file-btn").style.display = "block";
 } 
 
 function onChange(input){
