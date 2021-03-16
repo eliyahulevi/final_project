@@ -20,17 +20,14 @@ $(document).ready(function(){
 *	this function iterate over all images, checked if chosen and sent to server
 *********************************************************************************/
 function upload(){
-	
-	var output = document.getElementById("output");
-	var images = output.children;
-	
-	for (var i = 0; i < images.length; i++) {
-		var image = images[i];
-		if(image.checked == true){
-			alert("checked");
-		}	
+		
+	var images = document.getElementById("output").getElementsByTagName("input");
+	for (var i=0; i<images.length; i++) {
+  		if( images[i].checked == Boolean(true) ){
+  			alert("true at:" + i);
+  		}
 	}
-	//alert("TODO: add uploading functionality");
+
 }
 
 function cancel(){
