@@ -49,13 +49,13 @@ function createCheckedImage(source){
 	newCheckbox.setAttribute("id", id);
 	
 	newImg.setAttribute("alt", "#");
-	newImg.setAttribute("class", "img-fluid");
+	newImg.setAttribute("class", "thumb");
 	newImg.setAttribute("src", source);
 	
 	newLbl.setAttribute("class", "custom-control-label");
 	newLbl.setAttribute("for", id);
 	newLbl.appendChild(newImg);
-	alert();
+	
 	newDiv.setAttribute("class", "custom-control custom-checkbox image-checkbox");
 	newDiv.appendChild(newCheckbox);
 	newDiv.appendChild(newLbl);
