@@ -69,7 +69,7 @@ public class UserServlet extends HttpServlet
 			 if ((line = reader.readLine()) != null)
 			 {
 				 Message jobj = gson.fromJson(line, Message.class);  
-				 System.out.println(code = jobj.getCode());
+				 code = jobj.getCode();
 				 switch(code)
 				 {
 				 	case 0:
@@ -92,7 +92,12 @@ public class UserServlet extends HttpServlet
 						 System.out.println("message: " + jobj.getMessage());
 						 break;
 					 }
-						 
+						
+					 case 2:
+					 {
+						 System.out.println("message: " + code);
+						 break;
+					 }
 					 
 					 default:
 						break;

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -46,7 +47,7 @@ public class DB
 	
 	
 	User user;
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES"};
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
 	Statement statement;
@@ -110,6 +111,14 @@ public class DB
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
+	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[7] + "("
+			+ "IMAGE_ID int PRIMARY KEY,"
+			+ "IMG BLOB,"
+			+ "USER_NICKNAME varchar(30),"
+			+ "FOREIGN KEY (USER_NICKNAME) REFERENCES USERS(NICKNAME)" 
+		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
+		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
+			+ ")"; 
 	
 	//public final String CREATE_ALT_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
 	//		+ "ORDER_ID int PRIMARY KEY,"
@@ -120,19 +129,22 @@ public class DB
 	
 	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
 	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_IMAGE = 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
 	private String SELECT_USERS = 		"SELECT * FROM USERS";
 	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
 	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?"; 
+	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
+	private String SELECT_MAX = 		"SELECT MAX(?) FROM ? ";
 	
-	String[] queryString = {CREATE_USERS_TABLE, 
-							CREATE_MESSAGE_TABLE, 
-							CREATE_CHANNEL_TABLE, 
-							CREATE_PRODUCT_TABLE, 
-							CREATE_ORDER_TABLE, 
-							CREATE_ORDER_PRODUCT_TABLE,
-							CREATE_IMAGES_TABLE };
+	String[] createQueryString = {	CREATE_USERS_TABLE, 
+									CREATE_MESSAGE_TABLE, 
+									CREATE_CHANNEL_TABLE, 
+									CREATE_PRODUCT_TABLE, 
+									CREATE_ORDER_TABLE, 
+									CREATE_ORDER_PRODUCT_TABLE,
+									CREATE_IMAGES_TABLE,
+									CREATE_USER_IMAGES_TABLE};
 
 	
 	
@@ -178,8 +190,8 @@ public class DB
 		this.user = new User();
 		for(String s: this.tables_str)
 		{
-			this.map.put(s, queryString[count]); 
-			System.out.println("tabel: " + s + " has query "+ queryString[count]);
+			this.map.put(s, createQueryString[count]); 
+			System.out.println("tabel: " + s + " has query "+ createQueryString[count]);
 			count++;
 		}
 		try 
@@ -214,13 +226,15 @@ public class DB
 	private void createTables()
 	{
 		ResultSet rs;
-		
+		/*
 		String[] createTables = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
 									CREATE_CHANNEL_TABLE, 
 									CREATE_PRODUCT_TABLE,
 									CREATE_ORDER_TABLE,
-									CREATE_ORDER_PRODUCT_TABLE };
+									CREATE_ORDER_PRODUCT_TABLE,
+									CREATE_USER_IMAGES_TABLE};
+		*/
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
@@ -228,12 +242,12 @@ public class DB
 				this.statement = this.connection.createStatement();
 				DatabaseMetaData dbmd = this.connection.getMetaData();
 				
-				for (int index = 0; index < createTables.length; index++)
+				for (int index = 0; index < createQueryString.length; index++)
 				{
 					rs = dbmd.getTables(null, null, tables_str[index], null);
 					if (!rs.next())
 					{
-						this.statement.executeUpdate(createTables[index]);
+						this.statement.executeUpdate(createQueryString[index]);
 						System.out.println("create table: " + tables_str[index]);
 					}
 					else
@@ -559,6 +573,48 @@ public class DB
 		
 	}
 	
+	public int insertImage(String user, Blob image)
+	{
+		int result = -1;
+		int index = 0;
+		PreparedStatement insert;
+		PreparedStatement max;
+		ResultSet rs = null;
+		try
+		{
+			this.connect();
+			max = this.connection.prepareStatement(this.SELECT_MAX);
+			max.setString(1, "IMAGE_ID");
+			max.setString(2, "USER_IMAGES");
+			rs = max.executeQuery();
+			while(rs.next())
+				index = rs.getInt(1);
+			insert = this.connection.prepareStatement(this.INSERT_USER_IMAGE);
+			insert.setInt(1, index);
+			insert.setString(2, user);
+			insert.setBlob(3, image);			
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				rs.close();
+			} 
+			catch (SQLException e) 
+			{
+				System.out.println("result set failed to close");
+			}
+			this.disconnect();	
+		}
+		
+		
+		return result;
+	}
 	public byte[] getImage(String name)
 	{
 		int length = 10;
