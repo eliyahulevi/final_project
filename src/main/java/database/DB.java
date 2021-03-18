@@ -114,8 +114,8 @@ public class DB
 	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[7] + "("
 			+ "IMAGE_ID int PRIMARY KEY,"
 			+ "IMG BLOB,"
-			+ "USER_NICKNAME varchar(30),"
-			+ "FOREIGN KEY (USER_NICKNAME) REFERENCES USERS(NICKNAME)" 
+			+ "USERNAME varchar(40),"
+			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
@@ -225,19 +225,11 @@ public class DB
 	}
 	private void createTables()
 	{
-		ResultSet rs;
-		/*
-		String[] createTables = {	CREATE_USERS_TABLE, 
-									CREATE_MESSAGE_TABLE, 
-									CREATE_CHANNEL_TABLE, 
-									CREATE_PRODUCT_TABLE,
-									CREATE_ORDER_TABLE,
-									CREATE_ORDER_PRODUCT_TABLE,
-									CREATE_USER_IMAGES_TABLE};
-		*/
+		ResultSet rs = null;
+
 		try 
 		{
-			if (this.connection != null && !this.connection.isClosed())
+			if (this.connect() == 0)
 			{
 				this.statement = this.connection.createStatement();
 				DatabaseMetaData dbmd = this.connection.getMetaData();
@@ -259,6 +251,17 @@ public class DB
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try 
+			{
+				if(rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			this.disconnect();
+		}
 	}
 	private void createTable(String createTableQuery)
 	{
@@ -275,8 +278,9 @@ public class DB
 			e.printStackTrace();
 		}
 	}
-	private void connect()
+	private int connect()
 	{
+		int result = -1;
         try 
         {
         	Class.forName(DB.driverURL);
@@ -287,15 +291,19 @@ public class DB
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
 				System.out.println("connected to database: " + DB.dbName);	
+			result = 0;
 			
         }
         catch(SQLException | ClassNotFoundException e)
         {
         	e.printStackTrace();
         }
+        
+        return result;
 	}
-	private void disconnect() 
+	private int disconnect() 
 	{
+		int result = -1;
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
@@ -309,12 +317,14 @@ public class DB
 				{
 					e.printStackTrace();
 				}
+				result = 0;
 			}
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
+		return result;
 	}
 	private boolean isEmpty(String tabelName)
 	{
@@ -514,8 +524,8 @@ public class DB
 	}
 	
 	/*
-	/ user to JSON format 
-	*/
+	 *	user to JSON format 
+	 */
 	private String user2JSON(User user)
 	{
 		String result = "";
