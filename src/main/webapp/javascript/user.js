@@ -1,4 +1,6 @@
 /********************** 	handles user page messages ***************************
+ *	the message format is as follows (JSON):
+ *	[{"code", "user", "message", "image"}]
  *
  *	the messages codes are as follows:
  *	0x0000 - load registered users into "send message" modal
@@ -26,11 +28,12 @@ $(document).ready(function(){
 *********************************************************************************/
 function upload(){
 	let arr = [];
-	var images = document.getElementById("output").getElementsByTagName("input");
-	for (var i=0; i<images.length; i++) {
-  		if( images[i].checked == Boolean(true) ){
+	var ckbx = document.getElementById("output").getElementsByTagName("input");
+	var images = document.getElementById("output").getElementsByTagName("img");
+	for (var i=0; i<ckbx.length; i++) {
+  		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
-  			//alert("array at:" + i + " = " + images[i]);
+  			//alert("array at:" + i + " = " + images[i].src);
   		}
 	}
 	sendImages(arr);
@@ -99,7 +102,7 @@ function drop(event){
 *	this function creates the following div structure:
 *	that will hold a checkbox element with image
 *						<div>
-*							<checkbox/>
+*							<input type="checkbox"../>
 *							<label>
 *								<img/>
 *							</label>
@@ -179,22 +182,44 @@ function loadUsers(){
 *	this function sends a image(s) to the server 
 *********************************************************************************/
 function sendImages(images){
+	alert();
+	for (var i = 0; i < images.length; i++){
+		var data = images[i];
+		var form_data = new FormData();
+		form_data.append("image", data);
+		
+	    $.ajax({
+	        url: 'UserServlet', // point to server-side PHP script 
+	        dataType: 'text',  // what to expect back from the PHP script, if anything
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        data: form_data,                         
+	        type: 'post',
+	        success: function(php_script_response){
+	            alert("file uploaded successfully!"); 
+	        }
+	     });
 	
-	var msg = ("image");
+	}
+	
+	/*
 	var usrs = document.getElementById("users");
 	var usr = ""; //usrs.options[usrs.selectedIndex].text;
 	
+	
 	for( var i = 0; i < images.length; i++){
-	alert();
-		data = JSON.stringify({image: images[i]});
 		
+		//data = JSON.stringify({image: images[i]});
+		var data = new Blob(image[i], {type:"image/png"} );
+		alert(images[i].src);
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', 'UserServlet', true);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	    xhr.send(JSON.stringify({code: 0x0002, user: usr, data}));	
+	    xhr.send(JSON.stringify({code: 0x0002, user: usr, message:"", data}));	
 	}
 	//JSON.stringify([0x0001, usr, msg.value]);
-
+	*/
     
 }
 
@@ -210,6 +235,6 @@ function sendMessage(){
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify({code: 0x0001, user: usr, message: msg.value}));	
+    xhr.send(JSON.stringify({code: 0x0001, user: usr, message: msg.value, image:""}));	
     
 }

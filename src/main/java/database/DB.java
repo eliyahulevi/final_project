@@ -21,6 +21,8 @@ import model.product.AlternativeProduct;
 import model.users.*;
 
 import appConstants.*;
+import jdk.internal.jshell.tool.StopDetectingInputStream.State;
+
 import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
@@ -225,13 +227,14 @@ public class DB
 	}
 	private void createTables()
 	{
+		Statement stat = null;
 		ResultSet rs = null;
 
 		try 
 		{
 			if (this.connect() == 0)
 			{
-				this.statement = this.connection.createStatement();
+				stat = this.connection.createStatement();
 				DatabaseMetaData dbmd = this.connection.getMetaData();
 				
 				for (int index = 0; index < createQueryString.length; index++)
@@ -239,7 +242,7 @@ public class DB
 					rs = dbmd.getTables(null, null, tables_str[index], null);
 					if (!rs.next())
 					{
-						this.statement.executeUpdate(createQueryString[index]);
+						stat.executeUpdate(createQueryString[index]);
 						System.out.println("create table: " + tables_str[index]);
 					}
 					else
@@ -257,6 +260,8 @@ public class DB
 			{
 				if(rs != null)
 					rs.close();
+				if(stat != null)
+					stat.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -265,25 +270,35 @@ public class DB
 	}
 	private void createTable(String createTableQuery)
 	{
+		Statement stat = null;
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
 			{
-				this.statement = this.connection.createStatement();
-				this.statement.executeUpdate(createTableQuery);
+				stat = this.connection.createStatement();
+				stat.executeUpdate(createTableQuery);
 			}
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try {
+				stat.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
+	@SuppressWarnings("deprecation")
 	private int connect()
 	{
 		int result = -1;
         try 
         {
-        	Class.forName(DB.driverURL);
+        	Class.forName(DB.driverURL).newInstance();
 			System.out.println("database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
@@ -294,9 +309,23 @@ public class DB
 			result = 0;
 			
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-        	e.printStackTrace();
+        	System.out.println("error message:" + e.getMessage());
+        	if(e.getMessage().equals("XJ040"))
+        	{
+        		System.out.println("db exist already");
+        		try 
+        		{
+    				DB.dbURL = "jdbc:derby:" + DB.dbPath;
+					this.connection = DriverManager.getConnection(DB.dbURL);
+				} 
+        		catch (SQLException e1) 
+        		{
+					e1.printStackTrace();
+				}
+        	}
+        	
         }
         
         return result;
@@ -331,7 +360,7 @@ public class DB
 		int count = 0;
 		boolean result = true;
 		String queryString = "SELECT * FROM " + tabelName;
-		ResultSet rs;
+		ResultSet rs = null;
 		
 		this.connect();
 		try 
@@ -361,6 +390,12 @@ public class DB
 		}
 		finally
 		{
+			if(rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			this.disconnect();
 			System.out.println("tabel " + tabelName + " has " + count + " records");
 		}
@@ -375,7 +410,7 @@ public class DB
 	public List<String> getUsersNames()
 	{
 		List<String> result = new ArrayList<String>();
-		ResultSet rs;
+		ResultSet rs = null;
 		
 		try
 		{
@@ -395,6 +430,17 @@ public class DB
 		}
 		finally
 		{
+			try 
+			{
+				if(statement != null)
+					statement.close();
+				if(rs != null)
+					rs.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 		
@@ -406,6 +452,7 @@ public class DB
 	 */
  	public void insertUser(User user, boolean first) 
 	{
+ 		PreparedStatement state = null;
 		String dateString = "";
 		LocalTime date = LocalTime.now();
 		if (!first)
@@ -414,9 +461,13 @@ public class DB
 		try 
 		{
 			// connect to db
-			connect();
+			if (this.connect() < 0 )
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return;
+			}
 			// insert user			
-			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
+			state = this.connection.prepareStatement(INSERT_USER);
 			state.setString(1, user.getName() + dateString);	
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
@@ -441,7 +492,12 @@ public class DB
 		}
 		finally
 		{
-			//disconnect
+			if(state != null)
+				try {
+					state.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			disconnect();
 		}
 	}
@@ -453,12 +509,13 @@ public class DB
 	{
 		boolean result = false;
 		ResultSet res = null;
+		PreparedStatement state = null;
 				
 		try 
 		{
 			System.out.println("in db searching for user " + name + " with password " + password);
 			this.connect();
-			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
 			state.setString(2, password);		//password
 			res = state.executeQuery();
@@ -481,6 +538,17 @@ public class DB
 		}
 		finally
 		{
+			try
+			{
+				if(state != null)
+					state.close();
+				if(rs != null)
+					rs.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 				
@@ -490,12 +558,17 @@ public class DB
 	{
 		String result = "";
 		ResultSet res = null;
+		PreparedStatement state = null;
 				
 		try 
 		{
 			System.out.println("in db searching for user " + name + " with password " + password);
-			this.connect();
-			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			if (this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
+			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
 			state.setString(2, password);		//password
 			res = state.executeQuery();
@@ -517,6 +590,17 @@ public class DB
 		}
 		finally
 		{
+			try
+			{
+				if(state != null)
+					state.close();
+				if(res != null)
+					res.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 				
@@ -587,12 +671,16 @@ public class DB
 	{
 		int result = -1;
 		int index = 0;
-		PreparedStatement insert;
-		PreparedStatement max;
+		PreparedStatement insert = null;
+		PreparedStatement max = null;
 		ResultSet rs = null;
 		try
 		{
-			this.connect();
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
 			max = this.connection.prepareStatement(this.SELECT_MAX);
 			max.setString(1, "IMAGE_ID");
 			max.setString(2, "USER_IMAGES");
@@ -613,7 +701,12 @@ public class DB
 		{
 			try 
 			{
-				rs.close();
+				if(rs != null)
+					rs.close();
+				if(max != null)
+					max.close();
+				if(insert != null)
+					insert.close();
 			} 
 			catch (SQLException e) 
 			{
@@ -630,12 +723,16 @@ public class DB
 		int length = 10;
 		byte[] result = new byte[length];
 		Statement statement;
-		ResultSet rs;
+		ResultSet rs = null;
 		try 
 		{
+			if(this.connect() < 0)
+			{
+				
+			}
 			statement = (Statement)this.connection.createStatement();
 			rs = statement.executeQuery(SELECT_IMAGE);
-			this.connect();
+			
 		} 
 		catch (SQLException e) 
 		{
@@ -643,6 +740,14 @@ public class DB
 		}
 		finally
 		{
+			try 
+			{
+				if(rs != null)
+					rs.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 		
@@ -651,6 +756,34 @@ public class DB
 		return result;
 	}
 	
+	/*
+	 * shut down the database
+	*/
+	public int shutDown()
+	{
+		int result = -1;
+		
+		try
+		{
+        	Class.forName(DB.driverURL);
+        	DB.dbURL = "jdbc:derby:;shutdown=true";
+			System.out.println("database url: " + DB.dbURL);	
+			if (this.connection == null)
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else if (this.connection.isClosed())
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else
+				System.out.println("connected to database: " + DB.dbName);	
+			result = 0;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
 	/*
 	 *  getters-=setters *
 	 */

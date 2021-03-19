@@ -95,7 +95,10 @@ public class UserServlet extends HttpServlet
 						
 					 case 2:
 					 {
-						 System.out.println("message: " + code);
+						 System.out.println("message: " + jobj.getCode());
+						 System.out.println("user: " + jobj.getUser());
+						 System.out.println("message: " + jobj.getMessage());
+						 System.out.println("image: " + jobj.getImage());
 						 break;
 					 }
 					 

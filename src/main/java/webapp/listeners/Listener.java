@@ -92,7 +92,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
      */
     public void contextDestroyed(ServletContextEvent sce)  { 
-         
+         db.shutDown();
     }
 	
 }
