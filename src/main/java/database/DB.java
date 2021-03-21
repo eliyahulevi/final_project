@@ -132,6 +132,7 @@ public class DB
 	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
 	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
 	private String INSERT_USER_IMAGE = 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	private String INSERT_USER_IMAGE2= 	"INSERT INTO USER_IMAGES VALUES (?, ?)";
 	private String SELECT_USERS = 		"SELECT * FROM USERS";
 	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
 	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
@@ -299,28 +300,30 @@ public class DB
         try 
         {
         	Class.forName(DB.driverURL).newInstance();
-			System.out.println("database url: " + DB.dbURL);	
+			System.out.println("DB >> database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("connected to database: " + DB.dbName);	
+				System.out.println("DB >> connected to database: " + DB.dbName);	
 			result = 0;
 			
         }
         catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-        	System.out.println("error message:" + e.getMessage());
-        	if(e.getMessage().equals("XJ040"))
+        	System.out.println("\n>>DB >>  error: " + e.getMessage());
+        	if(((SQLException) e).getSQLState().equals("XJ040"))
         	{
-        		System.out.println("db exist already");
+        		System.out.println("DB >> db exist already");
         		try 
         		{
-    				DB.dbURL = "jdbc:derby:" + DB.dbPath;
+        			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
+    				DB.dbURL = "jdbc:derby:" + "C:/final_project/ClientsDB";//DB.dbPath + ";";
+    				System.out.println("DB >> dbURL: " + DB.dbURL);
 					this.connection = DriverManager.getConnection(DB.dbURL);
 				} 
-        		catch (SQLException e1) 
+        		catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
         		{
 					e1.printStackTrace();
 				}
@@ -340,7 +343,7 @@ public class DB
 				try 
 				{
 					this.connection.close();
-					System.out.println("disconnect from database: " + dbName);
+					System.out.println("DB >> disconnect from database: " + dbName);
 				} 
 				catch (SQLException e) 
 				{
@@ -463,7 +466,7 @@ public class DB
 			// connect to db
 			if (this.connect() < 0 )
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return;
 			}
 			// insert user			
@@ -475,18 +478,18 @@ public class DB
 			state.setString(5, user.getPhoto());		//photo
 			state.setString(6, user.getDescription());	//password
 			state.executeUpdate();
-			System.out.println("user " + user.getName() + " added");				
+			System.out.println("DB >> user " + user.getName() + " added");				
 		} 
 		catch (SQLException e) 
 		{
-			if (e.getSQLState() == "42X05")
+			if (e.getSQLState().equals("42X05"))
 			{
-				System.out.println("error >> need to update table");
+				System.out.println("DB >> error >> need to update table");
 				this.createTable(CREATE_USERS_TABLE);
 				this.insertUser(user, first);
 			}
 			else if(e.getSQLState() == "23505")
-				System.out.println("warning >> user alerady exist");
+				System.out.println("DB >> warning >> user alerady exist");
 			else
 				e.printStackTrace();
 		}
@@ -767,18 +770,20 @@ public class DB
 		{
         	Class.forName(DB.driverURL);
         	DB.dbURL = "jdbc:derby:;shutdown=true";
-			System.out.println("database url: " + DB.dbURL);	
+			System.out.println("DB >> database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("connected to database: " + DB.dbName);	
+				System.out.println("DB >> connected to database: " + DB.dbName);	
 			result = 0;
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			if(((SQLException) e).getSQLState().equals("XJ015")) {
+				System.out.println("DB >> shutting down..");
+	        }
 		}
 		
 		return result;

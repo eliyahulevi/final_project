@@ -164,7 +164,6 @@
 	<!-- /orders -->
 	
 	<!-- messages -->
-
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
 			<a data-target="#send-Message-Modal" data-toggle="modal" href="#send-Message-Modal"> user(send message)</a>
@@ -181,10 +180,8 @@
 	</form>
 		
 	</div>
-	<output id="output">
-	</output>
-	
-	<p>
+	<form id="output" action="upload" method="post" enctype="multipart/form-data">
+		<p>
 		<span style="display:inline-block;">
 			<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
 		</span>
@@ -193,6 +190,9 @@
 		</span>
 		
 	</p>
+	</form>
+	
+
 	<div></div>
 	<!-- /messages -->
 	

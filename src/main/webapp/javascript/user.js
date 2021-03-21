@@ -182,14 +182,14 @@ function loadUsers(){
 *	this function sends a image(s) to the server 
 *********************************************************************************/
 function sendImages(images){
-	alert();
+	
 	for (var i = 0; i < images.length; i++){
 		var data = images[i];
 		var form_data = new FormData();
 		form_data.append("image", data);
-		
+		alert();
 	    $.ajax({
-	        url: 'UserServlet', // point to server-side PHP script 
+	        url: 'ImageServlet', // point to server-side PHP script 
 	        dataType: 'text',  // what to expect back from the PHP script, if anything
 	        cache: false,
 	        contentType: false,
