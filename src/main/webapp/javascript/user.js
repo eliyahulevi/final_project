@@ -196,8 +196,8 @@ function sendImages(images){
 	        processData: false,
 	        data: form_data,                         
 	        type: 'post',
-	        success: function(php_script_response){
-	            alert("file uploaded successfully!"); 
+	        success: function(response){
+	            alert("file uploaded successfully!" + response); 
 	        }
 	     });
 	

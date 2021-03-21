@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.sql.Blob;
+import javax.sql.rowset.serial.SerialBlob;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -61,12 +62,19 @@ public class ImageServlet extends HttpServlet
 			InputStream fileContent = null;
 			Blob blob = null;
 			Part filePart = request.getPart("image");
+			byte[] data;
 			//String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 			if(!filePart.equals(""))
 			{
 				fileContent = filePart.getInputStream();
-				//Blob _blob = new Blob();
-				//loadDataFromInputStream(fileContent, blob);
+				if(fileContent.read() < 0)
+					System.out.println(">> image servlet: no data to read");
+				else
+				{
+					data = fileContent.readAllBytes();
+					blob = new SerialBlob(data);
+					db.insertImage("", blob);
+				}
 			}
 			else
 				System.out.println(">> image servlet:" + "no file image");
