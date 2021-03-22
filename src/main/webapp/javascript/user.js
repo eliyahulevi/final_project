@@ -187,6 +187,7 @@ function sendImages(images){
 		var data = images[i];
 		var form_data = new FormData();
 		form_data.append("image", data);
+		form_data.append("user", "admin");
 		alert();
 	    $.ajax({
 	        url: 'ImageServlet', // point to server-side PHP script 

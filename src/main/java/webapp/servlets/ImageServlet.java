@@ -61,28 +61,30 @@ public class ImageServlet extends HttpServlet
 		{
 			InputStream fileContent = null;
 			Blob blob = null;
-			Part filePart = request.getPart("image");
+			String name = request.getParameter("user");
+			Part image = request.getPart("image");
 			byte[] data;
 			//String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-			if(!filePart.equals(""))
+			if(!image.equals(""))
 			{
-				fileContent = filePart.getInputStream();
+				fileContent = image.getInputStream();
 				if(fileContent.read() < 0)
 					System.out.println(">> image servlet: no data to read");
 				else
 				{
+					System.out.println("image servlet >> user name " + name);		// TODO: erase if works
 					data = fileContent.readAllBytes();
 					blob = new SerialBlob(data);
-					db.insertImage("", blob);
+					db.insertImage(name.toString(), blob);
 				}
 			}
 			else
-				System.out.println(">> image servlet:" + "no file image");
+				System.out.println(" image servlet >>" + "no file image");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			System.out.println(">> image servlet:" + e.getMessage());
+			System.out.println(" image servlet >>" + e.getMessage());
 		}
 	}
 

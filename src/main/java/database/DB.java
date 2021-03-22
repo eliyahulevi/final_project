@@ -138,7 +138,7 @@ public class DB
 	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
-	private String SELECT_MAX = 		"SELECT MAX(?) FROM ? ";
+	private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -679,22 +679,21 @@ public class DB
 		ResultSet rs = null;
 		try
 		{
+			System.out.println("DB >> upload image");
 			if(this.connect() < 0)
 			{
 				System.out.println("cannot connect to database.. aborting");
 				return result;
 			}
-			max = this.connection.prepareStatement(this.SELECT_MAX);
-			max.setString(1, "IMAGE_ID");
-			max.setString(2, "USER_IMAGES");
+			max = this.connection.prepareStatement(this.SELECT_MAX_IMAGE_IDX);
 			rs = max.executeQuery();
 			while(rs.next())
 				index = rs.getInt(1);
 			insert = this.connection.prepareStatement(this.INSERT_USER_IMAGE);
 			insert.setInt(1, index);
-			insert.setString(2, user);
-			insert.setBlob(3, image);			
-			
+			insert.setBlob(2, image);
+			insert.setString(3, "admin");
+			insert.execute();
 		}
 		catch(Exception e)
 		{
