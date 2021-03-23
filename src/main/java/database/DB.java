@@ -114,7 +114,7 @@ public class DB
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[7] + "("
-			+ "IMAGE_ID int PRIMARY KEY,"
+			+ "IMAGE_NAME varchar(100) PRIMARY KEY,"
 			+ "IMG BLOB,"
 			+ "USERNAME varchar(40),"
 			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
@@ -132,13 +132,12 @@ public class DB
 	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
 	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
 	private String INSERT_USER_IMAGE = 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
-	private String INSERT_USER_IMAGE2= 	"INSERT INTO USER_IMAGES VALUES (?, ?)";
 	private String SELECT_USERS = 		"SELECT * FROM USERS";
 	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
 	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
-	private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
+	//private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -670,7 +669,7 @@ public class DB
 		
 	}
 	
-	public int insertImage(String user, Blob image)
+	public int insertImage(String imgName, String user, Blob image)
 	{
 		int result = -1;
 		int index = 0;
@@ -685,14 +684,12 @@ public class DB
 				System.out.println("cannot connect to database.. aborting");
 				return result;
 			}
-			max = this.connection.prepareStatement(this.SELECT_MAX_IMAGE_IDX);
-			rs = max.executeQuery();
-			while(rs.next())
-				index = rs.getInt(1);
+
+
 			insert = this.connection.prepareStatement(this.INSERT_USER_IMAGE);
-			insert.setInt(1, index);
+			insert.setString(1, imgName);
 			insert.setBlob(2, image);
-			insert.setString(3, "admin");
+			insert.setString(3, user);
 			insert.execute();
 		}
 		catch(Exception e)

@@ -62,6 +62,7 @@ public class ImageServlet extends HttpServlet
 			InputStream fileContent = null;
 			Blob blob = null;
 			String name = request.getParameter("user");
+			String imgName = request.getParameter("name");
 			Part image = request.getPart("image");
 			byte[] data;
 			//String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -72,10 +73,10 @@ public class ImageServlet extends HttpServlet
 					System.out.println(">> image servlet: no data to read");
 				else
 				{
-					System.out.println("image servlet >> user name " + name);		// TODO: erase if works
+					System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
 					data = fileContent.readAllBytes();
 					blob = new SerialBlob(data);
-					db.insertImage(name.toString(), blob);
+					db.insertImage(imgName, name, blob);
 				}
 			}
 			else
