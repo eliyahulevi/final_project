@@ -18,7 +18,8 @@ TASK:                                                                           
 	14.2 show user name in header																		|	  5											SHAHAR
 	14.3 show user details and allow edit options														|	  5											SHAHAR
 	14.4 show messages threads																			|	  5											SHAHAR
-	14.5 add name to uploaded images																	|	  5											SHAHAR
+	14.5 add name to uploaded images																	|	  5							DONE			SHAHAR
+	14.6 handle same image name error																	|	  5											SHAHAR
 15. create project UML																					|	  2
 16. code documentation																					|     3
 17. project specifications																				|     2

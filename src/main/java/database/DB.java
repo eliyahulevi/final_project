@@ -694,6 +694,10 @@ public class DB
 		}
 		catch(Exception e)
 		{
+			if(((SQLException) e).getSQLState().equals(""))
+			{
+				//TODO: handle same image name exception
+			}
 			e.printStackTrace();
 		}
 		finally
