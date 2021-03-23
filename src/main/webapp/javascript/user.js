@@ -33,7 +33,7 @@ function upload(){
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
-  			//alert("array at:" + i + " = " + images[i].src);
+  			alert("array at:" + i + " = " + images[i].name);
   		}
 	}
 	sendImages(arr);
@@ -64,10 +64,11 @@ function showFileLoad(){
 function onChange(input){
 	var url = $(input).val();
 	var file = input.files[0];
+	var name = file.name;
 	var parent = document.getElementById("output");	
 	var reader = new FileReader();
     reader.onload = function (event) {
-				    	parent.appendChild(createCheckedImage(event.target.result));
+				    	parent.appendChild(createCheckedImage(event.target.result, name));
 				    };
 
     reader.readAsDataURL(file);
@@ -108,7 +109,7 @@ function drop(event){
 *							</label>
 *						</div>
 *********************************************************************************/
-function createCheckedImage(source){
+function createCheckedImage(source, name){
 	
 	var id = Math.floor(Math.random() * 100); 
 	var newDiv = document.createElement("div");
@@ -123,6 +124,7 @@ function createCheckedImage(source){
 	newImg.setAttribute("alt", "#");
 	newImg.setAttribute("class", "thumb");
 	newImg.setAttribute("src", source);
+	newImg.setAttribute("name", name);
 	
 	newLbl.setAttribute("class", "custom-control-label");
 	newLbl.setAttribute("for", id);
@@ -188,7 +190,7 @@ function sendImages(images){
 		var form_data = new FormData();
 		form_data.append("image", data);
 		form_data.append("user", "admin");
-		alert();
+		alert(data);
 	    $.ajax({
 	        url: 'ImageServlet', // point to server-side PHP script 
 	        dataType: 'text',  // what to expect back from the PHP script, if anything
@@ -202,26 +204,7 @@ function sendImages(images){
 	        }
 	     });
 	
-	}
-	
-	/*
-	var usrs = document.getElementById("users");
-	var usr = ""; //usrs.options[usrs.selectedIndex].text;
-	
-	
-	for( var i = 0; i < images.length; i++){
-		
-		//data = JSON.stringify({image: images[i]});
-		var data = new Blob(image[i], {type:"image/png"} );
-		alert(images[i].src);
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'UserServlet', true);
-		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	    xhr.send(JSON.stringify({code: 0x0002, user: usr, message:"", data}));	
-	}
-	//JSON.stringify([0x0001, usr, msg.value]);
-	*/
-    
+	}    
 }
 
 
