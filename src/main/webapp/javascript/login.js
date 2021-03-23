@@ -1,8 +1,14 @@
- /**
- *  handle login functionality
- */
+/********************** 	handles user login ***************************
+ *	  
+ *
+ ********************************************************************************/
 
-	
+
+/*********************************************************************************
+*	this function loads the registered user details into:
+*	1. the page header
+*	2. the page 'Personal DEtails' section 
+*********************************************************************************/	
 function login(){
 	
 	var name = document.getElementById("sign-in-model-name").value;
@@ -19,7 +25,7 @@ function login(){
 		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
 			if (data != "") {
-				helloUser(data);
+				helloUser(name);
 			}	
 			else alert("no user found!");		
 		}
@@ -29,7 +35,7 @@ function login(){
 
 function helloUser(name){
 	//alert(name);
-	sessionStorage.setItem('label', name);
+	sessionStorage.setItem('user-name', name);
 	window.location.replace("/final-project/user.html");
 	
 }

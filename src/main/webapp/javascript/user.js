@@ -16,9 +16,14 @@
 *	the loadUsers function, in order to populate the users list
 *********************************************************************************/
 $(document).ready(function(){
-  $("#send-Message-Modal").on('show.bs.modal', function(){
-    loadUsers();
-  });
+
+	// load user's personal details
+	loadUserDetails();
+
+	// load users to 'send-message' modal
+	$("#send-Message-Modal").on('show.bs.modal', function(){
+		loadUsers();
+	});
   
 });
 
@@ -139,9 +144,15 @@ function createCheckedImage(source, name){
 }
 
 
-function loadUserPage(user){
-	sessionStorage.getItem('user');
-	//alert(user);
+/*********************************************************************************
+*	this function loads the registered user details into:
+*	1. the page header
+*	2. the page 'Personal DEtails' section 
+*********************************************************************************/
+function loadUserDetails(){
+	let name = sessionStorage.getItem('user-name');
+	alert("load " + name + " details");
+	document.getElementById("user-details-header").innerHTML = name;
 }
 
 
