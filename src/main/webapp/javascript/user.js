@@ -17,6 +17,8 @@
 *********************************************************************************/
 $(document).ready(function(){
 
+	// hide the 'update' button in 'personal-details' section
+	document.getElementById("pt-update").style.display = "none";
 	// load user's personal details
 	loadUserDetails();
 
@@ -27,6 +29,21 @@ $(document).ready(function(){
   
 });
 
+
+/*********************************************************************************
+*	this function iterate over all images, checked if chosen and sent to server
+*********************************************************************************/
+function edit(){
+	alert("edit");
+	
+	document.getElementById("pt-user-name").disabled = false;
+	document.getElementById("pt-password").disabled = false;
+	document.getElementById("pt-nickname").disabled = false;
+	document.getElementById("pt-email").disabled = false;
+	document.getElementById("pt-address").disabled = false;
+	document.getElementById("pt-update").style.display = "block";
+	
+}
 
 /*********************************************************************************
 *	this function iterate over all images, checked if chosen and sent to server
@@ -150,9 +167,30 @@ function createCheckedImage(source, name){
 *	2. the page 'Personal DEtails' section 
 *********************************************************************************/
 function loadUserDetails(){
-	let name = sessionStorage.getItem('user-name');
-	alert("load " + name + " details");
+
+	let name = sessionStorage.getItem('username');
+	let password = sessionStorage.getItem('password');
+	let nickname = sessionStorage.getItem('nickname');
+	let email = sessionStorage.getItem('email');
+	let address = sessionStorage.getItem('address');
+	
+	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
 	document.getElementById("user-details-header").innerHTML = name;
+	
+	document.getElementById("pt-user-name").placeholder = name;
+	document.getElementById("pt-user-name").disabled = true;
+	document.getElementById("pt-password").placeholder = password;
+	document.getElementById("pt-password").disabled = true;
+	document.getElementById("pt-nickname").placeholder = nickname;
+	document.getElementById("pt-nickname").disabled = true;
+	document.getElementById("pt-email").placeholder = email;
+	document.getElementById("pt-email").disabled = true;
+	document.getElementById("pt-address").placeholder = address;
+	document.getElementById("pt-address").disabled = true;
+	//TODO: add phone detail
+	//document.getElementById("pt-user-name").placeholder = phone;
+	//document.getElementById("pt-user-name").disabled = true;
+	
 }
 
 

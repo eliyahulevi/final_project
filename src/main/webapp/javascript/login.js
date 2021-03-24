@@ -1,13 +1,20 @@
-/********************** 	handles user login ***************************
- *	  
- *
- ********************************************************************************/
+/********************** 	handles user login **********************************
+*		user JSON format (sent from loginservlet):
+*		{
+*		"username": user name,
+*		"password": user password,
+*		"nickname": nickName,
+*		"email": e-mail,
+*		"phone": phone,
+*		"address": address
+*		}
+*
+********************************************************************************/
 
 
 /*********************************************************************************
-*	this function loads the registered user details into:
-*	1. the page header
-*	2. the page 'Personal DEtails' section 
+*	this function finds the registered user as typed into the login form and
+*	sends the request to the server  
 *********************************************************************************/	
 function login(){
 	
@@ -25,7 +32,7 @@ function login(){
 		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
 			if (data != "") {
-				helloUser(name);
+				onUserLogin(data);
 			}	
 			else alert("no user found!");		
 		}
@@ -33,9 +40,16 @@ function login(){
 }
 
 
-function helloUser(name){
-	//alert(name);
-	sessionStorage.setItem('user-name', name);
+function onUserLogin(user_data){
+	
+	var user = JSON.parse(user_data);
+	alert(user_data);
+	sessionStorage.setItem('username', user.username);
+	sessionStorage.setItem('password', user.password);
+	sessionStorage.setItem('nickname', user.nickname);
+	sessionStorage.setItem('email', user.email);
+	sessionStorage.setItem('phone', user.phone);
+	sessionStorage.setItem('address', user.address);
 	window.location.replace("/final-project/user.html");
 	
 }
