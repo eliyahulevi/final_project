@@ -31,7 +31,17 @@ $(document).ready(function(){
 
 
 /*********************************************************************************
-*	this function iterate over all images, checked if chosen and sent to server
+*	this function enables all fields in 'personal details' section and shows 
+*	'update' and 'cancel' buttons
+*********************************************************************************/
+function pt_cancel(){
+	alert("pt-cancel");
+}
+
+
+/*********************************************************************************
+*	this function enables all fields in 'personal details' section and shows 
+*	'update' and 'cancel' buttons
 *********************************************************************************/
 function edit(){
 	alert("edit");
@@ -42,6 +52,7 @@ function edit(){
 	document.getElementById("pt-email").disabled = false;
 	document.getElementById("pt-address").disabled = false;
 	document.getElementById("pt-update").style.display = "block";
+	document.getElementById("pt-cancel").style.display = "block";	
 	
 }
 

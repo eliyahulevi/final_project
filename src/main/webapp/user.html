@@ -178,18 +178,20 @@
 	<form>
 		<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
 	</form>
-		
-	</div>
-	<form id="output" action="upload" method="post" enctype="multipart/form-data">
+	
+		<form id="output" action="upload" method="post" enctype="multipart/form-data">
 		<p>
 			<span style="display:inline-block;">
 				<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
 			</span>
-			<span style="float:right; padding-right:100px; ">
+			<span style="float:right; padding-right:0px; ">
 				<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
 			</span>		
 		</p>
 	</form>
+		
+	</div>
+
 
 	<div></div>
 	<!-- /messages -->
@@ -234,19 +236,21 @@
 		      <input type="text" class="form-control" id="inputZip">
 		    </div>
 		  </div>
-			<div class="form-row">
-		  		<button type="submit" class="btn btn-primary" id="pt-update">update</button>
+			<div class="container">
+					<p>
+						<span style="display:inline-block;">
+							<button type="button" id="pt-update" class="btn btn-success" style="display:none;" onclick="pt_update()">update</button>
+						</span>
+						<span style="float:right; padding-right:0px; ">
+							<button type="button" id="pt-cancel" class="btn btn-danger" style="display:none;" onclick="pt_cancel()">cancel</button>
+						</span>		
+					</p>
+				
 		  	</div>
+
 		</form>
 		
 		</div>
-		<!-- div class="card-personal">
-		<img src="img_avatar.png" alt="Avatar" style="width:100%">
-		  <div class="container">
-		    <h4><b id="pt-user-name">John Doe</b></h4> 
-		    <p>Architect & Engineer
-		  </div>
-		</div -->
 
 	
 	<!-- /personal detail -->
