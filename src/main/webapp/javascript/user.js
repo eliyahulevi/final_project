@@ -31,11 +31,30 @@ $(document).ready(function(){
 
 
 /*********************************************************************************
-*	this function enables all fields in 'personal details' section and shows 
+*	this function sends the updated user details to the server
+*********************************************************************************/
+function pt_update(){
+	var name = 	document.getElementById("pt-user-name").value;
+	var password = document.getElementById("pt-password").value;
+	var nickname = document.getElementById("pt-nickname").value;
+	var email = document.getElementById("pt-email").value;
+	var address = document.getElementById("pt-address").value;
+	alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+}
+
+
+/*********************************************************************************
+*	this function DISABLES all fields in 'personal details' section and HIDES 
 *	'update' and 'cancel' buttons
 *********************************************************************************/
 function pt_cancel(){
-	alert("pt-cancel");
+	document.getElementById("pt-user-name").disabled = true;
+	document.getElementById("pt-password").disabled = true;
+	document.getElementById("pt-nickname").disabled = true;
+	document.getElementById("pt-email").disabled = true;
+	document.getElementById("pt-address").disabled = true;
+	document.getElementById("pt-update").style.display = "none";
+	document.getElementById("pt-cancel").style.display = "none";	
 }
 
 
@@ -43,17 +62,14 @@ function pt_cancel(){
 *	this function enables all fields in 'personal details' section and shows 
 *	'update' and 'cancel' buttons
 *********************************************************************************/
-function edit(){
-	alert("edit");
-	
+function edit(){	
 	document.getElementById("pt-user-name").disabled = false;
 	document.getElementById("pt-password").disabled = false;
 	document.getElementById("pt-nickname").disabled = false;
 	document.getElementById("pt-email").disabled = false;
 	document.getElementById("pt-address").disabled = false;
 	document.getElementById("pt-update").style.display = "block";
-	document.getElementById("pt-cancel").style.display = "block";	
-	
+	document.getElementById("pt-cancel").style.display = "block";		
 }
 
 /*********************************************************************************
@@ -188,18 +204,18 @@ function loadUserDetails(){
 	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
 	document.getElementById("user-details-header").innerHTML = name;
 	
-	document.getElementById("pt-user-name").placeholder = name;
+	document.getElementById("pt-user-name").value = name;
 	document.getElementById("pt-user-name").disabled = true;
-	document.getElementById("pt-password").placeholder = password;
+	document.getElementById("pt-password").value = password;
 	document.getElementById("pt-password").disabled = true;
-	document.getElementById("pt-nickname").placeholder = nickname;
+	document.getElementById("pt-nickname").value = nickname;
 	document.getElementById("pt-nickname").disabled = true;
-	document.getElementById("pt-email").placeholder = email;
+	document.getElementById("pt-email").value = email;
 	document.getElementById("pt-email").disabled = true;
-	document.getElementById("pt-address").placeholder = address;
+	document.getElementById("pt-address").value = address;
 	document.getElementById("pt-address").disabled = true;
 	//TODO: add phone detail
-	//document.getElementById("pt-user-name").placeholder = phone;
+	//document.getElementById("pt-user-name").value = phone;
 	//document.getElementById("pt-user-name").disabled = true;
 	
 }
