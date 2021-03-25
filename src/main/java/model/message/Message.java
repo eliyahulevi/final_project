@@ -2,7 +2,6 @@ package model.message;
 
 import java.sql.Blob;
 
-import org.json.simple.JSONObject;
 
 public class Message 
 {
