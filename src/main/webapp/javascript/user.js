@@ -272,12 +272,7 @@ function loadUsers(){
 			
 					if ( (count = array.length) > 0) 
 					{
-						// init the selection
-						for (var i = 0; i < count; i++) {
-							selectList.options[i] = null;
-							
-						}
-						// fill  the selection 
+						// init & fill  the selection 
 						for (var i = 0; i < count; i++) {
 							alert(array[i]);
 							selectList.options[i] = null;
