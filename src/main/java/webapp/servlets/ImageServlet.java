@@ -61,11 +61,12 @@ public class ImageServlet extends HttpServlet
 		{
 			InputStream fileContent = null;
 			Blob blob = null;
-			String name = request.getParameter("user");
 			String imgName = request.getParameter("name");
+			String name = request.getParameter("user");
 			Part image = request.getPart("image");
 			byte[] data;
 			//String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+			
 			if(!image.equals(""))
 			{
 				fileContent = image.getInputStream();
@@ -80,7 +81,7 @@ public class ImageServlet extends HttpServlet
 				}
 			}
 			else
-				System.out.println(" image servlet >>" + "no file image");
+				System.out.println(" image servlet >>" + "no image file");
 		}
 		catch(Exception e)
 		{

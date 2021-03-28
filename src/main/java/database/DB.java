@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 import model.product.AlternativeProduct;
 import model.users.*;
+import model.message.*;
 
 import appConstants.*;
 import jdk.internal.jshell.tool.StopDetectingInputStream.State;
@@ -76,11 +77,12 @@ public class DB
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
 	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
-			+ "PHOTO varchar(100) PRIMARY KEY,"
-			+ "NICKNAME varchar(20),"
-			+ "TIME timestamp,"
+			+ "USERDATE varchar(100) PRIMARY KEY,"
+			+ "SENDER varchar(20),"
+			+ "USERNAME varchar(20),"
 			+ "CONTENT varchar(500),"
-			+ "REPLYABLE char)";
+			+ "DATE varchar(20),"
+			+ "IMAGE BLOB)";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
 			+ "NAME varchar(30),"
@@ -128,15 +130,17 @@ public class DB
 	//		+ "TYPE varchar(10)
 	//		+ "LENGTH int"
 	//		+ "QUANTITY int";
-	
-	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
-	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
-	private String INSERT_USER_IMAGE = 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
-	private String SELECT_USERS = 		"SELECT * FROM USERS";
-	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
-	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
+	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
+	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
+	private String INSERT_USER = 			"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
+	private String SELECT_USERS = 			"SELECT * FROM USERS";
+	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
+	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
+	private String SELECT_ORDER = 			"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
 	//private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
@@ -758,6 +762,104 @@ public class DB
 		
 		return result;
 	}
+	
+	/*
+	 *  get users messages
+	 */
+	public List<Message> getUserMessages(String user)
+	{
+		List<Message> result = new ArrayList<Message>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			message = new Message();
+			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE);
+			ps.setString(1, user);
+			rs = ps.executeQuery();
+			
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));
+				message.setUser(rs.getString(3));
+				message.setMessage(rs.getString(4));
+				message.setImage(rs.getBlob(5));
+				message.setDate(rs.getString(6));
+				result.add(message);
+			}
+		}
+		catch(Exception e)
+		{
+			this.disconnect();
+			try 
+			{
+				if(!ps.isClosed())
+					ps.close();
+				if(!rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	/*
+	 *  insert user message
+	 */
+	public int insertMessage(Message msg)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(this.ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			
+			ps = this.connection.prepareStatement(this.INSERT_USER_MESSAGE);
+			ps.setString(1, msg.getUser() + msg.getDate());
+			ps.setString(2, msg.getSender());
+			ps.setString(3, msg.getUser());
+			ps.setString(4, msg.getMessage());
+			ps.setString(5, msg.getDate());
+			ps.setBlob(6, msg.getImage());
+			ps.execute();
+			result = 0;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try
+			{
+				if(!ps.isClosed())
+					ps.close();
+			} catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	
+	
 	
 	/*
 	 * shut down the database

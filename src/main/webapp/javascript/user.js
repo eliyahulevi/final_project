@@ -12,15 +12,18 @@
 
 
 /*********************************************************************************
-*	this function binds the on.show event of the send message modal to fire up
+*	this function is the first to file up when the page is loaded, it
+*	binds the on.show event of the send message modal to fire up
 *	the loadUsers function, in order to populate the users list
 *********************************************************************************/
 $(document).ready(function(){
 
 	// hide the 'update' button in 'personal-details' section
 	document.getElementById("pt-update").style.display = "none";
-	// load user's personal details
+	
+	// load user's personal details & messages
 	loadUserDetails();
+	loadUserMessages();
 
 	// load users to 'send-message' modal
 	$("#send-Message-Modal").on('show.bs.modal', function(){
@@ -28,6 +31,15 @@ $(document).ready(function(){
 	});
   
 });
+
+
+/*********************************************************************************
+*	this function sends the updated user details to the server
+*********************************************************************************/
+function loadUserMessages(){
+	alert("messages loaded");
+	
+}
 
 
 /*********************************************************************************
@@ -226,6 +238,60 @@ function loadUserDetails(){
 *	to choose from while sending a new message 
 *********************************************************************************/
 function loadUsers(){
+
+	const obj = {hello: 'world'};
+	var selectList = document.getElementById("users");
+	var blob = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
+	var form_data = new FormData();
+	form_data.append("code", "0");
+	form_data.append("user", "test");
+	form_data.append("sender", ""); 
+	form_data.append("message", "");
+	form_data.append("image", blob);
+	form_data.append("date", "");
+	
+	/*
+	for (var value of form_data.values()) {
+  		alert(value);
+	}*/
+	
+    $.ajax({
+        url: 'UserServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,                         
+        type: 'post',
+        success: function(data){
+        			
+		            var count;		
+					//var data = xhr.responseText;
+					var array = JSON.parse(data);
+					
+			
+					if ( (count = array.length) > 0) 
+					{
+						// init the selection
+						for (var i = 0; i < count; i++) {
+							selectList.options[i] = null;
+							
+						}
+						// fill  the selection 
+						for (var i = 0; i < count; i++) {
+							alert(array[i]);
+							selectList.options[i] = null;
+							var option = document.createElement("option");
+					    	option.value = array[i];
+					    	option.text = array[i];
+					    	selectList.appendChild(option);
+						}
+					}	
+					else alert("no users found!");
+        		}
+     });
+	
+	/*
 	var selectList = document.getElementById("users");
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'UserServlet', true);
@@ -239,9 +305,11 @@ function loadUsers(){
 						
 									if ( (count = array.length) > 0) 
 									{
+										// init the selection
 										for (var i = 0; i < count; i++) {
 											selectList.options[i] = null;
 										}
+										// fill  the selection 
 										for (var i = 0; i < count; i++) {
 											selectList.options[i] = null;
 											var option = document.createElement("option");
@@ -253,6 +321,7 @@ function loadUsers(){
 									else alert("no users found!");					
 								}
 							 }
+	 */ 
 }
 
 
@@ -267,10 +336,10 @@ function sendImages(images){
 		form_data.append("image", data);
 		form_data.append("user", "admin");
 		form_data.append("name", data.name); 
-		alert(data);
+		//alert(data);
 	    $.ajax({
-	        url: 'ImageServlet', // point to server-side PHP script 
-	        dataType: 'text',  // what to expect back from the PHP script, if anything
+	        url: 'ImageServlet', 	// point to server-side PHP script 
+	        dataType: 'text',  		// what to expect back from the PHP script, if anything
 	        cache: false,
 	        contentType: false,
 	        processData: false,
@@ -292,10 +361,36 @@ function sendMessage(){
 	var msg = document.getElementById("msg");
 	var usrs = document.getElementById("users");
 	var usr = usrs.options[usrs.selectedIndex].text;
-	alert(JSON.stringify([0x0001, usr, msg.value]));
+	var sender = sessionStorage.getItem('username');
+	var date = new Date();
+	var blob = new Blob(['0x0003'], {type: 'text/plain'});
+	
+	var form_data = new FormData();
+	form_data.append("code", 0x0001);
+	form_data.append("sender", sender); 
+	form_data.append("user", usr);
+	form_data.append("message", msg);
+	form_data.append("date", date);
+	form_data.append("image", blob);
+	
+    $.ajax({
+	    url: 'ImageServlet', 	// point to server-side PHP script 
+	    dataType: 'text',  		// what to expect back from the PHP script, if anything
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    data: form_data,                         
+	    type: 'post',
+	    success: function(response){
+	       			alert("file uploaded successfully!" + response); 
+    			}
+ 	});
+		
+	/*
 	var xhr = new XMLHttpRequest();
+	alert(JSON.stringify({code: 0x0001, user: usr, sender: sender, message: msg.value, date: date, image:blob}));
 	xhr.open('POST', 'UserServlet', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify({code: 0x0001, user: usr, message: msg.value, image:""}));	
-    
+    xhr.send(JSON.stringify({code: 0x0001, user: usr, sender: sender, message: msg.value, date: date, image:blob}));	
+    */
 }
