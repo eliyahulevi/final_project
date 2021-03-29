@@ -166,31 +166,39 @@
 	<!-- messages -->
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
-			<a data-target="#send-Message-Modal" data-toggle="modal" href="#send-Message-Modal"> user(send message)</a>
+			<a href="#messages" onclick="showMsgText()"> user(send message)</a>
 			<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
 		</span>
 		<span style="float:right; padding:10px; padding-right:100px; ">
 			<a href="#file" onclick="showFileLoad()">load images</a>
 		</span>
 		
-	
+	<!-- upload files -->
 	<div class="container" id="file-upload-area" style="display:none;">
-	<form>
-		<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
-	</form>
 	
-		<form id="output" action="upload" method="post" enctype="multipart/form-data">
-		<p>
-			<span style="display:inline-block;">
-				<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
-			</span>
-			<span style="float:right; padding-right:0px; ">
-				<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
-			</span>		
-		</p>
-	</form>
+		<form>
+			<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
+		</form>
 		
 	</div>
+	
+	<!-- write message text -->
+	<div class="container" id="msg-text-upload">
+		<label>Enter message:</label>
+		<textarea id="msg-txt" name="msg-txt" placeholder="enter text here..."></textarea>		
+		
+		<form id="output" action="upload" method="post" enctype="multipart/form-data">
+			<p>
+				<span style="display:inline-block;">
+					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
+				</span>
+				<span style="float:right; padding-right:0px; ">
+					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
+				</span>		
+			</p>
+		</form>	
+	</div>
+
 
 
 	<div></div>

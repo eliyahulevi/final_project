@@ -20,6 +20,7 @@ $(document).ready(function(){
 
 	// hide the 'update' button in 'personal-details' section
 	document.getElementById("pt-update").style.display = "none";
+	document.getElementById("msg-text-upload").style.display = "none";
 	
 	// load user's personal details & messages
 	loadUserDetails();
@@ -38,7 +39,6 @@ $(document).ready(function(){
 *********************************************************************************/
 function loadUserMessages(){
 
-		alert("load msgs");
 		var formdata = new FormData();
 		formdata.append("code", "0");
 		formdata.append("user", sessionStorage.getItem('username'));
@@ -153,6 +153,14 @@ function cancel(){
 *********************************************************************************/
 function showFileLoad(){
 	document.getElementById("file-upload-area").style.display = "block";
+} 
+
+
+/*********************************************************************************
+*	this function simply shows the hidden elements to allow message text upload
+*********************************************************************************/
+function showMsgText(){
+	document.getElementById("msg-text-upload").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
 } 
