@@ -37,6 +37,45 @@ $(document).ready(function(){
 *	this function sends the updated user details to the server
 *********************************************************************************/
 function loadUserMessages(){
+
+		alert("load msgs");
+		var formdata = new FormData();
+		formdata.append("code", "0");
+		formdata.append("user", sessionStorage.getItem('username'));
+		formdata.append("sender", ""); 
+		formdata.append("message", "");
+		formdata.append("image", "");
+		formdata.append("date", new Date());
+	    $.ajax({
+        url: 'UserServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formdata,                         
+        type: 'post',
+        success: function(data){
+        			
+		            var count;		
+					var data = xhr.responseText;
+					var array = JSON.parse(data);
+					
+			
+					if ( (count = array.length) > 0) 
+					{
+						// init & fill  the selection 
+						for (var i = 0; i < count; i++) {
+							alert(array[i]);
+							selectList.options[i] = null;
+							var option = document.createElement("option");
+					    	option.value = array[i];
+					    	option.text = array[i];
+					    	selectList.appendChild(option);
+						}
+					}	
+					else alert("no users found!");
+        		}
+     });
 	alert("messages loaded");
 	
 }
@@ -94,7 +133,7 @@ function upload(){
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
-  			alert("array at:" + i + " = " + images[i].name);
+  			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
 	sendImages(arr);
@@ -206,7 +245,7 @@ function createCheckedImage(source, name){
 *	2. the page 'Personal DEtails' section 
 *********************************************************************************/
 function loadUserDetails(){
-
+	
 	let name = sessionStorage.getItem('username');
 	let password = sessionStorage.getItem('password');
 	let nickname = sessionStorage.getItem('nickname');
@@ -239,7 +278,7 @@ function loadUserDetails(){
 *********************************************************************************/
 function loadUsers(){
 
-	const obj = {hello: 'world'};
+	const obj = {data: ''};
 	var selectList = document.getElementById("users");
 	var blob = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
 	var form_data = new FormData();
@@ -274,7 +313,7 @@ function loadUsers(){
 					{
 						// init & fill  the selection 
 						for (var i = 0; i < count; i++) {
-							alert(array[i]);
+							//alert(array[i]);
 							selectList.options[i] = null;
 							var option = document.createElement("option");
 					    	option.value = array[i];
@@ -285,38 +324,6 @@ function loadUsers(){
 					else alert("no users found!");
         		}
      });
-	
-	/*
-	var selectList = document.getElementById("users");
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'UserServlet', true);
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify({code: 0x0000}) );	
-	xhr.onreadystatechange = function() {	
-								if (xhr.readyState == 4) {			
-									var count;		
-									var data = xhr.responseText;
-									var array = JSON.parse(data);
-						
-									if ( (count = array.length) > 0) 
-									{
-										// init the selection
-										for (var i = 0; i < count; i++) {
-											selectList.options[i] = null;
-										}
-										// fill  the selection 
-										for (var i = 0; i < count; i++) {
-											selectList.options[i] = null;
-											var option = document.createElement("option");
-									    	option.value = array[i];
-									    	option.text = array[i];
-									    	selectList.appendChild(option);
-										}
-									}	
-									else alert("no users found!");					
-								}
-							 }
-	 */ 
 }
 
 
@@ -358,18 +365,19 @@ function sendMessage(){
 	var usr = usrs.options[usrs.selectedIndex].text;
 	var sender = sessionStorage.getItem('username');
 	var date = new Date();
-	var blob = new Blob(['0x0003'], {type: 'text/plain'});
-	
+	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
 	var form_data = new FormData();
-	form_data.append("code", 0x0001);
-	form_data.append("sender", sender); 
-	form_data.append("user", usr);
+	
+	alert(date.toISOString().split('T')[0]);
+	form_data.append("code", "1");
+	form_data.append("sender", sender.slice(0,20)); 
+	form_data.append("user", usr.slice(0,20));
 	form_data.append("message", msg);
-	form_data.append("date", date);
+	form_data.append("date", date.toISOString().split('T')[0]);
 	form_data.append("image", blob);
 	
     $.ajax({
-	    url: 'ImageServlet', 	// point to server-side PHP script 
+	    url: 'UserServlet', 	// point to server-side PHP script 
 	    dataType: 'text',  		// what to expect back from the PHP script, if anything
 	    cache: false,
 	    contentType: false,
