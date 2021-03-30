@@ -197,7 +197,7 @@ public class UserServlet extends HttpServlet
 			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
 			switch(code)
 			 {
-			 	case "0":
+			 	case "0":		// get all users
 			 	{
 			 		List<String> list = db.getUsersNames();
 					 String json = "";
@@ -212,7 +212,7 @@ public class UserServlet extends HttpServlet
 			 	}
 				
 					 
-				 case "1":
+				 case "1":		// insert message
 				 {
 						Part image = request.getPart("image");
 						if(!image.equals(""))
@@ -232,6 +232,15 @@ public class UserServlet extends HttpServlet
 							System.out.println(" image servlet >>" + "no image file");
 					 break;
 				 }
+				 
+				 case "2":		// get user messages
+				 {
+					 System.out.println("code:" + code + " message: " + msg);
+					 break;
+				 }
+				 
+				 default:
+					 break;
 			}
 
 		}

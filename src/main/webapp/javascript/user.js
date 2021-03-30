@@ -34,6 +34,21 @@ $(document).ready(function(){
 });
 
 
+
+/*********************************************************************************
+*	this function get a message in JSON format, parse it and displays
+*********************************************************************************/
+function addMessage(msg){
+	message = JSON.parse(msg);
+	var name = 	message.username;
+	var password = document.getElementById("pt-password").value;
+	var nickname = document.getElementById("pt-nickname").value;
+	var email = document.getElementById("pt-email").value;
+	var address = document.getElementById("pt-address").value;
+	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+}
+
+
 /*********************************************************************************
 *	this function sends the updated user details to the server
 *********************************************************************************/
@@ -54,18 +69,15 @@ function loadUserMessages(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        success: function(data){
-        			
+        success: function(data){      			
 		            var count;		
 					var data = xhr.responseText;
-					var array = JSON.parse(data);
-					
-			
+					var array = JSON.parse(data);			
 					if ( (count = array.length) > 0) 
 					{
 						// init & fill  the selection 
 						for (var i = 0; i < count; i++) {
-							alert(array[i]);
+							//alert(array[i]);
 							selectList.options[i] = null;
 							var option = document.createElement("option");
 					    	option.value = array[i];
@@ -76,8 +88,6 @@ function loadUserMessages(){
 					else alert("no users found!");
         		}
      });
-	alert("messages loaded");
-	
 }
 
 
@@ -90,7 +100,7 @@ function pt_update(){
 	var nickname = document.getElementById("pt-nickname").value;
 	var email = document.getElementById("pt-email").value;
 	var address = document.getElementById("pt-address").value;
-	alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
 }
 
 
@@ -136,7 +146,8 @@ function upload(){
   			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
-	sendImages(arr);
+	//sendImages(arr);
+	sendMessage1(arr);
 }
 
 
@@ -160,6 +171,7 @@ function showFileLoad(){
 *	this function simply shows the hidden elements to allow message text upload
 *********************************************************************************/
 function showMsgText(){
+	loadUsers();
 	document.getElementById("msg-text-upload").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
@@ -377,7 +389,7 @@ function sendMessage(){
 	var form_data = new FormData();
 	
 	alert(date.toISOString().split('T')[0]);
-	form_data.append("code", "1");
+	form_data.append("code", "2");
 	form_data.append("sender", sender.slice(0,20)); 
 	form_data.append("user", usr.slice(0,20));
 	form_data.append("message", msg);
@@ -396,12 +408,46 @@ function sendMessage(){
 	       			alert("file uploaded successfully!" + response); 
     			}
  	});
-		
-	/*
-	var xhr = new XMLHttpRequest();
-	alert(JSON.stringify({code: 0x0001, user: usr, sender: sender, message: msg.value, date: date, image:blob}));
-	xhr.open('POST', 'UserServlet', true);
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify({code: 0x0001, user: usr, sender: sender, message: msg.value, date: date, image:blob}));	
-    */
 }
+
+
+/*********************************************************************************
+*	this function sends a new message to user: usr 
+*********************************************************************************/
+function sendMessage1(images){
+
+	var msg = document.getElementById("msg-txt").value;
+	var usrs = document.getElementById("users");
+	var usr = usrs.options[usrs.selectedIndex].text;
+	var sender = sessionStorage.getItem('username');
+	var date = new Date();
+	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
+	var form_data = new FormData();
+	
+
+	form_data.append("code", "2");
+	form_data.append("sender", sender.slice(0,20)); 
+	form_data.append("user", usr.slice(0,20));
+	form_data.append("message", msg);
+	form_data.append("date", date.toISOString().split('T')[0]);
+	
+	if( images.length > 0){
+		for(var i = 0; i < images.length; i++){
+			form_data.append("images", images[i]);
+		}		
+	}
+	
+    $.ajax({
+	    url: 'UserServlet', 	// point to server-side PHP script 
+	    dataType: 'text',  		// what to expect back from the PHP script, if anything
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    data: form_data,                         
+	    type: 'post',
+	    success: function(response){
+	       			alert("file uploaded successfully!" + response); 
+    			}
+ 	});
+}
+

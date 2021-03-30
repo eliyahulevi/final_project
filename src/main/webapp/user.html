@@ -175,16 +175,16 @@
 		
 	<!-- upload files -->
 	<div class="container" id="file-upload-area" style="display:none;">
-	
 		<form>
 			<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
-		</form>
-		
+		</form>	
 	</div>
 	
 	<!-- write message text -->
 	<div class="container" id="msg-text-upload">
-		<label>Enter message:</label>
+	
+		<p>user</p>
+       	<select name="users" id="users"></select>
 		<textarea id="msg-txt" name="msg-txt" placeholder="enter text here..."></textarea>		
 		
 		<form id="output" action="upload" method="post" enctype="multipart/form-data">
