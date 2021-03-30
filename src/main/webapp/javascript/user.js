@@ -420,20 +420,19 @@ function sendMessage1(images){
 	var usrs = document.getElementById("users");
 	var usr = usrs.options[usrs.selectedIndex].text;
 	var sender = sessionStorage.getItem('username');
-	var date = new Date();
-	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
+	var date = new Date().getTime();
 	var form_data = new FormData();
 	
 
-	form_data.append("code", "2");
+	form_data.append("code", "1");
 	form_data.append("sender", sender.slice(0,20)); 
 	form_data.append("user", usr.slice(0,20));
 	form_data.append("message", msg);
-	form_data.append("date", date.toISOString().split('T')[0]);
+	form_data.append("date", date);
 	
 	if( images.length > 0){
 		for(var i = 0; i < images.length; i++){
-			form_data.append("images", images[i]);
+			form_data.append("image", images[i]);
 		}		
 	}
 	

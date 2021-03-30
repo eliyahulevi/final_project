@@ -813,6 +813,7 @@ public class DB
 		
 		return result;
 	}
+	
 	/*
 	 *  insert user message
 	 */

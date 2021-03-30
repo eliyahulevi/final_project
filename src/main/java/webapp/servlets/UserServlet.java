@@ -212,10 +212,15 @@ public class UserServlet extends HttpServlet
 			 	}
 				
 					 
-				 case "1":		// insert message
+				 case "1":		// insert image
 				 {
 						Part image = request.getPart("image");
-						if(!image.equals(""))
+						
+						if(image == null)
+						{
+							db.insertMessage(new Message(sender, user, msg, date, blob)); 
+						}
+						else if(!image.equals(""))
 						{
 							fileContent = image.getInputStream();
 							if(fileContent.read() < 0)
