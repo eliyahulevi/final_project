@@ -34,6 +34,19 @@ $(document).ready(function(){
 });
 
 
+/*********************************************************************************
+*	this function get a message in JSON format, parse it and displays
+*********************************************************************************/
+function onTextChange(){
+	
+	var key = window.event.keyCode;
+	if (key === 13) {
+        alert('enter');
+    }
+    
+}
+
+
 
 /*********************************************************************************
 *	this function get a message in JSON format, parse it and displays
@@ -55,7 +68,7 @@ function addMessage(msg){
 function loadUserMessages(){
 
 		var formdata = new FormData();
-		formdata.append("code", "0");
+		formdata.append("code", "2");
 		formdata.append("user", sessionStorage.getItem('username'));
 		formdata.append("sender", ""); 
 		formdata.append("message", "");
@@ -70,22 +83,7 @@ function loadUserMessages(){
         data: formdata,                         
         type: 'post',
         success: function(data){      			
-		            var count;		
-					var data = xhr.responseText;
-					var array = JSON.parse(data);			
-					if ( (count = array.length) > 0) 
-					{
-						// init & fill  the selection 
-						for (var i = 0; i < count; i++) {
-							//alert(array[i]);
-							selectList.options[i] = null;
-							var option = document.createElement("option");
-					    	option.value = array[i];
-					    	option.text = array[i];
-					    	selectList.appendChild(option);
-						}
-					}	
-					else alert("no users found!");
+		            alert('msg came back');
         		}
      });
 }

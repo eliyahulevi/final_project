@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -49,7 +51,7 @@ public class DB
 	static String driverURL = "";
 	
 	
-	User user;
+	static User user;
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
@@ -632,7 +634,37 @@ public class DB
 		return result;
 	}
 
-	public AlternativeProduct getOrder(int orderID) {
+	/*
+	 *  class 2 JSON
+	 */
+	static <T> String class2JSON(T clas)
+	{
+		String result = "";
+		Map<String,String> map = new HashMap<String,String>();
+		
+        Field[] fields = ((Class)clas).getDeclaredFields();
+        System.out.printf("%d fields:%n", fields.length);
+        try 
+    	{
+	        for (Field field : fields) 
+	        {
+	        	System.out.println("field: " + field.getName() + " has value: " + field.get(clas) );
+            	map.put(field.getName(), user.getName());
+	        }
+    	}
+    	catch (IllegalArgumentException e) 
+    	{
+			e.printStackTrace();
+		} 
+    	catch (IllegalAccessException e) 
+    	{
+			e.printStackTrace();
+		}
+        
+        return result;
+	}
+	
+ 	public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;
 		try 
@@ -763,12 +795,13 @@ public class DB
 		return result;
 	}
 	
+	
 	/*
 	 *  get users messages
 	 */
-	public List<Message> getUserMessages(String user)
+	public List<String> getUserMessages(String user)
 	{
-		List<Message> result = new ArrayList<Message>();
+		List<String> result = new ArrayList<String>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Message message = null;
@@ -792,7 +825,10 @@ public class DB
 				message.setMessage(rs.getString(4));
 				message.setImage(rs.getBlob(5));
 				message.setDate(rs.getString(6));
-				result.add(message);
+				String s = DB.class2JSON(message);
+				// TODO: erase later
+				System.out.println(s);
+				result.add(s);
 			}
 		}
 		catch(Exception e)
