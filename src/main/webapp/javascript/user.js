@@ -83,7 +83,7 @@ function loadUserMessages(){
         data: formdata,                         
         type: 'post',
         success: function(data){      			
-		            alert('msg came back');
+		            alert('msg came back: ' + data);
         		}
      });
 }

@@ -234,13 +234,21 @@ public class UserServlet extends HttpServlet
 							}
 						}
 						else
-							System.out.println(" image servlet >>" + "no image file");
+							System.out.println("image servlet >>" + "no image file");
 					 break;
 				 }
 				 
 				 case "2":		// get user messages
 				 {
-					 System.out.println("code:" + code + " message: " + msg);
+					 String json = "";
+					 System.out.println("image servlet >> code:" + code + " message: " + msg);
+					 List<String> list = db.getUserMessages(user);
+					 if( list.size() > 0)
+					 {
+						 json = new Gson().toJson(list);
+						 System.out.println(list);
+					 }
+					 response.getWriter().write(json);
 					 break;
 				 }
 				 

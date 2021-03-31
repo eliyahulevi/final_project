@@ -139,6 +139,7 @@ public class DB
 	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
 	private String SELECT_USERS = 			"SELECT * FROM USERS";
+	private String SELECT_MESSAGES = 		"SELECT * FROM MESSAGES";
 	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
 	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
@@ -635,6 +636,37 @@ public class DB
 	}
 
 	/*
+	 *  convert message to json format
+	 */
+	private String message2JSON(Message message)
+	{
+		String result = "";
+		Blob blob = message.getImage();
+		Map<String,String> map = new HashMap<String,String>();
+		System.out.println("DB >> " + message.getUser());
+		try
+		{
+			
+			map.put("user", message.getUser());
+			map.put("sender", message.getSender());
+			map.put("date", message.getDate());
+			map.put("message", message.getMessage());	
+			if(blob == null)
+				map.put("image", "");
+			else 
+				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		result = JSONValue.toJSONString(map);
+		return result;
+	}
+	
+	
+	/*
 	 *  class 2 JSON
 	 */
 	static <T> String class2JSON(T clas)
@@ -810,11 +842,14 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				System.exit(-1);
 			}
+			System.out.println("DB >> getting messages for: " + user);
 			message = new Message();
-			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE);
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE); 
 			ps.setString(1, user);
 			rs = ps.executeQuery();
 			
@@ -823,11 +858,12 @@ public class DB
 				message.setSender(rs.getString(2));
 				message.setUser(rs.getString(3));
 				message.setMessage(rs.getString(4));
-				message.setImage(rs.getBlob(5));
-				message.setDate(rs.getString(6));
-				String s = DB.class2JSON(message);
+				message.setDate(rs.getString(5));
+				message.setImage(rs.getBlob(6));
+				
+				String s = this.message2JSON(message);
 				// TODO: erase later
-				System.out.println(s);
+				System.out.println("DB >> msgs: " + s);
 				result.add(s);
 			}
 		}
