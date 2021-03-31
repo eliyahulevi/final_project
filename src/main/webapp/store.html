@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/store.css">
+    <!-- <link rel="stylesheet" type="text/css" href="css/style.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="css/style2.css" /> -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="#myPage">Logo</a>
+                        </div>
+                    </th>
+                    <th scope="col">
+                        <div class="collapse navbar-collapse" id="myNavbar">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="#about">ABOUT</a></li>
+                                <li><a href="#services">SERVICES</a></li>
+                                <li><a href="#portfolio">PORTFOLIO</a></li>
+                                <li><a href="#products">PRODUCTS</a></li>
+                                <li><a href="#contact">CONTACT</a></li>
+                            </ul>
+                        </div>
+                    </th>
+
+                    <th scope="col">
+                        <div id="sign-in-div">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="#sign-in-Modal" data-toggle="modal" data-target="#sign-in-Modal">sign
+                                        in</a> </li>
+                            </ul>
+
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="#register-Modal" data-toggle="modal"
+                                        data-target="#register-Modal">register</a> </li>
+                            </ul>
+                        </div>
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="container">
+            <!-- sign-in Modal -->
+            <div class="modal fade" id="sign-in-Modal" role="dialog">
+                <div class="modal-dialog">
+                    <div class="wrapper fadeInDown">
+                        <div id="formContent">
+                            <!-- Tabs Titles -->
+                            <!-- Icon -->
+                            <div class="fadeIn first">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
+                            </div>
+
+                            <!-- Login Form -->
+                            <form id="sign-in-form">
+                                <input type="text" id="sign-in-model-name" class="fadeIn second" name="register"
+                                    placeholder="user name">
+                                <input type="text" id="sign-in-model-password" class="fadeIn third" name="register"
+                                    placeholder="password">
+                                <input type="button" class="fadeIn fourth" value="Log In" onclick=login()>
+                            </form>
+
+                            <!-- Remind Passowrd -->
+                            <div id="formFooter">
+                                <a class="underlineHover" href="#">Forgot Password?</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <!-- register Modal -->
+            <div class="modal fade" id="register-Modal" role="dialog">
+                <div class="modal-dialog">
+                    <div class="wrapper fadeInDown">
+                        <div id="formContent">
+                            <!-- Tabs Titles -->
+                            <!-- Icon -->
+                            <div class="fadeIn first">
+                                <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Login Form -->
+                            <h4>New User</h4>
+                            <form method="post">
+                                <input type="text" id="reg-name" class="fadeIn second" name="register"
+                                    placeholder="name" required>
+                                <input type="text" id="reg-password" class="fadeIn second" name="register"
+                                    placeholder="password" required>
+                                <input type="text" id="reg-nick-name" class="fadeIn second" name="register"
+                                    placeholder="nick name" required>
+                                <input type="text" id="reg-email" class="fadeIn second" name="register"
+                                    placeholder="email" required>
+                                <input type="text" id="reg-address" class="fadeIn second" name="register"
+                                    placeholder="address" required>
+                                <input type="text" id="reg-description" class="fadeIn second" name="register"
+                                    placeholder="description (up to 200 charachters)" required>
+                                <input type="button" class="fadeIn fourth" value="submit" onclick=regNewUser()>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </nav>
+    <hr>
+    <br>
+    <br>
+
+    <section class="container content-header">
+        <h2 class="section-header">Items</h2>
+        <div class="shop-items">
+            <div class="shop-item">
+                <span class="shop-item-title">10x20 type pine wood </span>
+                <img class="shop-item-image" src="resources/10X20type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>15$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="shop-item">
+                <span class="shop-item-title">10x10 type pine wood </span>
+                <img class="shop-item-image" src="resources/10X10type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>12$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="shop-item">
+                <span class="shop-item-title">10x2 type pine wood </span>
+                <img class="shop-item-image" src="resources/10X2type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>8$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="shop-item">
+                <span class="shop-item-title">10x5 type pine wood </span>
+                <img class="shop-item-image" src="resources/10X5type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>13$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="shop-item">
+                <span class="shop-item-title">15x5 type pine wood </span>
+                <img class="shop-item-image" src="resources/15X5type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>14$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="shop-item">
+                <span class="shop-item-title">5x5 type pine wood </span>
+                <img class="shop-item-image" src="resources/5X5type.jpg" alt="">
+                <div class="shop-item-details">
+                    <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
+                        placeholder="length in centimeters" style="margin-bottom: 3px;">
+                    <div>
+                        <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
+                    </div>
+                </div>
+                <div>
+                    <span>6$ per meter</span>
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
+                        class="btn btn--large btn--full btn--clear uppercase">
+                        <span id="AddToCart">
+                            Add To Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+
+    </section>
+    <section>
+        <h2>Cart</h2>
+        <div>
+            <strong>Item</strong>
+            &lt;&gt;
+            <strong>Length</strong>
+            &lt;&gt;
+            <strong>Quantity</strong>
+        </div>
+        <div>
+            <img src="resources/10X10type.jpg" width="100">
+            <span>10x10 type</span>
+            <input type="number" value="1">
+            <input type="number" value="6">
+            <button role="button">REMOVE</button>
+        </div>
+        <div>
+            <button role="button">PURCHASE</button>
+        </div>
+    </section>
+
+
+</body>
+
+
+</html>
