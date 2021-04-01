@@ -86,8 +86,8 @@ function loadUserMessages(){
 		            //alert('msg came back: ' + messages);
 		            var form = document.getElementById("msg-display");
 		            for(var i = 0; i < messages.length; i++){
-		            	var msg = createMsgElement(messages[i]);
-		            	form.appendChild(msg);
+		            	//var msg = createMsgElement(messages[i]);
+		            	//form.appendChild(msg);
 		            }
         		}
      });
@@ -104,6 +104,85 @@ function addMessage(){
 	var user = sessionStorage.getItem('username');
 	var sender = sessionStorage.getItem('sender');
 	var date = new Date();
+	var msgCount = 0;
+	
+	var frame = document.createElement("div");
+	var userTag = document.createElement("a");
+	var replyUser = document.createElement("a");
+	var p = document.createElement("p");
+	var span = document.createElement("span");
+	var spanStart = document.createElement("span");
+	var spanEnd = document.createElement("span");
+	var reply = document.createElement("span");
+	var msg = document.createElement("p");	
+	var messages = document.getElementsByClassName('message');
+
+		
+	for(var i = 0; i < messages.length; i++){	
+		msgCount++;
+	}
+	
+	spanStart.innerHTML = "user ";
+	spanEnd.innerHTML = " on " + date;
+	
+	msg.innerHTML = " this is a test message ";
+	
+	userTag.setAttribute("id", 'user' + msgCount);
+	userTag.setAttribute("href", '#user' + msgCount);
+	userTag.innerHTML = user;
+	
+	replyUser.setAttribute("id", 'reply' + msgCount);
+	replyUser.setAttribute("href", '#reply' + msgCount);
+	replyUser.setAttribute("onclick", 'replyClicked(' + msgCount + ')' );
+	replyUser.innerHTML = " reply";
+	
+	span.appendChild(userTag);
+	reply.appendChild(replyUser);
+	
+	p.appendChild(spanStart);
+	p.appendChild(span);
+	p.appendChild(spanEnd);
+	p.appendChild(reply);
+
+	frame.setAttribute("class", "message");
+	frame.setAttribute("id", "message" + msgCount);
+	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
+	frame.appendChild(userTag);
+	frame.appendChild(p);
+	
+	form.appendChild(frame);
+	
+}
+
+
+/*********************************************************************************
+*	this function handles message element being clicked
+*********************************************************************************/
+function messageClicked(p){
+	var element = document.getElementById("message" + p);
+	element.setAttribute("style", "background-color: #ffffff;");
+}
+
+
+/*********************************************************************************
+*	this function handles message reply being clicked
+*********************************************************************************/
+function replyClicked(p){
+	alert(p);
+}
+
+
+
+/*********************************************************************************
+*	this function creates a new message element to be displayed and replied
+*********************************************************************************/
+function createMsgElement(message){
+
+var form = document.getElementById("msg-display");
+	
+	var user = sessionStorage.getItem('username');
+	var sender = sessionStorage.getItem('sender');
+	var date = new Date(); 
 	var msgCount = 0;
 	
 	var frame = document.createElement("div");
@@ -144,30 +223,9 @@ function addMessage(){
 	frame.setAttribute("id", "message" + msgCount);
 	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
 	frame.appendChild(userTag);
-	frame.appendChild(msg);
+	frame.appendChild(p);
 	
-	form.appendChild(frame);
-	
-}
-
-
-/*********************************************************************************
-*	this function creates a new message element to be displayed
-*********************************************************************************/
-function messageClicked(p){
-	var element = document.getElementById("message" + p);
-	element.setAttribute("style", "background-color: #ffffff;");
-}
-
-
-
-/*********************************************************************************
-*	this function creates a new message element to be displayed
-*********************************************************************************/
-function createMsgElement(message){
-	var div = document.createElement("div");
-	return div;
-
+	return frame; 
 }
 
 
