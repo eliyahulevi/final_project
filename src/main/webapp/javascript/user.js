@@ -82,10 +82,92 @@ function loadUserMessages(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        success: function(data){      			
-		            alert('msg came back: ' + data);
+        success: function(messages){      			
+		            //alert('msg came back: ' + messages);
+		            var form = document.getElementById("msg-display");
+		            for(var i = 0; i < messages.length; i++){
+		            	var msg = createMsgElement(messages[i]);
+		            	form.appendChild(msg);
+		            }
         		}
      });
+}
+
+
+/*********************************************************************************
+*	THIS IS A TEST FUNCTION DESIGN TO TEST 'ADD MESSAGES TO PAGE' FUNCTIONALITY !!
+*********************************************************************************/
+function addMessage(){
+	
+	var form = document.getElementById("msg-display");
+	
+	var user = sessionStorage.getItem('username');
+	var sender = sessionStorage.getItem('sender');
+	var date = new Date();
+	var msgCount = 0;
+	
+	var frame = document.createElement("div");
+	var userTag = document.createElement("a");
+	var replyUser = document.createElement("a");
+	var p = document.createElement("p");
+	var span = document.createElement("span");
+	var spanStart = document.createElement("span");
+	var spanEnd = document.createElement("span");
+	var reply = document.createElement("span");
+	var msg = document.createElement("p");	
+	var messages = document.getElementsByClassName('message');
+
+		
+	for(var i = 0; i < messages.length; i++){	
+		msgCount++;
+	}
+	
+	spanStart.innerHTML = "user ";
+	spanEnd.innerHTML = " on " + date;
+	
+	msg.innerHTML = " this is a test message ";
+	
+	userTag.setAttribute("href", "#");
+	userTag.innerHTML = user;
+	replyUser.setAttribute("href", "#");
+	replyUser.innerHTML = " reply";
+	
+	span.appendChild(userTag);
+	reply.appendChild(replyUser);
+	
+	p.appendChild(spanStart);
+	p.appendChild(span);
+	p.appendChild(spanEnd);
+	p.appendChild(reply);
+
+	frame.setAttribute("class", "message");
+	frame.setAttribute("id", "message" + msgCount);
+	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
+	frame.appendChild(userTag);
+	frame.appendChild(msg);
+	
+	form.appendChild(frame);
+	
+}
+
+
+/*********************************************************************************
+*	this function creates a new message element to be displayed
+*********************************************************************************/
+function messageClicked(p){
+	var element = document.getElementById("message" + p);
+	element.setAttribute("style", "background-color: #ffffff;");
+}
+
+
+
+/*********************************************************************************
+*	this function creates a new message element to be displayed
+*********************************************************************************/
+function createMsgElement(message){
+	var div = document.createElement("div");
+	return div;
+
 }
 
 

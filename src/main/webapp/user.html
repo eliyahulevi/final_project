@@ -165,13 +165,20 @@
 	
 	<!-- messages -->
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
-		<span style="display:inline-block;">
-			<a href="#messages" onclick="showMsgText()"> user(send message)</a>
-			<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
-		</span>
-		<span style="float:right; padding:10px; padding-right:100px; ">
-			<a href="#file" onclick="showFileLoad()">load images</a>
-		</span>
+	
+	<div class="container">
+		<form id="msg-display" class="msg-form">
+			<!--  button id="add-msg" onclick="addMessage()">add message</button -->
+			<button id="add-msg1" onclick="addMessage()">add message</button>
+		</form>
+	</div>
+	<span style="display:inline-block;">
+		<a href="#messages" onclick="showMsgText()"> user(send message)</a>
+		<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
+	</span>
+	<span style="float:right; padding:10px; padding-right:100px; ">
+		<a href="#file" onclick="showFileLoad()">load images</a>
+	</span>
 		
 	<!-- upload files -->
 	<div class="container" id="file-upload-area" style="display:none;">
