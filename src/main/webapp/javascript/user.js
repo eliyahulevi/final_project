@@ -133,7 +133,7 @@ function addMessage(){
 	
 	replyUser.setAttribute("id", 'reply' + msgCount);
 	replyUser.setAttribute("href", '#reply' + msgCount);
-	replyUser.setAttribute("onclick", 'replyClicked(' + msgCount + ')' );
+	replyUser.setAttribute("onclick", 'replyClicked1(' + msgCount + ')' );
 	replyUser.innerHTML = " reply";
 	
 	span.appendChild(userTag);
@@ -168,7 +168,72 @@ function messageClicked(p){
 *	this function handles message reply being clicked
 *********************************************************************************/
 function replyClicked(p){
-	alert(p);
+
+	var existingNode = document.getElementById("message" + p);	
+	
+	/*var newNode = document.createElement("textarea");
+	newNode.setAttribute("id", "text-area" + p);*/
+	var replyNode = document.getElementById("msg-text-upload");
+	
+	var newNode = replyNode.cloneNode(true);
+	
+	//existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+	existingNode.parentNode.appendChild(newNode);
+	alert(newNode);
+}
+
+
+/*********************************************************************************
+*	this function handles message reply being clicked
+*********************************************************************************/
+function replyClicked1(p){
+	
+	var existingNode = document.getElementById("message" + p);	
+	var div = document.createElement("div");
+	var textarea = document.createElement("textarea");
+	var form = document.createElement("form");
+	var span1 = document.createElement("span");
+	var span2 = document.createElement("span");
+	var p = document.createElement("p");	
+	var btnUpload = document.createElement("button");
+	var btnCancel = document.createElement("button");
+	
+	textarea.setAttribute("id", "msg-txt");
+	textarea.setAttribute("name", "msg-txt");
+	textarea.setAttribute("onkeypress", "onTextChange()");
+	
+	form.setAttribute("id", "output1");
+	form.setAttribute("action", "upload");
+	form.setAttribute("method", "post");
+	form.setAttribute("enctype", "multipart/form-data");
+	
+	span1.setAttribute("style", "display:inline-block");
+	span2.setAttribute("style", "float:right; padding-right:0px;");
+	
+	btnUpload.innerHTML = "upload";
+	btnUpload.setAttribute('id', 'upload-file-btn');
+	btnUpload.setAttribute('type', 'button');
+	btnUpload.setAttribute('class', 'btn btn-success');
+	btnUpload.setAttribute('onclick', 'upload()');
+	
+	btnCancel.innerHTML = "cancel";
+	btnCancel.setAttribute('id', 'cancel-file-btn');
+	btnCancel.setAttribute('type', 'button');
+	btnCancel.setAttribute('class', 'btn btn-danger');
+	btnCancel.setAttribute('onclick', 'cancel()');
+	
+	
+	// build the element hierarchy
+	div.appendChild(textarea);	
+	div.appendChild(form);
+	form.appendChild(p);
+	p.appendChild(span1);
+	p.appendChild(span2);
+	span1.appendChild(btnUpload);
+	span2.appendChild(btnCancel);
+	
+	existingNode.parentNode.appendChild(div);
+	
 }
 
 
