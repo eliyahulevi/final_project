@@ -11,6 +11,7 @@ public class Message
 	String message;
 	String date;
 	Blob image;
+	boolean clicked;
 	
 	public Message() {}
 	public Message(String sender, String user, String msg, String date, Blob img)
@@ -20,6 +21,7 @@ public class Message
 		this.message = msg;
 		this.date = date;
 		this.image = img;
+		this.clicked = false;
 	}
 	
 	/*
@@ -31,6 +33,7 @@ public class Message
 	public void setUser(String u) { this.user = u;}
 	public void setCode(int i) { this.code = i; }
 	public void setImage(Blob b) { this.image = b; }
+	public void setClicked(boolean b) { this.clicked = b; }
 
 	public int getCode() { return this.code; }
 	public String getUser() { return this.user;}
@@ -38,5 +41,6 @@ public class Message
 	public String getDate() { return this.date;}
 	public String getMessage() { return this.message; }
 	public Blob getImage() { return this.image; }
+	public boolean getClicked() { return this.clicked; } 
 
 }

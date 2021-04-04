@@ -232,7 +232,8 @@ function replyClicked1(p){
 	span1.appendChild(btnUpload);
 	span2.appendChild(btnCancel);
 	
-	existingNode.parentNode.appendChild(div);
+	//existingNode.parentNode.appendChild(div);
+	existingNode.parentNode.insertBefore(div, existingNode.nextSibling);
 	
 }
 
