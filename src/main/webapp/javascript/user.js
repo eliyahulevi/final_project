@@ -83,13 +83,9 @@ function loadUserMessages(){
         type: 'post',
         success: function(response){ 
         			var messages = JSON.parse(response);      			
-		            alert('msg came back: ' + messages);
 		            var form = document.getElementById("msg-display");
-		            alert('# of messages: ' + messages.length);
 		            for(var i = 0; i < messages.length; i++){
-		            	alert('message S@' + i + ": " + messages[i]);
 		            	var msg = addMessage1(messages[i]);
-		            	
 		            	form.appendChild(msg);
 		            }
         		}
@@ -108,7 +104,7 @@ function addMessage1(jsonMessage){
 	var date = message.date;
 	var msg_text = message.message;
 	var msgCount = 0;
-	alert(message);
+	//alert(message.message);
 	var frame = document.createElement("div");
 	var userTag = document.createElement("a");
 	var replyUser = document.createElement("a");
@@ -125,11 +121,11 @@ function addMessage1(jsonMessage){
 		msgCount++;
 	}
 	
-	spanStart.innerHTML = "user ";
+	spanStart.innerHTML = msg_text;
 	spanEnd.innerHTML = " on " + date;
 	spanEnd.setAttribute("id", 'date' + msgCount );
 	
-	msg.innerHTML = msg_text;
+	//msg.innerHTML = msg_text;
 	
 	userTag.setAttribute("id", 'user' + msgCount);
 	userTag.setAttribute("href", '#user' + msgCount);
