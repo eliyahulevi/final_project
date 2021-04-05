@@ -478,7 +478,9 @@ public class DB
 	 */
  	public void insertUser(User user, boolean first) 
 	{
+ 		int rs = -1;
  		PreparedStatement state = null;
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, LocalTime.now().toString(), null);
 		String dateString = "";
 		LocalTime date = LocalTime.now();
 		if (!first)
@@ -500,8 +502,14 @@ public class DB
 			state.setString(4, user.getAddress());		//address
 			state.setString(5, user.getPhoto());		//photo
 			state.setString(6, user.getDescription());	//password
-			state.executeUpdate();
-			System.out.println("DB >> user " + user.getName() + " added");				
+			rs = state.executeUpdate();
+			
+			if (rs > 0)
+			{
+				this.insertMessage(message);
+				System.out.println("DB >> user " + user.getName() + " added");	
+			}
+						
 		} 
 		catch (SQLException e) 
 		{

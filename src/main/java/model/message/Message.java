@@ -3,6 +3,8 @@ package model.message;
 import java.sql.Blob;
 
 
+
+
 public class Message 
 {
 	int code;
@@ -12,6 +14,7 @@ public class Message
 	String date;
 	Blob image;
 	boolean clicked;
+	public static String WELCOME = "Welcome to the LumberYard !! please feel free to ask any question @SUPPORT";
 	
 	public Message() {}
 	public Message(String sender, String user, String msg, String date, Blob img)
@@ -42,5 +45,6 @@ public class Message
 	public String getMessage() { return this.message; }
 	public Blob getImage() { return this.image; }
 	public boolean getClicked() { return this.clicked; } 
+
 
 }

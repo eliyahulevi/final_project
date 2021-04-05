@@ -81,15 +81,80 @@ function loadUserMessages(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        success: function(messages){      			
-		            //alert('msg came back: ' + messages);
+        success: function(response){ 
+        			var messages = JSON.parse(response);      			
+		            alert('msg came back: ' + messages);
 		            var form = document.getElementById("msg-display");
+		            alert('# of messages: ' + messages.length);
 		            for(var i = 0; i < messages.length; i++){
-		            	//var msg = createMsgElement(messages[i]);
-		            	//form.appendChild(msg);
+		            	alert('message S@' + i + ": " + messages[i]);
+		            	var msg = addMessage1(messages[i]);
+		            	
+		            	form.appendChild(msg);
 		            }
         		}
      });
+}
+
+
+/*********************************************************************************
+*	this function takes a message in JSON format and create a message element
+*********************************************************************************/
+function addMessage1(jsonMessage){
+	
+	var message = JSON.parse(jsonMessage);
+	var user = message.user;
+	var sender = message.sender;
+	var date = message.date;
+	var msg_text = message.message;
+	var msgCount = 0;
+	alert(message);
+	var frame = document.createElement("div");
+	var userTag = document.createElement("a");
+	var replyUser = document.createElement("a");
+	var p = document.createElement("p");
+	var span = document.createElement("span");
+	var spanStart = document.createElement("span");
+	var spanEnd = document.createElement("span");
+	var reply = document.createElement("span");
+	var msg = document.createElement("p");	
+	var messages = document.getElementsByClassName('message');
+	
+		
+	for(var i = 0; i < messages.length; i++){	
+		msgCount++;
+	}
+	
+	spanStart.innerHTML = "user ";
+	spanEnd.innerHTML = " on " + date;
+	spanEnd.setAttribute("id", 'date' + msgCount );
+	
+	msg.innerHTML = msg_text;
+	
+	userTag.setAttribute("id", 'user' + msgCount);
+	userTag.setAttribute("href", '#user' + msgCount);
+	userTag.innerHTML = sender;
+	
+	replyUser.setAttribute("id", 'reply' + msgCount);
+	replyUser.setAttribute("href", '#reply' + msgCount);
+	replyUser.setAttribute("onclick", 'replyClicked1(' + msgCount + ')' );
+	replyUser.innerHTML = " reply";
+	
+	span.appendChild(userTag);
+	reply.appendChild(replyUser);
+	
+	p.appendChild(spanStart);
+	p.appendChild(span);
+	p.appendChild(spanEnd);
+	p.appendChild(reply);
+
+	frame.setAttribute("class", "message");
+	frame.setAttribute("id", "message" + msgCount);
+	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
+	frame.appendChild(userTag);
+	frame.appendChild(p);
+	
+	return frame;	
 }
 
 
