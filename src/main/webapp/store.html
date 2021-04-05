@@ -138,7 +138,7 @@
     <br>
     <br>
 
-    <section class="container content-header">
+    <section class="container content-section">
         <h2 class="section-header">Items</h2>
         <div class="shop-items">
             <div class="shop-item">
@@ -153,8 +153,7 @@
                 </div>
                 <div>
                     <span>15$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;" class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -173,8 +172,7 @@
                 </div>
                 <div>
                     <span>12$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;" class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -193,8 +191,7 @@
                 </div>
                 <div>
                     <span>8$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;" class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -213,8 +210,7 @@
                 </div>
                 <div>
                     <span>13$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;" class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -233,8 +229,7 @@
                 </div>
                 <div>
                     <span>14$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;" class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -244,17 +239,17 @@
             <div class="shop-item">
                 <span class="shop-item-title">5x5 type pine wood </span>
                 <img class="shop-item-image" src="resources/5X5type.jpg" alt="">
-                <div class="shop-item-details">
+                <div>
                     <input type="number" min="0" pattern="[0-9]*" inputmode="numeric"
                         placeholder="length in centimeters" style="margin-bottom: 3px;">
                     <div>
                         <input type="number" min="0" pattern="[0-9]*" inputmode="numeric" placeholder="quantity">
                     </div>
                 </div>
-                <div>
+                <div class="shop-item-details">
                     <span>6$ per meter</span>
-                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px;"
-                        class="btn btn--large btn--full btn--clear uppercase">
+                    <button role="button" name="add" id="AddToCart" style="margin-top: 5px; margin-left: 2px;"
+                        class="btn btn-primary">
                         <span id="AddToCart">
                             Add To Cart
                         </span>
@@ -266,25 +261,35 @@
     <section>
 
     </section>
-    <section>
-        <h2>Cart</h2>
-        <div>
-            <strong>Item</strong>
-            &lt;&gt;
-            <strong>Length</strong>
-            &lt;&gt;
-            <strong>Quantity</strong>
+
+    <section class="container content-section">
+        <h2 class="section-header">Cart</h2>
+
+        <div class="cart-row">
+            <span class="cart-item cart-header cart-column">Item</span>
+            <span class="cart-length cart-header cart-column">Length</span>
+            <span class="cart-quantity cart-header cart-column">Quantity</span>
         </div>
-        <div>
-            <img src="resources/10X10type.jpg" width="100">
-            <span>10x10 type</span>
-            <input type="number" value="1">
-            <input type="number" value="6">
-            <button role="button">REMOVE</button>
+        <div class="cart-items">
+            <div class="cart-row">
+                <div class="item-column cart-column">
+                    <img class="cart-item-image" src="resources/10X10type.jpg" width="100">
+                    <span class="cart-item-title">10x10 type</span>
+                </div>
+                <div class="cart-length cart-column input">
+                    <input class="cart-input" type="number" value="1">
+                </div>
+
+                <div class="cart-quantity cart-column input">
+                    <input class="cart-input" type="number" value="6">
+                    <button class="btn btn-danger" role="button">REMOVE</button>
+                </div>
+            </div>
         </div>
-        <div>
-            <button role="button">PURCHASE</button>
-        </div>
+
+        <button class="btn btn-primary btn-purchase" role="button">PURCHASE</button>
+
+
     </section>
 
 
