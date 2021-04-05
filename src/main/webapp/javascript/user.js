@@ -131,7 +131,7 @@ function addMessage1(jsonMessage){
 	userTag.setAttribute("href", '#user' + msgCount);
 	userTag.innerHTML = sender;
 	
-	replyUser.setAttribute("id", 'reply' + msgCount);
+	replyUser.setAttribute("id", 'user-reply' + msgCount);
 	replyUser.setAttribute("href", '#reply' + msgCount);
 	replyUser.setAttribute("onclick", 'replyClicked1(' + msgCount + ')' );
 	replyUser.innerHTML = " reply";
@@ -155,68 +155,6 @@ function addMessage1(jsonMessage){
 
 
 /*********************************************************************************
-*	THIS IS A TEST FUNCTION DESIGN TO TEST 'ADD MESSAGES TO PAGE' FUNCTIONALITY !!
-*********************************************************************************/
-function addMessage(){
-	
-	var form = document.getElementById("msg-display");
-	
-	var user = sessionStorage.getItem('username');
-	var sender = sessionStorage.getItem('sender');
-	var date = new Date();
-	var msgCount = 0;
-	
-	var frame = document.createElement("div");
-	var userTag = document.createElement("a");
-	var replyUser = document.createElement("a");
-	var p = document.createElement("p");
-	var span = document.createElement("span");
-	var spanStart = document.createElement("span");
-	var spanEnd = document.createElement("span");
-	var reply = document.createElement("span");
-	var msg = document.createElement("p");	
-	var messages = document.getElementsByClassName('message');
-
-		
-	for(var i = 0; i < messages.length; i++){	
-		msgCount++;
-	}
-	
-	spanStart.innerHTML = "user ";
-	spanEnd.innerHTML = " on " + date;
-	spanEnd.setAttribute("id", 'date' + msgCount );
-	
-	msg.innerHTML = " this is a test message ";
-	
-	userTag.setAttribute("id", 'user' + msgCount);
-	userTag.setAttribute("href", '#user' + msgCount);
-	userTag.innerHTML = user;
-	
-	replyUser.setAttribute("id", 'reply' + msgCount);
-	replyUser.setAttribute("href", '#reply' + msgCount);
-	replyUser.setAttribute("onclick", 'replyClicked1(' + msgCount + ')' );
-	replyUser.innerHTML = " reply";
-	
-	span.appendChild(userTag);
-	reply.appendChild(replyUser);
-	
-	p.appendChild(spanStart);
-	p.appendChild(span);
-	p.appendChild(spanEnd);
-	p.appendChild(reply);
-
-	frame.setAttribute("class", "message");
-	frame.setAttribute("id", "message" + msgCount);
-	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
-	frame.appendChild(userTag);
-	frame.appendChild(p);
-	
-	form.appendChild(frame);
-	
-}
-
-
-/*********************************************************************************
 *	this function handles message element being clicked
 *********************************************************************************/
 function messageClicked(p){
@@ -226,40 +164,21 @@ function messageClicked(p){
 
 
 /*********************************************************************************
-*	this function handles message reply being clicked
-*********************************************************************************/
-function replyClicked(p){
-
-	var existingNode = document.getElementById("message" + p);	
-	
-	/*var newNode = document.createElement("textarea");
-	newNode.setAttribute("id", "text-area" + p);*/
-	var replyNode = document.getElementById("msg-text-upload");
-	
-	var newNode = replyNode.cloneNode(true);
-	
-	//existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-	existingNode.parentNode.appendChild(newNode);
-	alert(newNode);
-}
-
-
-/*********************************************************************************
 *	this function is fired up when reply to specific message is clicked. reply
 *	area is being added to page under the chosen message and 'message clicked' 
 *	is sent
 *********************************************************************************/
 function replyClicked1(p){
-
-	var sender = document.getElementById('user' + p);
-	var date = document.getElementById('date' + p).innerHTML;
+	var count = p;
+	var sender = document.getElementById('user' + count);
+	var date = document.getElementById('date' + count).innerHTML;
 	var user = sessionStorage.getItem('username');
 	var formData = new FormData();
 	
 	
 	
-	var existingNode = document.getElementById("message" + p);	
-	var div = document.createElement("div");
+	var existingNode = document.getElementById("message" + count);	
+	var reply = document.createElement("div");
 	var replyText = document.createElement("textarea");
 	var form = document.createElement("form");
 	var span1 = document.createElement("span");
@@ -281,27 +200,28 @@ function replyClicked1(p){
 	span2.setAttribute("style", "float:right; padding-right:0px;");
 	
 	btnUpload.innerHTML = "upload";
-	btnUpload.setAttribute('id', 'upload-file-btn');
+	btnUpload.setAttribute('id', 'upload-file-btn' + count);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute('onclick', 'upload()');
+	btnUpload.setAttribute("onclick", 'upload(' + count + ')');
 	
 	btnCancel.innerHTML = "cancel";
-	btnCancel.setAttribute('id', 'cancel-file-btn');
+	btnCancel.setAttribute('id', 'cancel-file-btn' + count);
 	btnCancel.setAttribute('type', 'button');
 	btnCancel.setAttribute('class', 'btn btn-danger');
-	btnCancel.setAttribute('onclick', 'cancel()');
+	btnCancel.setAttribute("onclick", 'cancel(' + count + ')' );
 	
 	
 	// build the element hierarchy and add to page
-	div.appendChild(replyText);	
-	div.appendChild(form);
+	reply.setAttribute("id", 'reply' + count);
+	reply.appendChild(replyText);	
+	reply.appendChild(form);
 	form.appendChild(p);
 	p.appendChild(span1);
 	p.appendChild(span2);
 	span1.appendChild(btnUpload);
 	span2.appendChild(btnCancel);
-	existingNode.parentNode.insertBefore(div, existingNode.nextSibling);
+	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
 	
 	//alert(user);
 	notifyMessageClicked(user, date);
@@ -326,6 +246,15 @@ function replyClicked1(p){
     			}
  	});
 	*/
+}
+
+
+/*********************************************************************************
+*	this function resets the images chosen
+*********************************************************************************/
+function cancel(p){
+	var obj = document.getElementById('reply' + p);	
+	obj.remove();	
 }
 
 
@@ -489,14 +418,6 @@ function uploadMessage(number){
 	}
 	//sendImages(arr);
 	sendMessage1(arr);
-}
-
-
-/*********************************************************************************
-*	this function resets the images chosen
-*********************************************************************************/
-function cancel(){
-	alert("TODO: add cancel functionality");
 }
 
 
