@@ -214,27 +214,26 @@ public class UserServlet extends HttpServlet
 					 
 				 case "1":		// insert image
 				 {
-						Part image = request.getPart("image");
-						
-						if(image == null)
-						{
-							db.insertMessage(new Message(sender, user, msg, date, blob)); 
-						}
-						else if(!image.equals(""))
-						{
-							fileContent = image.getInputStream();
-							if(fileContent.read() < 0)
-								System.out.println(">> image servlet: no data to read");
-							else
-							{
-								//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
-								data = fileContent.readAllBytes();
-								blob = new SerialBlob(data);
-								db.insertMessage(new Message(sender, user, msg, date, blob));
-							}
-						}
+					Part image = request.getPart("image");
+					
+					if(image == null)
+						db.insertMessage(new Message(sender, user, msg, date, blob)); 
+					
+					else if(!image.equals(""))
+					{
+						fileContent = image.getInputStream();
+						if(fileContent.read() < 0)
+							System.out.println(">> image servlet: no data to read");
 						else
-							System.out.println("image servlet >>" + "no image file");
+						{
+							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
+							data = fileContent.readAllBytes();
+							blob = new SerialBlob(data);
+							db.insertMessage(new Message(sender, user, msg, date, blob));
+						}
+					}
+					else
+						System.out.println("image servlet >>" + "no image file");
 					 break;
 				 }
 				 
@@ -249,6 +248,12 @@ public class UserServlet extends HttpServlet
 						 System.out.println(list);
 					 }
 					 response.getWriter().write(json);
+					 break;
+				 }
+				 
+				 case "3":		// message clicked
+				 {
+					 db.messageClicked(user, date);
 					 break;
 				 }
 				 

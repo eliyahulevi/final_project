@@ -42,8 +42,7 @@ function onTextChange(){
 	var key = window.event.keyCode;
 	if (key === 13) {
         alert('enter');
-    }
-    
+    }  
 }
 
 
@@ -124,6 +123,7 @@ function addMessage(){
 	
 	spanStart.innerHTML = "user ";
 	spanEnd.innerHTML = " on " + date;
+	spanEnd.setAttribute("id", 'date' + msgCount );
 	
 	msg.innerHTML = " this is a test message ";
 	
@@ -184,13 +184,22 @@ function replyClicked(p){
 
 
 /*********************************************************************************
-*	this function handles message reply being clicked
+*	this function is fired up when reply to specific message is clicked. reply
+*	area is being added to page under the chosen message and 'message clicked' 
+*	is sent
 *********************************************************************************/
 function replyClicked1(p){
+
+	var sender = document.getElementById('user' + p);
+	var date = document.getElementById('date' + p).innerHTML;
+	var user = sessionStorage.getItem('username');
+	var formData = new FormData();
+	
+	
 	
 	var existingNode = document.getElementById("message" + p);	
 	var div = document.createElement("div");
-	var textarea = document.createElement("textarea");
+	var replyText = document.createElement("textarea");
 	var form = document.createElement("form");
 	var span1 = document.createElement("span");
 	var span2 = document.createElement("span");
@@ -198,9 +207,9 @@ function replyClicked1(p){
 	var btnUpload = document.createElement("button");
 	var btnCancel = document.createElement("button");
 	
-	textarea.setAttribute("id", "msg-txt");
-	textarea.setAttribute("name", "msg-txt");
-	textarea.setAttribute("onkeypress", "onTextChange()");
+	replyText.setAttribute("id", "msg-txt");
+	replyText.setAttribute("name", "msg-txt");
+	replyText.setAttribute("onkeypress", "onTextChange()");
 	
 	form.setAttribute("id", "output1");
 	form.setAttribute("action", "upload");
@@ -223,20 +232,67 @@ function replyClicked1(p){
 	btnCancel.setAttribute('onclick', 'cancel()');
 	
 	
-	// build the element hierarchy
-	div.appendChild(textarea);	
+	// build the element hierarchy and add to page
+	div.appendChild(replyText);	
 	div.appendChild(form);
 	form.appendChild(p);
 	p.appendChild(span1);
 	p.appendChild(span2);
 	span1.appendChild(btnUpload);
 	span2.appendChild(btnCancel);
-	
-	//existingNode.parentNode.appendChild(div);
 	existingNode.parentNode.insertBefore(div, existingNode.nextSibling);
 	
+	//alert(user);
+	notifyMessageClicked(user, date);
+	
+	/*
+	formData.append("code", "3");
+	formData.append("user", (sender.innerHTML).slice(0,20)); 
+	formData.append("sender", user.slice(0,20));
+	formData.append("message", replyText.value);
+	formData.append("date", date); 
+	
+    $.ajax({
+	    url: 'UserServlet', 	// point to server-side 
+	    dataType: 'text',  		// what to expect back from the server, if anything
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    data: formData,                         
+	    type: 'post',
+	    success: function(response){
+	       			alert("file uploaded successfully!" + response); 
+    			}
+ 	});
+	*/
 }
 
+
+/*********************************************************************************
+*	this function notify the server that the message with 'user' and 'data'
+*	was clicked
+*********************************************************************************/
+function notifyMessageClicked(user, date){
+	var formData = new FormData();
+	formData.append("code", "3");
+	formData.append("user", user.slice(0,20)); 
+	formData.append("sender", "");
+	formData.append("message", "");
+	formData.append("date", date); 
+    $.ajax({
+	    url: 'UserServlet', 	// point to server-side 
+	    dataType: 'text',  		// what to expect back from the server, if anything
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    data: formData,                         
+	    type: 'post',
+	    success: function(response){
+	       			alert("message clicked"); 
+    			}
+	});
+
+}
 
 
 /*********************************************************************************
@@ -342,6 +398,26 @@ function edit(){
 *********************************************************************************/
 function upload(){
 	let arr = [];
+	var ckbx = document.getElementById("output").getElementsByTagName("input");
+	var images = document.getElementById("output").getElementsByTagName("img");
+	for (var i=0; i<ckbx.length; i++) {
+  		if( ckbx[i].checked == Boolean(true) ){
+  			arr.push(images[i]);
+  			//alert("array at:" + i + " = " + images[i].name);
+  		}
+	}
+	//sendImages(arr);
+	sendMessage1(arr);
+}
+
+
+/*********************************************************************************
+*	this function cretaes a JSON object of 'Message' type,  iterate over all images, 
+*	checked if chosen and sent to server
+*********************************************************************************/
+function uploadMessage(number){
+	let arr = [];
+	var msg = document.getElementById('message' + number).value;
 	var ckbx = document.getElementById("output").getElementsByTagName("input");
 	var images = document.getElementById("output").getElementsByTagName("img");
 	for (var i=0; i<ckbx.length; i++) {

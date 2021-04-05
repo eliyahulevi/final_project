@@ -8,6 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import database.DB;
 import model.users.*;
 
@@ -43,12 +48,24 @@ public class RegisterServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		
+		Gson gson = new Gson();
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonElement;
 		 String line = null;
 		 String[] values = null;
 		 try 
 		 {
 			 BufferedReader reader = request.getReader();
+			 
+			if (( line = reader.readLine()) != null) 
+			{
+				System.out.println(line);
+				jsonElement = jsonParser.parse(line);
+				User user = gson.fromJson(jsonElement, User.class);
+				db.insertUser(user, false);
+			}
+			 
+			 /*
 			 while ((line = reader.readLine()) != null)
 			 {
 				 values  = getValues(line, 5);
@@ -68,6 +85,8 @@ public class RegisterServlet extends HttpServlet
 				response.getWriter().write("1");
 			else
 				response.getWriter().write("0");
+				
+			*/
 		 } 
 		 
 		 catch (Exception e) 
