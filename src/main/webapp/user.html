@@ -19,25 +19,32 @@
 <!-- navigation bar -->
 <div class="container">
 	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="col-sm-2"><a class="navbar-brand" href="index.html">Home</a></div>
+		<div class="row">
+			<div class="col-sm-4"><a class="navbar-brand" href="index.html">Home</a></div>
 		
-		<div class="col-sm-6" align="center">
-			<ul class="nav navbar-nav">
-				<li><a href="#projects">Projects</a></li>
-				<li><a href="#orders">Orders</a></li>
-				<li><a href="#messages">Messages</a></li>
-				<li><a href="#personal">Personal Details</a></li>
-			</ul>
+			<div class="col-sm-4" align="center">
+				<ul class="nav navbar-nav">
+					<li><a href="#projects">Projects</a></li>
+					<li><a href="#orders">Orders</a></li>
+					<li><a href="#messages">Messages</a></li>
+					<li><a href="#personal">Personal Details</a></li>
+				</ul>
+			</div>
+		
+			<div class="col-sm-4" style="text-align: right; ">
+					you're connected as:
+					<a href="#personal" id="user-details-header" style="display: inline-block;"></a>
+					<a href="" id="user-sign-out">sign out</a>
+				<ul class="nav navbar-nav">
+					<li>
+						<div class="row">
+
+						</div>
+					</li>
+					
+				</ul>
+			</div>
 		</div>
-		
-		<div class="col-sm-4">
-			<ul class="nav navbar-nav navbar-right">
-				<!-- li><a href="../navbar/">Default</a></li>
-				<li><a href="../navbar-static-top/">Static top</a></li -->
-				<li><a style="display: inline-block">hello</a><a href="" id="user-details-header" style="display: inline-block"></a></li>
-			</ul>
-		</div>
-		
 	</nav>
 </div>
 <!-- /navigation bar -->
@@ -162,15 +169,29 @@
 	</div>
 	
 	<!-- /orders -->
-	
+
 	<!-- messages -->
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
-	
+  		<div class="container">
+  			<div class="row">
+			    <div class="col-sm-3" >
+			    	<div class="row"><label>users</label></div>
+			    	<div class="row"><select id="users-list" onchange="onSenderChosen()" style="width:90%;" multiple></select></div>
+			    </div>
+			    <div class="col-sm-9" id="">
+				    <div class="row"><label>messages</label></div>
+				    <div class="row">
+		    			<form id="msg-display" class="msg-form">
+							<!--  button id="add-msg" onclick="addMessage()">add message</button -->
+							<button id="add-msg1" onclick="addMessage()">add message</button>
+						</form>
+				    </div>
+			    </div>
+	  		</div>  		
+  		</div>
 	<div class="container">
-		<form id="msg-display" class="msg-form">
-			<!--  button id="add-msg" onclick="addMessage()">add message</button -->
-			<button id="add-msg1" onclick="addMessage()">add message</button>
-		</form>
+
+
 	</div>
 	<span style="display:inline-block;">
 		<a href="#messages" onclick="showMsgText()"> user(send message)</a>

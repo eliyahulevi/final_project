@@ -69,8 +69,11 @@ function loadUserMessages(){
         success: function(response){ 
         			var messages = JSON.parse(response);      			
 		            var form = document.getElementById("msg-display");
+		            var users_list = document.getElementById("users-list");
 		            for(var i = 0; i < messages.length; i++){
-		            	var msg = addMessage(messages[i]);
+		            	var msg = createMessage(messages[i]);
+		            	var sender = createSender(messages[i]);
+		            	users_list.add(sender);
 		            	form.appendChild(msg);
 		            }
         		}
@@ -78,10 +81,34 @@ function loadUserMessages(){
 }
 
 
+
+/*********************************************************************************
+*	this function load all message of a specific 'sender' (user)
+*********************************************************************************/
+function onSenderChosen(){
+	alert();
+
+}
+
+
+/*********************************************************************************
+*	this function takes a message in JSON format and create an option 'sender'
+*********************************************************************************/
+function createSender(jMessage){
+
+	var result = document.createElement("option");
+	var message = JSON.parse(jMessage);
+	result.value = message.sender;
+	result.innerHTML = message.sender;
+	return result;
+}
+
+
+
 /*********************************************************************************
 *	this function takes a message in JSON format and create a message element
 *********************************************************************************/
-function addMessage(jsonMessage){
+function createMessage(jsonMessage){
 	
 	var message = JSON.parse(jsonMessage);
 	var user = message.user;
