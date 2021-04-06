@@ -1,6 +1,8 @@
-/**
- *  handles registration of a new user/wjatever
- */
+/********************** 	handles user page messages ***************************
+ *  
+ *	handles registration of a new user/whatever
+ *
+ ********************************************************************************/
 
 
 
@@ -14,23 +16,8 @@ function regNewUser(){
 	var address = document.getElementById("reg-address").value;
 	var requestString = JSON.stringify({ "name": name, "password": password, "nickname": nickname, "email": email, "address": address });
 	alert("requestString:" + requestString);
+	window.location.replace("/final-project/user.html");
 	
-	/*
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'RegisterServlet', true);
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(requestString);	
-	xhr.onreadystatechange = function() {
-	
-		if (xhr.readyState == 4) {
-			
-			var data = xhr.responseText;
-			//alert("response from servlet: " + data);
-			//var response = ""; 
-			if (data == "1")  helloUser(name);			
-		}
-	}
-	*/
 	
     $.ajax({
 	    url: 'RegisterServlet', 	// point to server-side 
@@ -41,11 +28,23 @@ function regNewUser(){
 	    data: requestString,                         
 	    type: 'post',
 	    success: function(response){
-	       			alert("user: " + name + " registered successfully!"); 
+	       			//alert("user: " + name + " registered successfully!"); 
+	       			//onUserLogin(name, password, nickname, email, address);
     			}
  	});
 }
 
 
+function onUserLogin(name, password, nickname, email, address){
+	
+	sessionStorage.setItem('username', name);
+	sessionStorage.setItem('password', password);
+	sessionStorage.setItem('nickname', nickname);
+	sessionStorage.setItem('email', email);
+	sessionStorage.setItem('phone', phone);
+	sessionStorage.setItem('address', address);
+	window.location.replace("/final-project/user.html");
+	alert();
+}
 
 

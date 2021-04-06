@@ -32,7 +32,7 @@ function login(){
 		if (xhr.readyState == 4) {			
 			var data = xhr.responseText;
 			if (data != "") {
-				onUserLogin(data);
+				onSuccess(data);
 			}	
 			else alert("no user found!");		
 		}
@@ -40,10 +40,12 @@ function login(){
 }
 
 
-function onUserLogin(user_data){
-	
-	var user = JSON.parse(user_data);
-	alert(user_data);
+/*********************************************************************************
+*	this function handles on successful login event
+*********************************************************************************/
+function onSuccess(data){
+
+	var user = JSON.parse(data);
 	sessionStorage.setItem('username', user.username);
 	sessionStorage.setItem('password', user.password);
 	sessionStorage.setItem('nickname', user.nickname);
@@ -51,7 +53,5 @@ function onUserLogin(user_data){
 	sessionStorage.setItem('phone', user.phone);
 	sessionStorage.setItem('address', user.address);
 	window.location.replace("/final-project/user.html");
-	
 }
-
 
