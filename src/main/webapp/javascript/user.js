@@ -46,21 +46,6 @@ function onTextChange(){
 }
 
 
-
-/*********************************************************************************
-*	this function get a message in JSON format, parse it and displays
-*********************************************************************************/
-function addMessage(msg){
-	message = JSON.parse(msg);
-	var name = 	message.username;
-	var password = document.getElementById("pt-password").value;
-	var nickname = document.getElementById("pt-nickname").value;
-	var email = document.getElementById("pt-email").value;
-	var address = document.getElementById("pt-address").value;
-	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
-}
-
-
 /*********************************************************************************
 *	this function sends the updated user details to the server
 *********************************************************************************/
@@ -85,7 +70,7 @@ function loadUserMessages(){
         			var messages = JSON.parse(response);      			
 		            var form = document.getElementById("msg-display");
 		            for(var i = 0; i < messages.length; i++){
-		            	var msg = addMessage1(messages[i]);
+		            	var msg = addMessage(messages[i]);
 		            	form.appendChild(msg);
 		            }
         		}
@@ -96,7 +81,7 @@ function loadUserMessages(){
 /*********************************************************************************
 *	this function takes a message in JSON format and create a message element
 *********************************************************************************/
-function addMessage1(jsonMessage){
+function addMessage(jsonMessage){
 	
 	var message = JSON.parse(jsonMessage);
 	var user = message.user;
@@ -104,7 +89,7 @@ function addMessage1(jsonMessage){
 	var date = message.date;
 	var msg_text = message.message;
 	var msgCount = 0;
-	//alert(message.message);
+
 	var frame = document.createElement("div");
 	var userTag = document.createElement("a");
 	var replyUser = document.createElement("a");
@@ -125,8 +110,6 @@ function addMessage1(jsonMessage){
 	spanEnd.innerHTML = " on " + date;
 	spanEnd.setAttribute("id", 'date' + msgCount );
 	
-	//msg.innerHTML = msg_text;
-	
 	userTag.setAttribute("id", 'user' + msgCount);
 	userTag.setAttribute("href", '#user' + msgCount);
 	userTag.innerHTML = sender;
@@ -137,12 +120,15 @@ function addMessage1(jsonMessage){
 	replyUser.innerHTML = " reply";
 	
 	span.appendChild(userTag);
-	reply.appendChild(replyUser);
+	if(user == "admin" ){
+		reply.appendChild(replyUser);
+		p.appendChild(reply);
+	}
 	
 	p.appendChild(spanStart);
 	p.appendChild(span);
 	p.appendChild(spanEnd);
-	p.appendChild(reply);
+	
 
 	frame.setAttribute("class", "message");
 	frame.setAttribute("id", "message" + msgCount);
