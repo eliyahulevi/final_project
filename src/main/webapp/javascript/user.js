@@ -41,7 +41,7 @@ function onTextChange(){
 	
 	var key = window.event.keyCode;
 	if (key === 13) {
-        alert('enter');
+        upload();
     }  
 }
 
@@ -73,11 +73,32 @@ function loadUserMessages(){
 		            for(var i = 0; i < messages.length; i++){
 		            	var msg = createMessage(messages[i]);
 		            	var sender = createSender(messages[i]);
-		            	users_list.add(sender);
+		            	if(!userExist(sender.value) ){
+		            		users_list.add(sender);
+	            		}
 		            	form.appendChild(msg);
 		            }
         		}
      });
+}
+
+
+/*********************************************************************************
+*	this function search for a specific user name 'sender' in the user select 
+*	drop-down menu
+*********************************************************************************/
+function userExist(user){
+	var result = false;
+	var users = document.getElementById('users-list');
+	var len = users.length;
+	for(var i = 0; i < len; i++){
+		if(users[i].value == user){
+			alert(users[i]);
+			result = true;
+			break;
+		}
+	}	
+	return result;
 }
 
 
@@ -87,7 +108,6 @@ function loadUserMessages(){
 *********************************************************************************/
 function onSenderChosen(){
 	alert();
-
 }
 
 
