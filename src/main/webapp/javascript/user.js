@@ -116,9 +116,9 @@ function onSenderChosen(){
 *********************************************************************************/
 function createSender(jMessage){
 
-	var result = document.createElement("option");
-	var message = JSON.parse(jMessage);
-	result.value = message.sender;
+	var result 	  = document.createElement("option");
+	var message   = JSON.parse(jMessage);
+	result.value  = message.sender;
 	result.innerHTML = message.sender;
 	return result;
 }
@@ -130,31 +130,33 @@ function createSender(jMessage){
 *********************************************************************************/
 function createMessage(jsonMessage){
 	
-	var message = JSON.parse(jsonMessage);
-	var user = message.user;
-	var sender = message.sender;
-	var date = Number(message.date);
-	var clicked = message.clicked;
-	var msg_text = message.message;
-	var msgCount = 0;
-
-	var frame = document.createElement("div");
-	var userTag = document.createElement("a");
+	var message   = JSON.parse(jsonMessage);
+	var user 	  = message.user;
+	var sender	  = message.sender;
+	var date 	  = Number(message.date);
+	var clicked   = message.clicked;
+	var msg_text  = message.message;
+	var msgCount  = 0;
+	
+	var frame 	  = document.createElement("div");
+	var userTag   = document.createElement("a");
 	var replyUser = document.createElement("a");
-	var p = document.createElement("p");
-	var span = document.createElement("span");
+	var p 		  = document.createElement("p");
+	var span 	  = document.createElement("span");
 	var spanStart = document.createElement("span");
-	var spanEnd = document.createElement("span");
-	var reply = document.createElement("span");
-	var msg = document.createElement("p");	
-	var clkd = document.createElement("p");
-	var messages = document.getElementsByClassName('message');
+	var spanEnd   = document.createElement("span");
+	var reply 	  = document.createElement("span");
+	var msg       = document.createElement("p");	
+	var clkd      = document.createElement("a");
+	var messages  = document.getElementsByClassName('message');
+	
 		
-		
-	//alert(clicked);
+	alert(clicked);
 	for(var i = 0; i < messages.length; i++){	
 		msgCount++;
 	}
+	
+	sessionStorage.setItem('messageRealTime' + msgCount, date);	
 	
 	clkd.setAttribute('id', 'clicked' + msgCount);
 	clkd.setAttribute('style', 'visibility:hidden;');
@@ -203,8 +205,32 @@ function createMessage(jsonMessage){
 *********************************************************************************/
 function messageClicked(p){
 	var click = document.getElementById('clicked' + p);
-	var msg = document.getElementById('message' + p);
-	msg.setAttribute('style', 'background-color: #ffffff;');
+	var user = sessionStorage.getItem('username');
+	var date = sessionStorage.getItem('messageRealTime' + p)
+	var formData = new FormData();
+	
+	if(click.innerHTML == 'false'){
+		formData.append("code", "3");
+		formData.append("user", user.slice(0,20)); 
+		formData.append("sender", user.slice(0,20));
+		formData.append("message", "");
+		formData.append("date", date); 
+		
+	    $.ajax({
+		    url: 'UserServlet', 	// point to server-side 
+		    dataType: 'text',  		// what to expect back from the server, if anything
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+		    data: formData,                         
+		    type: 'post',
+		    success: function(response){
+       					var msg = document.getElementById('message' + p);
+						msg.setAttribute('style', 'background-color: #ffffff;');
+						click.innerHTML = 'true';
+	    			}
+	 	});
+ 	}
 }
 
 
@@ -432,9 +458,10 @@ function edit(){
 *	this function iterate over all images, checked if chosen and sent to server
 *********************************************************************************/
 function upload(){
-	let arr = [];
-	var ckbx = document.getElementById("output").getElementsByTagName("input");
-	var images = document.getElementById("output").getElementsByTagName("img");
+	var formData	  = new FormData();		
+	let arr 		  = [];
+	var ckbx 		  = document.getElementById("output").getElementsByTagName("input");
+	var images 		  = document.getElementById("output").getElementsByTagName("img");
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
@@ -451,10 +478,10 @@ function upload(){
 *	checked if chosen and sent to server
 *********************************************************************************/
 function uploadMessage(number){
-	let arr = [];
-	var msg = document.getElementById('message' + number).value;
-	var ckbx = document.getElementById("output").getElementsByTagName("input");
-	var images = document.getElementById("output").getElementsByTagName("img");
+	let arr 		 = [];
+	var msg 		 = document.getElementById('message' + number).value;
+	var ckbx 		 = document.getElementById("output").getElementsByTagName("input");
+	var images 		 = document.getElementById("output").getElementsByTagName("img");
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
@@ -573,11 +600,11 @@ function createCheckedImage(source, name){
 *********************************************************************************/
 function loadUserDetails(){
 	
-	let name = sessionStorage.getItem('username');
-	let password = sessionStorage.getItem('password');
-	let nickname = sessionStorage.getItem('nickname');
-	let email = sessionStorage.getItem('email');
-	let address = sessionStorage.getItem('address');
+	let name	   = sessionStorage.getItem('username');
+	let password   = sessionStorage.getItem('password');
+	let nickname   = sessionStorage.getItem('nickname');
+	let email      = sessionStorage.getItem('email');
+	let address	   = sessionStorage.getItem('address');
 	
 	alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
 	document.getElementById("user-details-header").innerHTML = name;
@@ -605,16 +632,20 @@ function loadUserDetails(){
 *********************************************************************************/
 function loadUsers(){
 
-	const obj = {data: ''};
+	const obj	   = {data: ''};
 	var selectList = document.getElementById("users");
-	var blob = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
-	var form_data = new FormData();
-	form_data.append("code", "0");
-	form_data.append("user", "test");
-	form_data.append("sender", ""); 
-	form_data.append("message", "");
-	form_data.append("image", blob);
-	form_data.append("date", "");
+	var blob	   = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
+	var formData   = new FormData();
+	var date	   = new Date();
+	
+	formData.append("code", "0");
+	formData.append("user", "test");
+	formData.append("sender", ""); 
+	formData.append("message", "");
+	formData.append("image", blob);
+	formData.append("date", date.getTime());
+	
+	alert(date.getTime());
 	
 	/*
 	for (var value of form_data.values()) {
@@ -627,7 +658,7 @@ function loadUsers(){
         cache: false,
         contentType: false,
         processData: false,
-        data: form_data,                         
+        data: formData,                         
         type: 'post',
         success: function(data){
         			
@@ -723,21 +754,21 @@ function sendMessage(){
 *********************************************************************************/
 function sendMessage1(images){
 
-	var msg = document.getElementById("msg-txt").value;
-	var usrs = document.getElementById("users");
-	var usr = usrs.options[usrs.selectedIndex].text;
-	var sender = sessionStorage.getItem('username');
-	var date = new Date();
-	var clicked = false;
-	var form_data = new FormData();
+	var msg 	  = document.getElementById("msg-txt").value;
+	var usrs 	  = document.getElementById("users");
+	var usr  	  = usrs.options[usrs.selectedIndex].text;
+	var sender	  = sessionStorage.getItem('username');
+	var date	  = new Date();
+	var clicked   = false;
+	var formData  = new FormData();
 	
-
-	form_data.append("code", "1");
-	form_data.append("sender", sender.slice(0,20)); 
-	form_data.append("user", usr.slice(0,20));
-	form_data.append("message", msg);
-	form_data.append("date", date);
-	form_data.append("clicked", clicked);
+	alert(date.getTime());
+	formData.append("code", "1");
+	formData.append("sender", sender.slice(0,20)); 
+	formData.append("user", usr.slice(0,20));
+	formData.append("message", msg);
+	formData.append("date", date.getTime());
+	formData.append("clicked", clicked);
 	
 	if( images.length > 0){
 		for(var i = 0; i < images.length; i++){
@@ -751,7 +782,7 @@ function sendMessage1(images){
 	    cache: false,
 	    contentType: false,
 	    processData: false,
-	    data: form_data,                         
+	    data: formData,                         
 	    type: 'post',
 	    success: function(response){
 	       			alert("file uploaded successfully!" + response); 
