@@ -134,6 +134,8 @@ function createMessage(jsonMessage){
 	var user = message.user;
 	var sender = message.sender;
 	var date = message.date;
+	
+	var dateString = new Date(1617791055071);
 	var msg_text = message.message;
 	var msgCount = 0;
 
@@ -147,14 +149,13 @@ function createMessage(jsonMessage){
 	var reply = document.createElement("span");
 	var msg = document.createElement("p");	
 	var messages = document.getElementsByClassName('message');
-	
 		
 	for(var i = 0; i < messages.length; i++){	
 		msgCount++;
 	}
 	
 	spanStart.innerHTML = msg_text;
-	spanEnd.innerHTML = " on " + date;
+	spanEnd.innerHTML = " on " + dateString.toString();
 	spanEnd.setAttribute("id", 'date' + msgCount );
 	
 	userTag.setAttribute("id", 'user' + msgCount);
@@ -163,19 +164,19 @@ function createMessage(jsonMessage){
 	
 	replyUser.setAttribute("id", 'user-reply' + msgCount);
 	replyUser.setAttribute("href", '#reply' + msgCount);
-	replyUser.setAttribute("onclick", 'replyClicked1(' + msgCount + ')' );
+	replyUser.setAttribute("onclick", 'replyClicked(' + msgCount + ')' );
 	replyUser.innerHTML = " reply";
 	
 	span.appendChild(userTag);
-	if(user == "admin" ){
-		reply.appendChild(replyUser);
-		p.appendChild(reply);
-	}
 	
 	p.appendChild(spanStart);
 	p.appendChild(span);
 	p.appendChild(spanEnd);
 	
+	if(user == "admin" ){
+		reply.appendChild(replyUser);
+		p.appendChild(reply);
+	}
 
 	frame.setAttribute("class", "message");
 	frame.setAttribute("id", "message" + msgCount);
@@ -201,7 +202,7 @@ function messageClicked(p){
 *	area is being added to page under the chosen message and 'message clicked' 
 *	is sent
 *********************************************************************************/
-function replyClicked1(p){
+function replyClicked(p){
 	var count = p;
 	var sender = document.getElementById('user' + count);
 	var date = document.getElementById('date' + count).innerHTML;
