@@ -83,7 +83,7 @@ public class DB
 			+ "SENDER varchar(20),"
 			+ "USERNAME varchar(20),"
 			+ "CONTENT varchar(500),"
-			+ "DATE varchar(20),"
+			+ "DATE bigint,"
 			+ "IMAGE BLOB,"
 			+ "CLICKED boolean"
 			+ ")";
@@ -479,13 +479,10 @@ public class DB
  	public void insertUser(User user, boolean first) 
 	{
  		int rs = -1;
+ 		long time = System.currentTimeMillis();
  		PreparedStatement state = null;
- 		Message message = new Message("admin", user.getName(), Message.WELCOME, LocalTime.now().toString(), null);
-		String dateString = "";
-		LocalTime date = LocalTime.now();
-		if (!first)
-			dateString = date.toString(); 
-				
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null);
+ 		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
 			// connect to db
@@ -658,7 +655,7 @@ public class DB
 			
 			map.put("user", message.getUser());
 			map.put("sender", message.getSender());
-			map.put("date", message.getDate());
+			map.put("date", Long.toString(message.getDate()));
 			map.put("message", message.getMessage());	
 			map.put("clicked", String.valueOf(message.getClicked()));
 			if(blob == null)
@@ -705,7 +702,7 @@ public class DB
 				message.setSender(rs.getString(2));				// sender
 				message.setUser(rs.getString(3));				// user
 				message.setMessage(rs.getString(4));			// message content
-				message.setDate(rs.getString(5));				// date
+				message.setDate(rs.getLong(5));					// date
 				message.setImage(rs.getBlob(6));				// image source
 				message.setClicked(rs.getBoolean(7));			// clicked
 				
@@ -755,7 +752,7 @@ public class DB
 			ps.setString(2, message.getSender());
 			ps.setString(3, message.getUser());
 			ps.setString(4, message.getMessage());
-			ps.setString(5, message.getDate());
+			ps.setLong(5, message.getDate());
 			ps.setBlob(6, message.getImage());
 			ps.setBoolean(7, message.getClicked());
 			ps.execute();
@@ -784,7 +781,7 @@ public class DB
 	/*
 	 * 	update 'message' clicked field
 	 */
-	public int messageClicked(String user, String date)
+	public int messageClicked(String user, long date)
 	{
 		int result = -1;
 		PreparedStatement ps = null;

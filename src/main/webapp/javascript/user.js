@@ -50,14 +50,14 @@ function onTextChange(){
 *	this function sends the updated user details to the server
 *********************************************************************************/
 function loadUserMessages(){
-
+		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "2");
 		formdata.append("user", sessionStorage.getItem('username'));
 		formdata.append("sender", ""); 
 		formdata.append("message", "");
 		formdata.append("image", "");
-		formdata.append("date", new Date());
+		formdata.append("date", date);
 	    $.ajax({
         url: 'UserServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
@@ -133,9 +133,8 @@ function createMessage(jsonMessage){
 	var message = JSON.parse(jsonMessage);
 	var user = message.user;
 	var sender = message.sender;
-	var date = message.date;
+	var date = Number(message.date);
 	var clicked = message.clicked;
-	var dateString = new Date(date.toString());
 	var msg_text = message.message;
 	var msgCount = 0;
 
@@ -162,7 +161,7 @@ function createMessage(jsonMessage){
 	clkd.innerHTML = clicked;
 	
 	spanStart.innerHTML = msg_text;
-	spanEnd.innerHTML = " on " + dateString;
+	spanEnd.innerHTML = " on " + new Date(date);
 	spanEnd.setAttribute("id", 'date' + msgCount );
 	
 	userTag.setAttribute('id', 'user' + msgCount);
