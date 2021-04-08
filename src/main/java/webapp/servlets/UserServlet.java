@@ -191,6 +191,8 @@ public class UserServlet extends HttpServlet
 		String sender = request.getParameter("sender");
 		String msg = request.getParameter("message");
 		String date = request.getParameter("date");
+		//boolean clicked = Boolean.parseBoolean(request.getParameter("clicked"));
+		
 		byte[] data = null;
 		try 
 		{
