@@ -1,9 +1,14 @@
-/**
- *  handles registration of a new user/wjatever
- */
+/********************** 	handles user page messages ***************************
+ *  
+ *	handles registration of a new user/whatever
+ *
+ ********************************************************************************/
 
 
 
+/*********************************************************************************
+ *	this function fires up upon registration form submission
+ ********************************************************************************/
 function regNewUser(){
 	
 	// get users info from form
@@ -12,25 +17,43 @@ function regNewUser(){
 	var nickname = document.getElementById("reg-nick-name").value;
 	var email = document.getElementById("reg-email").value;
 	var address = document.getElementById("reg-address").value;
-	var requestString = 'name=' + name + ',password=' + password + ",nickname=" + nickname + ",email=" + email + ",address=" + address;
-	alert("requestString:" + requestString);
+	var requestString = JSON.stringify({ "name": name, "password": password, "nickname": nickname, "email": email, "address": address });
 	
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'RegisterServlet', true);
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(requestString);	
-	xhr.onreadystatechange = function() {
-	
-		if (xhr.readyState == 4) {
-			
-			var data = xhr.responseText;
-			//alert("response from servlet: " + data);
-			//var response = ""; 
-			if (data == "1")  helloUser(name);			
-		}
-	}
+    $.ajax({
+	    url: 'RegisterServlet', 	// point to server-side 
+	    dataType: 'text',  		// what to expect back from the server, if anything
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    data: requestString,                         
+	    type: 'post',
+	    success: function(response){
+	       			//alert("user: " + name + " registered successfully!"); 
+	       			onUserRegistration(name, password, nickname, email, address);
+    			}
+ 	});
 }
 
 
+/********************************************************************************
+ *	this function fires up upon successful registration, clean session storage
+ *	 and redirect to user page, with user details
+ ********************************************************************************/
+function onUserRegistration(name, password, nickname, email, address){
+	
+	sessionStorage.removeItem('username');
+	sessionStorage.removeItem('password');
+	sessionStorage.removeItem('nickname');
+	sessionStorage.removeItem('email');
+	sessionStorage.removeItem('phone');
+	sessionStorage.removeItem('address');
+	
+	sessionStorage.setItem('username', name);
+	sessionStorage.setItem('password', password);
+	sessionStorage.setItem('nickname', nickname);
+	sessionStorage.setItem('email', email);
+	sessionStorage.setItem('address', address);
+	window.location.replace("/final-project/user.html");
+}
 
 

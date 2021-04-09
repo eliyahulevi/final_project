@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>user page 3</title>
+<title>user</title>
 
   	<link rel="stylesheet" type="text/css" href="css/user.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -19,25 +19,32 @@
 <!-- navigation bar -->
 <div class="container">
 	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="col-sm-2"><a class="navbar-brand" href="#">Home</a></div>
+		<div class="row">
+			<div class="col-sm-4"><a class="navbar-brand" href="index.html">Home</a></div>
 		
-		<div class="col-sm-6" align="center">
-			<ul class="nav navbar-nav">
-				<li><a href="#projects">Projects</a></li>
-				<li><a href="#orders">Orders</a></li>
-				<li><a href="#messages">Messages</a></li>
-				<li><a href="#personal">Personal Details</a></li>
-			</ul>
+			<div class="col-sm-4" align="center">
+				<ul class="nav navbar-nav">
+					<li><a href="#projects">Projects</a></li>
+					<li><a href="#orders">Orders</a></li>
+					<li><a href="#messages">Messages</a></li>
+					<li><a href="#personal">Personal Details</a></li>
+				</ul>
+			</div>
+		
+			<div class="col-sm-4" style="text-align: right; ">
+					you're connected as:
+					<a href="#personal" id="user-details-header" style="display: inline-block;"></a>
+					<a href="" id="user-sign-out">sign out</a>
+				<ul class="nav navbar-nav">
+					<li>
+						<div class="row">
+
+						</div>
+					</li>
+					
+				</ul>
+			</div>
 		</div>
-		
-		<div class="col-sm-4">
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="../navbar/">Default</a></li>
-				<li><a href="../navbar-static-top/">Static top</a></li>
-				<li><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
-			</ul>
-		</div>
-		
 	</nav>
 </div>
 <!-- /navigation bar -->
@@ -162,50 +169,122 @@
 	</div>
 	
 	<!-- /orders -->
-	
-	<!-- messages -->
 
+	<!-- messages -->
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
-			<a data-target="#send-Message-Modal" data-toggle="modal" href="#send-Message-Modal"> user(send message)</a>
+			<a href="#messages" onclick="showMsgText()"> user</a>
 			<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
 		</span>
 		<span style="float:right; padding:10px; padding-right:100px; ">
 			<a href="#file" onclick="showFileLoad()">load images</a>
 		</span>
-	</p>	
-	
-	<div class="container" id="file-upload-area" style="display:none;">
-	<form>
-		<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
-	</form>
-		
+  		<div class="container">
+  			<div class="row">
+			    <div class="col-sm-3" >
+			    	<div class="row"><label>users</label></div>
+			    	<div class="row"><select id="users-list" onchange="onSenderChosen()" style="width:90%;" multiple></select></div>
+			    </div>
+			    <div class="col-sm-9" id="">
+				    <div class="row"><label>messages</label></div>
+				    <div class="row">
+		    			<form id="msg-display" class="msg-form">
+						</form>
+				    </div>
+			    </div>
+	  		</div>  		
+  		</div>
+	<div class="container">
+
+
 	</div>
-	<output id="output">
-	</output>
-	
-	<p>
-		<span style="display:inline-block;">
-			<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
-		</span>
-		<span style="float:right; padding-right:100px; ">
-			<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
-		</span>
+
 		
-	</p>
+	<!-- upload files -->
+	<div class="container" id="file-upload-area" style="display:none;">
+		<form>
+			<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
+		</form>	
+	</div>
+	
+	<!-- write message text -->
+	<div class="container" id="msg-text-upload">
+	
+		<p>user</p>
+       	<select name="users" id="users"></select>
+		<textarea id="msg-txt" name="msg-txt" onkeypress="onTextChange()" placeholder="enter text here..."></textarea>		
+		
+		<form id="output" action="upload" method="post" enctype="multipart/form-data">
+			<p>
+				<span style="display:inline-block;">
+					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
+				</span>
+				<span style="float:right; padding-right:0px; ">
+					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
+				</span>		
+			</p>
+		</form>	
+	</div>
+
+
+
 	<div></div>
 	<!-- /messages -->
 	
 	<!-- personal detail -->
-	<p></p>
-	<p id="personal"><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal"> edit</a>
-	
-		<div class="card-personal">
-		<img src="img_avatar.png" alt="Avatar" style="width:100%">
-		  <div class="container">
-		    <h4><b>John Doe</b></h4> 
-		    <p>Architect & Engineer
+	<p>
+	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a>
+		<div class="container" id="personal">
+
+		<form>
+		  <div class="form-row">
+		    <div class="form-group col-md-6">
+		      <label for="user-name" >User name</label>
+		      <input type="email" class="form-control" id="pt-user-name"  style="display:inline;">
+		    </div>
+		    <div class="form-group col-md-6">
+		      <label for="pt-password">Password</label>
+		      <input type="password" class="form-control" id="pt-password" >
+		    </div>
 		  </div>
+		  <div class="form-row">
+		  <div class="form-group col-md-6">
+		    <label for="pt-nickname">Nickname</label>
+		    <input type="text" class="form-control" id="pt-nickname" >
+		  </div>
+		  <div class="form-group col-md-6">
+		    <label for="pt-address">Address</label>
+		    <input type="text" class="form-control" id="pt-address">
+		  </div>
+		  </div>
+		  <div class="form-row">
+		    <div class="form-group col-md-6">
+		      <label for="pt-email">E-mail</label>
+		      <input type="text" class="form-control" id="pt-email">
+		    </div>
+		    <div class="form-group col-md-4">
+		      <label for="pt-phone">Phone</label>
+		      <input type="text" class="form-control" id="pt-phone">
+		    </div>
+		    <div class="form-group col-md-2">
+		      <label for="inputZip">Zip</label>
+		      <input type="text" class="form-control" id="inputZip">
+		    </div>
+		  </div>
+			<div class="container">
+					<p>
+						<span style="display:inline-block;">
+							<button type="button" id="pt-update" class="btn btn-success" style="display:none;" onclick="pt_update()">update</button>
+						</span>
+						<span style="float:right; padding-right:0px; ">
+							<button type="button" id="pt-cancel" class="btn btn-danger" style="display:none;" onclick="pt_cancel()">cancel</button>
+						</span>		
+					</p>
+				
+		  	</div>
+
+		</form>
+		
 		</div>
 	</p>
 	

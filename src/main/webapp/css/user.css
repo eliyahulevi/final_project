@@ -1,6 +1,24 @@
 @charset "UTF-8";
 
 
+.msg-form{
+	
+	width:100%;
+	
+}
+
+textarea {
+	width: 100%;
+	resize: none;
+    padding: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+}
+
 .thumb{
   border: 1px solid #ddd; /* Gray border */
   border-radius: 4px;  /* Rounded border */
@@ -28,23 +46,19 @@ input#file {
   background-size: 60px 60px;
 }
 
-.card-personal {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-  width: 40%;
-  margin: 0 auto;
-}
-
-.card-personal:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
 
 .container {
   padding: 2px 16px;
+
 }
 
-.container {
-  padding: 2px 16px;
+
+.message{
+	width: 100%;
+	padding-right: 10px;
+	background-color: #00ff00;
+    border-radius: 5px;
+    border: 1px solid #000000;
 }
 
 .messages-icon{
@@ -61,28 +75,7 @@ body{
 .main-body {
     padding: 15px;
 }
-.card {
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-    margin: 0 auto;
-}
 
-.card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 0 solid rgba(0,0,0,.125);
-    border-radius: .25rem;
-}
-
-.card-body {
-    flex: 1 1 auto;
-    min-height: 1px;
-    padding: 1rem;
-}
 
 .gutters-sm {
     margin-right: -8px;

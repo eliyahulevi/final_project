@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -19,8 +21,11 @@ import java.sql.SQLException;
 
 import model.product.AlternativeProduct;
 import model.users.*;
+import model.message.*;
 
 import appConstants.*;
+import jdk.internal.jshell.tool.StopDetectingInputStream.State;
+
 import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +51,7 @@ public class DB
 	static String driverURL = "";
 	
 	
-	User user;
+	static User user;
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
@@ -74,11 +79,14 @@ public class DB
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
 	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
-			+ "PHOTO varchar(100) PRIMARY KEY,"
-			+ "NICKNAME varchar(20),"
-			+ "TIME timestamp,"
+			+ "USERDATE varchar(100) PRIMARY KEY,"
+			+ "SENDER varchar(20),"
+			+ "USERNAME varchar(20),"
 			+ "CONTENT varchar(500),"
-			+ "REPLYABLE char)";
+			+ "DATE bigint,"
+			+ "IMAGE BLOB,"
+			+ "CLICKED boolean"
+			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
 			+ "NAME varchar(30),"
@@ -112,30 +120,29 @@ public class DB
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[7] + "("
-			+ "IMAGE_ID int PRIMARY KEY,"
+			+ "IMAGE_NAME varchar(100) PRIMARY KEY,"
 			+ "IMG BLOB,"
-			+ "USER_NICKNAME varchar(30),"
-			+ "FOREIGN KEY (USER_NICKNAME) REFERENCES USERS(NICKNAME)" 
+			+ "USERNAME varchar(40),"
+			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 	
-	//public final String CREATE_ALT_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
-	//		+ "ORDER_ID int PRIMARY KEY,"
-	//		+ "USERNAME varchar(50)" //?
-	//		+ "TYPE varchar(10)
-	//		+ "LENGTH int"
-	//		+ "QUANTITY int";
-	
-	private String SELECT_IMAGE = 		"SELECT IMAGE FROM IMAGES WHERE";
-	private String INSERT_USER = 		"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
-	private String INSERT_USER_IMAGE = 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
-	private String SELECT_USERS = 		"SELECT * FROM USERS";
-	private String SELECT_USERS_NAMES = "SELECT USERNAME FROM USERS";
-	private String SELECT_USER		=	"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-	private String INSERT_PRODUCT = 	"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 		"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
-	private String SELECT_MAX = 		"SELECT MAX(?) FROM ? ";
+
+	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
+	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
+	private String INSERT_USER = 			"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
+	private String SELECT_USERS = 			"SELECT * FROM USERS";
+	private String SELECT_MESSAGES = 		"SELECT * FROM MESSAGES";
+	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
+	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
+	private String SELECT_ORDER = 			"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
+	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
+	//private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -179,9 +186,9 @@ public class DB
 		init();
 	}
 	
-	/*
-	 *	 private methods	
-	 */
+	/************************************************************************
+	 *	 					private class methods	
+	 ***********************************************************************/
 	private void init() 
 	{
 		int count = 0;
@@ -225,21 +232,14 @@ public class DB
 	}
 	private void createTables()
 	{
-		ResultSet rs;
-		/*
-		String[] createTables = {	CREATE_USERS_TABLE, 
-									CREATE_MESSAGE_TABLE, 
-									CREATE_CHANNEL_TABLE, 
-									CREATE_PRODUCT_TABLE,
-									CREATE_ORDER_TABLE,
-									CREATE_ORDER_PRODUCT_TABLE,
-									CREATE_USER_IMAGES_TABLE};
-		*/
+		Statement stat = null;
+		ResultSet rs = null;
+
 		try 
 		{
-			if (this.connection != null && !this.connection.isClosed())
+			if (this.connect() == 0)
 			{
-				this.statement = this.connection.createStatement();
+				stat = this.connection.createStatement();
 				DatabaseMetaData dbmd = this.connection.getMetaData();
 				
 				for (int index = 0; index < createQueryString.length; index++)
@@ -247,8 +247,8 @@ public class DB
 					rs = dbmd.getTables(null, null, tables_str[index], null);
 					if (!rs.next())
 					{
-						this.statement.executeUpdate(createQueryString[index]);
-						System.out.println("create table: " + tables_str[index]);
+						stat.executeUpdate(createQueryString[index]);
+						System.out.println("table: " + tables_str[index] + " created");
 					}
 					else
 						System.out.println("table: " + tables_str[index] + " exists");
@@ -259,43 +259,87 @@ public class DB
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try 
+			{
+				if(rs != null)
+					rs.close();
+				if(stat != null)
+					stat.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			this.disconnect();
+		}
 	}
 	private void createTable(String createTableQuery)
 	{
+		Statement stat = null;
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
 			{
-				this.statement = this.connection.createStatement();
-				this.statement.executeUpdate(createTableQuery);
+				stat = this.connection.createStatement();
+				stat.executeUpdate(createTableQuery);
 			}
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try {
+				stat.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	private void connect()
+	@SuppressWarnings("deprecation")
+	private int connect()
 	{
+		int result = -1;
         try 
         {
-        	Class.forName(DB.driverURL);
-			System.out.println("database url: " + DB.dbURL);	
+        	Class.forName(DB.driverURL).newInstance();
+			System.out.println("DB >> database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("connected to database: " + DB.dbName);	
+				System.out.println("DB >> connected to database: " + DB.dbName);	
+			result = 0;
 			
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-        	e.printStackTrace();
+        	System.out.println("\n>>DB >>  error: " + e.getMessage());
+        	if(((SQLException) e).getSQLState().equals("XJ040"))
+        	{
+        		System.out.println("DB >> db exist already");
+        		try 
+        		{
+        			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
+    				DB.dbURL = "jdbc:derby:" + "C:/final_project/ClientsDB";//DB.dbPath + ";";
+    				System.out.println("DB >> dbURL: " + DB.dbURL);
+					this.connection = DriverManager.getConnection(DB.dbURL);
+				} 
+        		catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
+        		{
+					e1.printStackTrace();
+				}
+        	}
+        	
         }
+        
+        return result;
 	}
-	private void disconnect() 
+	private int disconnect() 
 	{
+		int result = -1;
 		try 
 		{
 			if (this.connection != null && !this.connection.isClosed())
@@ -303,25 +347,27 @@ public class DB
 				try 
 				{
 					this.connection.close();
-					System.out.println("disconnect from database: " + dbName);
+					System.out.println("DB >> disconnect from database: " + dbName);
 				} 
 				catch (SQLException e) 
 				{
 					e.printStackTrace();
 				}
+				result = 0;
 			}
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
 		}
+		return result;
 	}
 	private boolean isEmpty(String tabelName)
 	{
 		int count = 0;
 		boolean result = true;
 		String queryString = "SELECT * FROM " + tabelName;
-		ResultSet rs;
+		ResultSet rs = null;
 		
 		this.connect();
 		try 
@@ -351,6 +397,12 @@ public class DB
 		}
 		finally
 		{
+			if(rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			this.disconnect();
 			System.out.println("tabel " + tabelName + " has " + count + " records");
 		}
@@ -358,14 +410,34 @@ public class DB
 		return result;
 	}
 	
-	
+	/************************************************************************
+	*	USER related code here: (insert, update, get all, etc. )
+	*************************************************************************/		
+	/*
+	 *	user to JSON format 
+	 */
+	private String user2JSON(User user)
+	{
+		String result = "";
+		
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("username", user.getName());
+		map.put("password", user.getPassword());
+		map.put("nickname", user.getNickName());
+		map.put("email", user.getEmail());
+		map.put("phone", user.getPhone());
+		map.put("address", user.getAddress());
+		
+		result = JSONValue.toJSONString(map);
+		return result;
+	}
 	/*
 	 *  get all users 
 	 */
 	public List<String> getUsersNames()
 	{
 		List<String> result = new ArrayList<String>();
-		ResultSet rs;
+		ResultSet rs = null;
 		
 		try
 		{
@@ -385,57 +457,81 @@ public class DB
 		}
 		finally
 		{
+			try 
+			{
+				if(statement != null)
+					statement.close();
+				if(rs != null)
+					rs.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 		
 		return result;
 	}
-	
 	/*
 	 *  insert a new user 
 	 */
  	public void insertUser(User user, boolean first) 
 	{
-		String dateString = "";
-		LocalTime date = LocalTime.now();
-		if (!first)
-			dateString = date.toString(); 
-				
+ 		int rs = -1;
+ 		long time = System.currentTimeMillis();
+ 		PreparedStatement state = null;
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null);
+ 		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
 			// connect to db
-			connect();
+			if (this.connect() < 0 )
+			{
+				System.out.println("DB >> cannot connect to database.. aborting");
+				return;
+			}
 			// insert user			
-			PreparedStatement state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName() + dateString);	
+			state = this.connection.prepareStatement(INSERT_USER);
+			state.setString(1, user.getName());	
 			state.setString(2, user.getPassword());		//email
 			state.setString(3, user.getNickName());		//phone
 			state.setString(4, user.getAddress());		//address
 			state.setString(5, user.getPhoto());		//photo
 			state.setString(6, user.getDescription());	//password
-			state.executeUpdate();
-			System.out.println("user " + user.getName() + " added");				
+			rs = state.executeUpdate();
+			
+			if (rs > 0)
+			{
+				this.insertMessage(message);
+				System.out.println("DB >> user " + user.getName() + " added");	
+			}
+						
 		} 
 		catch (SQLException e) 
 		{
-			if (e.getSQLState() == "42X05")
+			if (e.getSQLState().equals("42X05"))
 			{
-				System.out.println("error >> need to update table");
+				System.out.println("DB >> error >> need to update table");
 				this.createTable(CREATE_USERS_TABLE);
 				this.insertUser(user, first);
 			}
 			else if(e.getSQLState() == "23505")
-				System.out.println("warning >> user alerady exist");
+				System.out.println("DB >> warning >> user alerady exist");
 			else
 				e.printStackTrace();
 		}
 		finally
 		{
-			//disconnect
+			if(state != null)
+				try {
+					state.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			disconnect();
 		}
-	}
-	
+	}	
 	/*
 	 *  find user 
 	 */
@@ -443,12 +539,13 @@ public class DB
 	{
 		boolean result = false;
 		ResultSet res = null;
+		PreparedStatement state = null;
 				
 		try 
 		{
 			System.out.println("in db searching for user " + name + " with password " + password);
 			this.connect();
-			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
 			state.setString(2, password);		//password
 			res = state.executeQuery();
@@ -471,6 +568,17 @@ public class DB
 		}
 		finally
 		{
+			try
+			{
+				if(state != null)
+					state.close();
+				if(rs != null)
+					rs.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 				
@@ -480,12 +588,17 @@ public class DB
 	{
 		String result = "";
 		ResultSet res = null;
+		PreparedStatement state = null;
 				
 		try 
 		{
 			System.out.println("in db searching for user " + name + " with password " + password);
-			this.connect();
-			PreparedStatement state = this.connection.prepareStatement(SELECT_USER);
+			if (this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
+			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
 			state.setString(2, password);		//password
 			res = state.executeQuery();
@@ -507,32 +620,310 @@ public class DB
 		}
 		finally
 		{
+			try
+			{
+				if(state != null)
+					state.close();
+				if(res != null)
+					res.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			this.disconnect();
 		}
 				
 		return result;
 	}
 	
+	
+	/************************************************************************
+	*	MESSAGE related code here:  (insert, update, get all, etc. )
+	*************************************************************************/	
 	/*
-	/ user to JSON format 
-	*/
-	private String user2JSON(User user)
+	 *  convert message to JSON format
+	 */
+	private String message2JSON(Message message)
 	{
 		String result = "";
-		
+		Blob blob = message.getImage();
 		Map<String,String> map = new HashMap<String,String>();
-		map.put("username", user.getName());
-		map.put("password", user.getPassword());
-		map.put("nickname", user.getNickName());
-		map.put("email", user.getEmail());
-		map.put("phone", user.getPhone());
-		map.put("address", user.getAddress());
+		System.out.println("DB >> " + message.getUser());
+		try
+		{
+			
+			map.put("user", message.getUser());
+			map.put("sender", message.getSender());
+			map.put("date", Long.toString(message.getDate()));
+			map.put("message", message.getMessage());	
+			map.put("clicked", String.valueOf(message.getClicked()));
+			if(blob == null)
+				map.put("image", "");
+			else 
+				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		
 		result = JSONValue.toJSONString(map);
 		return result;
 	}
+	
+	/*
+	 *  get messages (for  a given user)
+	 */
+	public List<String> getUserMessages(String user)
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println("DB >> cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.println("DB >> getting messages for: " + user);
+			message = new Message();
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE); 
+			ps.setString(1, user);
+			rs = ps.executeQuery();
+			
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));				// sender
+				message.setUser(rs.getString(3));				// user
+				message.setMessage(rs.getString(4));			// message content
+				message.setDate(rs.getLong(5));					// date
+				message.setImage(rs.getBlob(6));				// image source
+				message.setClicked(rs.getBoolean(7));			// clicked
+				
+				String s = this.message2JSON(message);
+				// TODO: erase later
+				System.out.println("DB >> msgs: " + s);
+				result.add(s);
+			}
+		}
+		catch(Exception e)
+		{
+			this.disconnect();
+			try 
+			{
+				if(!ps.isClosed())
+					ps.close();
+				if(!rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	
+	/*
+	 *  insert user message
+	 */
+	public int insertMessage(Message message)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(this.ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			
+			ps = this.connection.prepareStatement(this.INSERT_USER_MESSAGE);
+			ps.setString(1, message.getUser() + message.getDate());
+			ps.setString(2, message.getSender());
+			ps.setString(3, message.getUser());
+			ps.setString(4, message.getMessage());
+			ps.setLong(5, message.getDate());
+			ps.setBlob(6, message.getImage());
+			ps.setBoolean(7, message.getClicked());
+			ps.execute();
+			result = 0;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try
+			{
+				if(!ps.isClosed())
+					ps.close();
+			} catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
 
-	public AlternativeProduct getOrder(int orderID) {
+	/*
+	 * 	update 'message' clicked field
+	 */
+	public int messageClicked(String user, long date)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			ps = this.connection.prepareStatement(UPDATE_TABLE_CLICKED);
+			ps.setBoolean(1, true);
+			ps.setString(2, user + date);
+			ps.execute();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null)
+					ps.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+
+	
+	
+	/************************************************************************
+	*	IMAGE related code here:  (insert, update, get all, etc. ), this 
+	*	section might by unified with MESSAGE section
+	*************************************************************************/	
+ 	public int insertImage(String imgName, String user, Blob image)
+	{
+		int result = -1;
+		int index = 0;
+		PreparedStatement insert = null;
+		PreparedStatement max = null;
+		ResultSet rs = null;
+		try
+		{
+			System.out.println("DB >> upload image");
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
+
+
+			insert = this.connection.prepareStatement(this.INSERT_USER_IMAGE);
+			insert.setString(1, imgName);
+			insert.setBlob(2, image);
+			insert.setString(3, user);
+			insert.execute();
+		}
+		catch(Exception e)
+		{
+			if(((SQLException) e).getSQLState().equals(""))
+			{
+				//TODO: handle same image name exception
+			}
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				if(rs != null)
+					rs.close();
+				if(max != null)
+					max.close();
+				if(insert != null)
+					insert.close();
+			} 
+			catch (SQLException e) 
+			{
+				System.out.println("result set failed to close");
+			}
+			this.disconnect();	
+		}
+		
+		
+		return result;
+	}
+	public byte[] getImage(String name)
+	{
+		int length = 10;
+		byte[] result = new byte[length];
+		Statement statement;
+		ResultSet rs = null;
+		try 
+		{
+			if(this.connect() < 0)
+			{
+				
+			}
+			statement = (Statement)this.connection.createStatement();
+			rs = statement.executeQuery(SELECT_IMAGE);
+			
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				if(rs != null)
+					rs.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+			this.disconnect();
+		}
+		
+		
+		
+		return result;
+	}
+	
+	
+	
+
+	
+	/************************************************************************
+	*	ORDER related code here:  (insert, update, get all, etc. )
+	*************************************************************************/	
+	
+ 	public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;
 		try 
@@ -573,79 +964,79 @@ public class DB
 		
 	}
 	
-	public int insertImage(String user, Blob image)
+	
+	
+	
+	
+	
+	/**************************************************************************
+	*								general methods
+	***************************************************************************/ 
+	
+	/*
+	 * shut down the database
+	*/
+	public int shutDown()
 	{
 		int result = -1;
-		int index = 0;
-		PreparedStatement insert;
-		PreparedStatement max;
-		ResultSet rs = null;
+		
 		try
 		{
-			this.connect();
-			max = this.connection.prepareStatement(this.SELECT_MAX);
-			max.setString(1, "IMAGE_ID");
-			max.setString(2, "USER_IMAGES");
-			rs = max.executeQuery();
-			while(rs.next())
-				index = rs.getInt(1);
-			insert = this.connection.prepareStatement(this.INSERT_USER_IMAGE);
-			insert.setInt(1, index);
-			insert.setString(2, user);
-			insert.setBlob(3, image);			
-			
+        	Class.forName(DB.driverURL);
+        	DB.dbURL = "jdbc:derby:;shutdown=true";
+			System.out.println("DB >> database url: " + DB.dbURL);	
+			if (this.connection == null)
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else if (this.connection.isClosed())
+				this.connection = DriverManager.getConnection(DB.dbURL);		
+			else
+				System.out.println("DB >> connected to database: " + DB.dbName);	
+			result = 0;
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			if(((SQLException) e).getSQLState().equals("XJ015")) {
+				System.out.println("DB >> shutting down..");
+	        }
 		}
-		finally
-		{
-			try 
-			{
-				rs.close();
-			} 
-			catch (SQLException e) 
-			{
-				System.out.println("result set failed to close");
-			}
-			this.disconnect();	
-		}
-		
 		
 		return result;
 	}
-	public byte[] getImage(String name)
-	{
-		int length = 10;
-		byte[] result = new byte[length];
-		Statement statement;
-		ResultSet rs;
-		try 
-		{
-			statement = (Statement)this.connection.createStatement();
-			rs = statement.executeQuery(SELECT_IMAGE);
-			this.connect();
-		} 
-		catch (SQLException e) 
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			this.disconnect();
-		}
-		
-		
-		
-		return result;
-	}
-	
+
 	/*
 	 *  getters-=setters *
 	 */
 	public void setConnection(Connection con) { this.connection = con; }
 	
 	
+	/*
+	 *  class 2 JSON
+	 */
+	static <T> String class2JSON(T clas)
+	{
+		String result = "";
+		Map<String,String> map = new HashMap<String,String>();
+		
+        Field[] fields = ((Class)clas).getDeclaredFields();
+        System.out.printf("%d fields:%n", fields.length);
+        try 
+    	{
+	        for (Field field : fields) 
+	        {
+	        	System.out.println("field: " + field.getName() + " has value: " + field.get(clas) );
+            	map.put(field.getName(), user.getName());
+	        }
+    	}
+    	catch (IllegalArgumentException e) 
+    	{
+			e.printStackTrace();
+		} 
+    	catch (IllegalAccessException e) 
+    	{
+			e.printStackTrace();
+		}
+        
+        return result;
+	}
 
 }
