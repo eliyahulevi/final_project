@@ -23,6 +23,7 @@ $(document).ready(function(){
 	document.getElementById("msg-text-upload").style.display = "none";
 	
 	// load user's personal details & messages
+	loadUserOrders();
 	loadUserDetails();
 	loadUserMessages();
 
@@ -37,12 +38,26 @@ $(document).ready(function(){
 /*********************************************************************************
 *	this function get a message in JSON format, parse it and displays
 *********************************************************************************/
-function onTextChange(){
-	
+function onTextChange(){	
 	var key = window.event.keyCode;
 	if (key === 13) {
         upload();
     }  
+}
+
+
+/*********************************************************************************
+*	this function load all the users orders (past and present) from the server DB
+*********************************************************************************/
+function loadUserOrders(){
+		var formdata = new FormData();
+		formdata.append("code", "2");
+		formdata.append("user", sessionStorage.getItem('username'));
+		formdata.append("sender", ""); 
+		formdata.append("message", "");
+		formdata.append("image", "");
+		formdata.append("date", date);
+
 }
 
 

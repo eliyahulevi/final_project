@@ -20,9 +20,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import model.product.AlternativeProduct;
+import model.product.Product;
 import model.users.*;
 import model.message.*;
-
+import model.order.Order;
 import appConstants.*;
 import jdk.internal.jshell.tool.StopDetectingInputStream.State;
 
@@ -42,9 +43,21 @@ public class DB
 	//String dbName = const_names.Get_dbName();
 	//String driverURL = const_names.Get_driverURL();
 	//String dbURL = const_names.Get_dbURL();
-
-	boolean firstTime = true;
 	
+	enum tables { USERS(0), MESSAGES(1), CHANNELS(2), PRODUCTS(3), ORDERS(4), ORDERED_PRODUCT(5), IMAGES(6), USER_IMAGES(7);
+
+		private final int value;
+		tables(int i) 
+		{
+			this.value = i;
+		}
+		
+	    public int getValue() {
+	        return value;
+	    }
+	};
+	
+	boolean firstTime = true;
 	static String dbURL = "";
 	static String dbPath = "";
 	static String dbName = "";
@@ -52,7 +65,7 @@ public class DB
 	
 	
 	static User user;
-	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDER_PRODUCT" ,"IMAGES", "USER_IMAGES"};
+	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDERED_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
 	Statement statement;
@@ -69,7 +82,7 @@ public class DB
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
-	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[0] + "("  
+	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[tables.USERS.getValue()] + "("  
 			+ "USERNAME varchar(40),"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
@@ -78,7 +91,7 @@ public class DB
 			+ "DESCRIPTION varchar(200),"
 			+ "PRIMARY KEY(USERNAME)"
 			+ ")";
-	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[1] + "("
+	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[tables.MESSAGES.getValue()] + "("
 			+ "USERDATE varchar(100) PRIMARY KEY,"
 			+ "SENDER varchar(20),"
 			+ "USERNAME varchar(20),"
@@ -88,38 +101,41 @@ public class DB
 			+ "CLICKED boolean"
 			+ ")";
 
-	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[2] + "("
+	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.getValue()] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
-	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[3] + "("
+	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.PRODUCTS.getValue()] + "("
 			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE int,"
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
 			+ "COLOR varchar(10))"; 
-	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[4] + "("
+	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.getValue()] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
-			+ "DATE varchar(20),"
-			+ "SHIPADDREDD varchar(100),"
-			+ "STATUS int," 
+			+ "DATE bigint,"
 			+ "CUSTOMERNAME varchar(100),"
-			+ "COLOR varchar(10))"; 
-	private final String CREATE_ORDER_PRODUCT_TABLE = "CREATE TABLE " + tables_str[5] + "("
-			+ "ORDER_ID int,"
-			+ "PRODUCT_ID int,"
-			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
-		    + "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
-		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
+			+ "SHIPADDREDD varchar(100),"
+			+ "STATUS boolean," 
+			+ "COMMENT varchar(200),"
+			+ "PRODUCTS varchar(500)"
 			+ ")"; 
-	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[6] + "("
+	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.getValue()] + "("
+			+ "PRODUCT_ID int,"
+			+ "QTY int,"
+			+ "COLOR varchar(20),"
+			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
+		    //+ "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
+		    + "CONSTRAINT ORDERED_PRODUCT PRIMARY KEY (PRODUCT_ID, QTY)"
+			+ ")"; 
+	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.IMAGES.getValue()] + "("
 			+ "IMAGE_ID int PRIMARY KEY,"
 			+ "IMG BLOB"
 			//+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
-	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[7] + "("
+	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.USER_IMAGES.getValue()] + "("
 			+ "IMAGE_NAME varchar(100) PRIMARY KEY,"
 			+ "IMG BLOB,"
 			+ "USERNAME varchar(40),"
@@ -127,29 +143,33 @@ public class DB
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
+
+	
 	
 
 	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
 	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
-	private String INSERT_USER = 			"INSERT INTO USERS VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER = 			"INSERT INTO" + tables_str[0] + " VALUES (?, ?, ?, ?, ?, ?)";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
+	private String SELECT_USERS_ORDERS =	"SELECT * FROM ORDERS WHERE USERNAME=?";
 	private String SELECT_USERS = 			"SELECT * FROM USERS";
 	private String SELECT_MESSAGES = 		"SELECT * FROM MESSAGES";
 	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
 	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_ORDERED_PRODUCT = "INSERT INTO  " + tables_str[5] + " VALUES (?, ?, ?)";
 	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 			"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
-	//private String SELECT_MAX_IMAGE_IDX="SELECT MAX(IMAGE_ID) FROM USER_IMAGES";
+	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
 									CREATE_CHANNEL_TABLE, 
 									CREATE_PRODUCT_TABLE, 
 									CREATE_ORDER_TABLE, 
-									CREATE_ORDER_PRODUCT_TABLE,
+									CREATE_ORDERED_PRODUCT_TABLE,
 									CREATE_IMAGES_TABLE,
 									CREATE_USER_IMAGES_TABLE};
 
@@ -431,6 +451,7 @@ public class DB
 		result = JSONValue.toJSONString(map);
 		return result;
 	}
+	
 	/*
 	 *  get all users 
 	 */
@@ -473,6 +494,7 @@ public class DB
 		
 		return result;
 	}
+	
 	/*
 	 *  insert a new user 
 	 */
@@ -532,7 +554,8 @@ public class DB
 			disconnect();
 		}
 	}	
-	/*
+	
+ 	/*
 	 *  find user 
 	 */
 	public boolean findUser(String name, String password)
@@ -964,12 +987,142 @@ public class DB
 		
 	}
 	
+ 	/*
+ 	 * 	get all users orders
+ 	 */
+ 	public List<String> getUserOrders(String user) 
+	{
+ 		int index = 0;
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Order order = null;
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}			
+			
+			ps = this.connection.prepareStatement(SELECT_USERS_ORDERS);
+			ps.setString(1, user);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				order.setIndex(rs.getInt(1));				// index
+				order.setDate(rs.getLong(2));				// date
+				order.setCustomer(rs.getString(3));			// customer
+				order.setAddress(rs.getString(4));			// ship address
+				order.setIsSupplied(rs.getBoolean(5));		// is supplied
+				order.setComment(rs.getString(6));		// comment
+								
+				String s = this.order2JSON(order);
+				// TODO: erase later
+				System.out.println("DB >> msgs: " + s);
+				result.add(s);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+		finally
+		{
+			try
+			{
+				if(rs != null)
+					rs.close();
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+
+		}
+		
+		return result;
+	}
 	
+	/*
+	 * 	insert a new order 
+	 */
+ 	public void insertOrder(Order order)
+ 	{
+ 	 	PreparedStatement ps = null;
+		ResultSet rs = null;
+	 	try
+	 	{
+			ps = this.connection.prepareStatement(SELECT_MAX_ORDER_IDX);
+			//ps.setInt(1, order.get);
+			ps.execute();
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		
+	 	}
+	 	finally
+	 	{
+			try
+			{
+				if(rs != null)
+					rs.close();
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}
+ 	}
 	
+ 	/*
+ 	 * 	insert ordered product
+ 	 */
+ 	public void insertOrderedProduct(Product product)
+ 	{
+ 		PreparedStatement ps = null;
+	 	try
+	 	{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return;
+			}
+			ps = this.connection.prepareStatement(SELECT_MAX_ORDER_IDX);
+			ps.setInt(1, product.getCatalog());
+			ps.setInt(2, (int)product.getLength());
+			ps.setString(3, product.getColor());
+			ps.execute();
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		
+	 	}
+	 	finally
+	 	{
+			try
+			{
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}
+ 	}
+
 	
-	
-	
-	/**************************************************************************
+ 	
+ 	
+ 	/**************************************************************************
 	*								general methods
 	***************************************************************************/ 
 	
@@ -1037,6 +1190,13 @@ public class DB
 		}
         
         return result;
+	}
+	
+	private String order2JSON(Order order) {
+		String result = "";
+		
+		
+		return result;
 	}
 
 }

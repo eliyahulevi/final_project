@@ -8,26 +8,39 @@ import model.product.*;
 
 public class Order 
 {
-	int number;
-	String date;
+	int index;
+	long date;
+	String customer;
 	String shipAddress;
 	boolean supplied;
-	User customer;
+	String Comment;
 	List<Product> products;
 	
 	/*
-	 *  constructor *
+	 *  constructors *
 	 */
 	public Order()
 	{
 		
 	}
-	
-	public void setNumber(int n)
+	public Order(int index, String user, long date, String shipAddress, boolean supplied, List<Product> products)
 	{
-		this.number = n;
+		this.index = index;
+		this.customer = user;
+		this.date = date;
+		this.shipAddress = shipAddress;
+		this.supplied = supplied;
+		this.products = products;
 	}
-	public void setDate(String d)
+
+	/*
+	 * 	setters
+	 */
+	public void setIndex(int n)
+	{
+		this.index = n;
+	}
+	public void setDate(long d)
 	{
 		this.date = d;
 	}
@@ -39,7 +52,7 @@ public class Order
 	{
 		this.supplied = b;
 	}
-	public void setCustomer(User c)
+	public void setCustomer(String c)
 	{
 		this.customer = c;
 	}
@@ -47,5 +60,13 @@ public class Order
 	{
 		this.products.add(p);
 	}
-
+	public void setComment(String s) { this.Comment = s; }
+	
+	public int getIndex() { return this.index; }
+	public long getDate() { return this.date; }
+	public String getCustomerName() { return this.customer; }
+	public String getShipAddess() { return this.shipAddress; }
+	public boolean getIsSupplied() { return this.supplied; }
+	public String getComment() { return this.Comment; }
+	public List<Product> getProducts() { return this.products; }
 }

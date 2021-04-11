@@ -14,11 +14,11 @@ enum types { t_2x4, t_2x6, t_2x8,
  */
 public class Product 
 {
-	int catalog;
-	int type;
-	float price;
-	float length;
-	String color;
+	int 	catalog;
+	int 	type;
+	float 	price;
+	float 	length;
+	String 	color;
 	
 	/**
 	 * constructor *
@@ -28,26 +28,15 @@ public class Product
 		
 	}
 
-	public void setCatalog(int c)
-	{
-		this.catalog = c;
-	}
- 	public void setType(int t)
-	{
-		this.type = t;
-	}
-	public void setPrice(float p)
-	{
-		this.price = p;
-	}
-	public void setLength(float l)
-	{
-		this.length = l;
-	}
-	public void setColor(String c)
-	{
-		this.color = c;
-	}
+	public void setCatalog(int c) 	{ this.catalog = c; }
+ 	public void setType(int t) 		{ this.type = t; }
+	public void setPrice(float p) 	{ this.price = p; }
+	public void setLength(float l) 	{ this.length = l; }
+	public void setColor(String c) 	{ this.color = c; }
 
-	
+	public int getCatalog() 		{ return this.catalog; }
+	public int getType() 			{ return this.type; }
+	public float getPrice() 		{ return this.price; }
+	public float getLength()		{ return this.length; }
+	public String getColor()		{ return this.color; }
 }

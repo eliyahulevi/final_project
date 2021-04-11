@@ -242,12 +242,11 @@ public class UserServlet extends HttpServlet
 				 case "2":		// get user messages
 				 {
 					 String json = "";
-					 System.out.println("image servlet >> code:" + code + " message: " + msg);
+					 System.out.println("user servlet >> code:" + code + " message: " + msg);
 					 List<String> list = db.getUserMessages(user);
 					 if( list.size() > 0)
 					 {
 						 json = new Gson().toJson(list);
-						 System.out.println(list);
 					 }
 					 response.getWriter().write(json);
 					 break;
@@ -256,6 +255,20 @@ public class UserServlet extends HttpServlet
 				 case "3":		// message clicked
 				 {
 					 db.messageClicked(user, date);
+					 break;
+				 }
+				 
+				 case "4":
+				 {
+					 String json = "";
+					 System.out.println("user servlet >> code:" + code);
+					 List<String> list = db.getUserOrders(user);
+					 if( list.size() > 0)
+					 {
+						 json = new Gson().toJson(list);
+						 System.out.println(list);
+					 }
+					 response.getWriter().write(json);
 					 break;
 				 }
 				 
