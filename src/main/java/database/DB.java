@@ -73,7 +73,9 @@ public class DB
 	ResultSet rs;
 	Map<String, String> map;
 	
-	//sql statements
+	/************************************************************************
+	 *	 					create query strings	
+	 ***********************************************************************/
 	private final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
 	private final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
 			+ "FROM INFORMATION_SCHEMA.TABLES "
@@ -122,12 +124,11 @@ public class DB
 			+ "FOREIGN KEY (CUSTOMERNAME) REFERENCES PRODUCTS(PRODUCT_ID)" 
 			+ ")"; 
 	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.getValue()] + "("
+			+ "ORDERED_PRODUCT varchar (30) NOT NULL PRIMARY KEY, "
 			+ "PRODUCT_ID int NOT NULL,"
 			+ "QTY int NOT NULL,"
 			+ "COLOR varchar(20),"
-			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
-		    //+ "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
-		    + "CONSTRAINT ORDERED_PRODUCT PRIMARY KEY (PRODUCT_ID, QTY)"
+			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)" 
 			+ ")"; 
 	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.IMAGES.getValue()] + "("
 			+ "IMAGE_ID int PRIMARY KEY,"
@@ -145,26 +146,50 @@ public class DB
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
 
-	
-	
 
-	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
-	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
-	private String INSERT_USER = 			"INSERT INTO" + tables_str[0] + " VALUES (?, ?, ?, ?, ?, ?)";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	/************************************************************************
+	 *	 					order	
+	 ***********************************************************************/
+	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[4] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[4] + " WHERE ORDER_ID=?";
+	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[4] + " WHERE USERNAME=?";
+	
+	/************************************************************************
+	 *	 					user	
+	 ***********************************************************************/
+	private String INSERT_USER = 			"INSERT INTO "   + tables_str[0] + " VALUES (?, ?, ?, ?, ?, ?)";
+	private String SELECT_USERS = 			"SELECT * FROM " + tables_str[0] ;
+	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[0];
+	private String SELECT_USER		=		"SELECT * FROM " + tables_str[0] + " WHERE USERNAME=? AND PASSWORD=?";
+	
+	/************************************************************************
+	 *	 					message
+	 ***********************************************************************/
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
-	private String SELECT_USERS_ORDERS =	"SELECT * FROM ORDERS WHERE USERNAME=?";
-	private String SELECT_USERS = 			"SELECT * FROM USERS";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM MESSAGES";
-	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM USERS";
-	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-	private String INSERT_ORDERED_PRODUCT = "INSERT INTO  " + tables_str[5] + " VALUES (?, ?, ?)";
-	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
-	private String INSERT_ORDER = 			"INSERT INTO ORDERS VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 			"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
+	
+	/************************************************************************
+	 *	 					image
+	 ***********************************************************************/
+	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
+	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	
+	/************************************************************************
+	 *	 					product
+	 ***********************************************************************/
+	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[5] + " VALUES (?, ?, ?, ?)";
+	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[5] + " WHERE ORDERED_PRODUCT=?";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[5] + " VALUES (?, ?, ?, ?, ?)";
+	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[5] + " WHERE PRODUCT_ID=?";
+	
+	/************************************************************************
+	 *	 					general app queries
+	 ***********************************************************************/
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
 	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
+	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
+
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -332,7 +357,7 @@ public class DB
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("DB >> connected to database: " + DB.dbName);	
+				System.out.println("DB >> already connected to database: " + DB.dbName);	
 			result = 0;
 			
         }
@@ -946,9 +971,9 @@ public class DB
 	
 	/************************************************************************
 	*	ORDER related code here:  (insert, update, get all, etc. )
-	*************************************************************************/	
-	
- 	public AlternativeProduct getOrder(int orderID) {
+	*************************************************************************/		
+ 	
+public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;
 		try 
@@ -992,21 +1017,29 @@ public class DB
  	/*
  	 * 	get all users orders
  	 */
- 	public List<String> getUserOrders(String user) 
+ 	public List<Order> getOrders(String user) 
 	{
- 		int index = 0;
-		List<String> result = new ArrayList<String>();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Order order = null;
+ 		String productString = "";
+		List<Order> result = new ArrayList<Order>();
+		List<Product> products = new ArrayList<Product>();
+		PreparedStatement ps = null, ps1 = null;
+		ResultSet rs = null, rs1 = null;
+		Order order = new Order();
 		try
 		{
+			// 0. connect
 			if(this.connect() < 0)
 			{
 				System.out.println("cannot connect to database.. aborting");
 				return result;
-			}			
+			}	
 			
+			// 1. create the products list
+			ps1 = this.connection.prepareStatement(SELECT_USERS_ORDERS);
+			ps1.setString(1, user);
+			rs1 = ps1.executeQuery();
+			
+			// 2. create the orders list
 			ps = this.connection.prepareStatement(SELECT_USERS_ORDERS);
 			ps.setString(1, user);
 			rs = ps.executeQuery();
@@ -1016,36 +1049,34 @@ public class DB
 				order.setCustomer(rs.getString(3));			// customer
 				order.setAddress(rs.getString(4));			// ship address
 				order.setIsSupplied(rs.getBoolean(5));		// is supplied
-				order.setComment(rs.getString(6));		// comment
-								
-				String s = this.order2JSON(order);
+				order.setComment(rs.getString(6));			// comment
+				productString = rs.getString(7);			// product string				
+				//String s = this.order2JSON(order);
 				// TODO: erase later
-				System.out.println("DB >> msgs: " + s);
-				result.add(s);
+				//System.out.println("DB >> msgs: " + s);
+				result.add(order);
 			}
 			
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		finally
 		{
 			try
 			{
-				if(rs != null)
-					rs.close();
-				if(ps != null)
-					ps.close();
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+				if(rs1 != null) rs1.close();
+				if(ps1 != null) ps1.close();
 				this.disconnect();
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
 			}
-
-		}
-		
+		}		
 		return result;
 	}
 	
@@ -1116,6 +1147,11 @@ public class DB
 	 	}
  	}
 	
+ 
+ 	
+	/************************************************************************
+	*	ORDER related code here:  (insert, update, get all, etc. )
+	*************************************************************************/	
  	/*
  	 * 	insert ordered product
  	 */
@@ -1129,15 +1165,17 @@ public class DB
 				System.out.println("cannot connect to database.. aborting");
 				return;
 			}
-			ps = this.connection.prepareStatement(SELECT_MAX_ORDER_IDX);
-			ps.setInt(1, product.getCatalog());
-			ps.setInt(2, (int)product.getLength());
-			ps.setString(3, product.getColor());
+			ps = this.connection.prepareStatement(INSERT_ORDERED_PRODUCT);
+			
+			ps.setString(1, Integer.toString(product.getCatalog()) + Float.toString(product.getLength()));
+			ps.setInt(2, product.getCatalog());
+			ps.setInt(3, (int)product.getLength());
+			ps.setString(4, product.getColor());
 			ps.execute();
 	 	}
 	 	catch(Exception e)
 	 	{
-	 		
+	 		e.printStackTrace();
 	 	}
 	 	finally
 	 	{
@@ -1153,19 +1191,79 @@ public class DB
 			}
 	 	}
  	}
-
-	/*
-	 * 	get all user orders
-	 */
- 	public List<String> getOrders(String username)
+ 	
+ 	/*
+ 	 * 	gets a string like: "product1qty1, product2qty2,..." parse it into
+ 	 * 	product1qty1, product2qty2,.. extracts the product key for each
+ 	 * 	product-quantity key and creates the appropriate product object 
+ 	 * 	@param	list	a string of the form "product1qty1,product2qty2,.."
+ 	 * 	return			a list of products according to product1, product2,..
+ 	 */
+ 	private List<Product> productsFromList(String list)
  	{
- 		List<String> result = new ArrayList<String>();
+ 		List<Product> result = new ArrayList<Product>();
+ 		String[] products = list.split(",");
+ 		PreparedStatement ps = null, ps1 = null;
+ 		ResultSet rs = null, rs1 = null;
  		
- 		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return null;
+			}
+					
+	 		for(String s: products)
+	 		{
+	 			long id = 0;
+	 			Product product = new Product();
+	 			
+	 			// get the product id from ordered products table
+	 			ps = this.connection.prepareStatement(SELECT_ORDERED_PRODUCT);	
+	 			ps.setLong(1, Long.parseLong(s));
+	 			rs = ps.executeQuery();
+	 			rs.next();
+	 			
+	 			// get product from products table and create Product object
+	 			ps1 = this.connection.prepareStatement(SELECT_PRODUCT);
+	 			id = rs.getLong(1);
+	 			rs1 = ps1.executeQuery();
+	 			while(rs1.next())
+	 			{
+	 				product.setCatalog(rs1.getInt(1));
+	 				product.setType(rs1.getInt(2));
+	 				product.setPrice(rs1.getFloat(3));
+	 				product.setLength(rs1.getFloat(4));
+	 				product.setColor(rs1.getString(5));
+	 			}
+	 			result.add(product);
+	 		}
+		}
+ 		catch(Exception e)
+		{
+ 			
+		}
+		finally
+		{
+			this.disconnect();
+			try
+			{
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+				if(rs1 != null) rs1.close();
+				if(ps1 != null) ps1.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
  		
  		return result;
  	}
  	
+ 		
  	
  	/**************************************************************************
 	*								general methods

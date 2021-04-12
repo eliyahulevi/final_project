@@ -61,6 +61,7 @@ public class Order
 		this.products.add(p);
 	}
 	public void setComment(String s) { this.Comment = s; }
+	public void setProducts(List<Product> p) { this.products = p; }
 	
 	public int getIndex() { return this.index; }
 	public long getDate() { return this.date; }
