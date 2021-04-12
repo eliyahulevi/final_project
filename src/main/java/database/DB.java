@@ -118,11 +118,12 @@ public class DB
 			+ "SHIPADDREDD varchar(100),"
 			+ "STATUS boolean," 
 			+ "COMMENT varchar(200),"
-			+ "PRODUCTS varchar(500)"
+			+ "PRODUCTS varchar(500),"
+			+ "FOREIGN KEY (CUSTOMERNAME) REFERENCES PRODUCTS(PRODUCT_ID)" 
 			+ ")"; 
 	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.getValue()] + "("
-			+ "PRODUCT_ID int,"
-			+ "QTY int,"
+			+ "PRODUCT_ID int NOT NULL,"
+			+ "QTY int NOT NULL,"
 			+ "COLOR varchar(20),"
 			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
 		    //+ "FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID)"
@@ -160,6 +161,7 @@ public class DB
 	private String SELECT_USER		=		"SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
 	private String INSERT_ORDERED_PRODUCT = "INSERT INTO  " + tables_str[5] + " VALUES (?, ?, ?)";
 	private String INSERT_PRODUCT = 		"INSERT INTO PRODUCTS VALUES (?, ?, ?, ?, ?)";
+	private String INSERT_ORDER = 			"INSERT INTO ORDERS VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 			"SELECT * FROM PRODUCTS WHERE PRODUCT_ID=?";
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
 	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
@@ -1052,12 +1054,45 @@ public class DB
 	 */
  	public void insertOrder(Order order)
  	{
- 	 	PreparedStatement ps = null;
-		ResultSet rs = null;
+ 	 	PreparedStatement ps = null, ps1 = null;
+		ResultSet rs = null, rs1 = null;
+		List<String> list = new ArrayList<String>();
+		int length = order.getProducts().size();
+		int index = 0;
+
 	 	try
 	 	{
-			ps = this.connection.prepareStatement(SELECT_MAX_ORDER_IDX);
-			//ps.setInt(1, order.get);
+	 		// 0. open connection
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return;
+			}
+			
+	 		// 1. get the max order index
+			ps1 = this.connection.prepareStatement(SELECT_MAX_ORDER_IDX);
+			rs1 = ps1.executeQuery();
+			while(rs1.next())
+				index = rs1.getInt(1);
+	 		
+	 		// 2. create the ordered products string "product1qty1, product2qty2,..."
+			list.add(order.getProducts().get(0).getCatalog() + Float.toString(order.getProducts().get(0).getLength()));
+			for(int i = 1; i < length; i++)
+			{
+				Product p = order.getProducts().get(i);
+				String productQty = "," + p.getCatalog() + Float.toString(p.getLength());
+				System.out.println(productQty);
+			}
+			
+	 		// 3. fire up the insert query
+			ps = this.connection.prepareStatement(INSERT_ORDER);
+			ps.setInt(1, ++index);
+			ps.setLong(2, order.getDate());
+			ps.setString(3, order.getCustomerName());
+			ps.setString(4, order.getShipAddess());
+			ps.setBoolean(5, order.getIsSupplied());
+			ps.setString(6, order.getComment());
+			ps.setString(7, list.toString());
 			ps.execute();
 	 	}
 	 	catch(Exception e)
@@ -1119,7 +1154,17 @@ public class DB
 	 	}
  	}
 
-	
+	/*
+	 * 	get all user orders
+	 */
+ 	public List<String> getOrders(String username)
+ 	{
+ 		List<String> result = new ArrayList<String>();
+ 		
+ 		
+ 		
+ 		return result;
+ 	}
  	
  	
  	/**************************************************************************
