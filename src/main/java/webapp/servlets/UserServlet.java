@@ -65,136 +65,18 @@ public class UserServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		/*JsonReader jreader;
-		BufferedReader reader = request.getReader();
-		Gson gson = new Gson();
-		String line = null;
-		String user;
-		int code;*/
-		 
-		 /* we read the message from the request, and the code that the message
-		  * starts with, and return the appropriate response.  
-		 */
-		
-		doPost2(request, response);
-		/*
-		 try 
-		 {
-			 
-			 if (( line = reader.readLine()) != null)
-			 {
-				 Message jobj = gson.fromJson(line, Message.class);  
-				 code = jobj.getCode();
-				 user = jobj.getUser();
-				 switch(code)
-				 {
-				 	case 0:
-				 	{
-				 		List<String> list = db.getUsersNames();
-						 String json = "";
-						 if( list.size() > 0)
-						 {
-							 json = new Gson().toJson(list);
-							 System.out.println(list);
-						 } 
-						
-						 response.getWriter().write(json);
-						 break;
-				 	}
-					
-						 
-					 case 1:
-					 {
-						 System.out.println("message: " + jobj.getMessage());
-						 JsonArray jsonArray = new JsonArray();
-						 List<Message> msgs = db.getUserMessages(user);
-						 for( int i = 0; i < msgs.size(); i++)
-						 {
-							 String msgJson = gson.toJson(msgs.get(i));
-							 jsonArray.add(msgJson);
-						 }
-						 response.getWriter().write(jsonArray.toString());
-						 break;
-					 }
-						
-					 case 2:
-					 {
-						 System.out.println("message: " + jobj.getCode());
-						 System.out.println("user: " + jobj.getUser());
-						 System.out.println("message: " + jobj.getMessage());
-						 System.out.println("image: " + jobj.getImage());
-						 break;
-					 }
-					 
-					 default:
-						break;
-				 }
-				 
-				 /* return all users
-				 if (line.startsWith ("0"))
-				 {
-					 List<String> list = db.getUsersNames();
-					 String json = "";
-					 if( list.size() > 0)
-					 {
-						 json = new Gson().toJson(list);
-						 System.out.println(list);
-					 }
-					
-					 response.getWriter().write(json);
-				 }
-				 // send message to *specific* user
-				 else if(line.startsWith ("1"))
-				 {
-					 JsonParser parser = new JsonParser();
-					 JsonElement element = parser.parse(line); 
-					 JsonObject jsonObject = element.getAsJsonObject();
-					 System.out.println(jsonObject);
-					 
-				 }
-				 else
-					 System.out.println("no request");
-					 
-			
-			 }
-		 
-			 			
-		 }
-		 catch(Exception e)
-		 {
-			 e.printStackTrace();
-		 }
-		 /*
-		
-		try
-		{
-
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			
-		}
-		*/
-	}
-
-	private void doPost2(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException 
-	{
-		
 		InputStream fileContent = null;
-		Blob blob = null;
-		//Part code = request.getPart("code");
-		String code = request.getParameter("code");
-		String user = request.getParameter("user");
-		String sender = request.getParameter("sender");
-		String msg = request.getParameter("message");
-		long date = Long.parseLong(request.getParameter("date")); 
-		//boolean clicked = Boolean.parseBoolean(request.getParameter("clicked"));
+		Blob blob 				= null;
+		byte[] data 			= null;
 		
-		byte[] data = null;
+		
+		String code 			= request.getParameter("code");
+		String user 			= request.getParameter("user");
+		String sender 			= request.getParameter("sender");
+		String msg 				= request.getParameter("message");
+		long date 				= Long.parseLong(request.getParameter("date")); 
+		
+		
 		try 
 		{
 			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
@@ -308,6 +190,7 @@ public class UserServlet extends HttpServlet
 			e.printStackTrace();
 		}
 		
-	}
+	
+	}		
 
 }

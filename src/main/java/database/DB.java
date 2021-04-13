@@ -182,6 +182,7 @@ public class DB
 	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[5] + " WHERE ORDERED_PRODUCT=?";
 	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[5] + " VALUES (?, ?, ?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[5] + " WHERE PRODUCT_ID=?";
+	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[5];
 	
 	/************************************************************************
 	 *	 					general app queries
@@ -1014,9 +1015,6 @@ public class DB
 		
 	}
 	
- 	/*
- 	 * 	get all users orders
- 	 */
  	
  	/*
  	 * 	get all the orders related to specific user
@@ -1087,14 +1085,11 @@ public class DB
 		return result;
 	}
 	
-	/*
-	 * 	insert a new order 
-	 */
  	
 	/*
 	 * 	inserts a new order instance to DB
 	 * 	@param	Order	order that holds all the info
-	 * 	return			none	
+	 * 	return			null	
 	 */
  	public void insertOrder(Order order)
  	{
@@ -1277,6 +1272,60 @@ public class DB
  	}
  	
  		
+ 	/*
+ 	 * 	get ALL the products from the DB
+ 	 * 	@param	null
+ 	 * 	return 			a list of Product objects
+ 	 */
+ 	public List<Product> getProducts()
+ 	{
+ 		List<Product> result = new ArrayList<Product>();
+ 		PreparedStatement ps = null;
+ 		ResultSet rs = null;
+ 		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return null;
+			}
+			ps = this.connection.prepareStatement(SELECT_ALL_PRODUCTS);	
+ 			rs = ps.executeQuery();
+ 			
+	 		while(rs.next())
+	 		{
+ 				Product product = new Product();
+ 				product.setCatalog(rs.getInt(1));
+ 				product.setType(rs.getInt(2));
+ 				product.setPrice(rs.getFloat(3));
+ 				product.setLength(rs.getFloat(4));
+ 				product.setColor(rs.getString(5));
+ 				result.add(product);
+	 		}
+		}
+ 		catch(Exception e)
+		{
+ 			
+		}
+		finally
+		{
+			this.disconnect();
+			try
+			{
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+ 		
+ 		
+ 		return result;
+ 	}
+ 	
  	
  	/**************************************************************************
 	*								general methods

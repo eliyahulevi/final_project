@@ -10,29 +10,32 @@ if (document.readyState == "loading") {
 *	with 'length', 'qty', 'add' & 'remove' buttons
 *********************************************************************************/
 function ready() {
-  var removeCartItemButtons = document.getElementsByClassName("btn-danger");
-  //   console.log(removeCartItemButtons);
-  for (var i = 0; i < removeCartItemButtons.length; i++) {
-    var button = removeCartItemButtons[i];
-    button.addEventListener("click", removeButtonClicked);
-  }
 
-  var quantityInput = document.getElementsByClassName("cart-input-quantity");
-  for (var i = 0; i < quantityInput.length; i++) {
-    var input = quantityInput[i];
-    input.addEventListener("change", quantityChange);
-  }
-  var lengthInput = document.getElementsByClassName("cart-input-length");
-  for (var i = 0; i < lengthInput.length; i++) {
-    var input = lengthInput[i];
-    input.addEventListener("change", lengthChange);
-  }
-
-  var addToCartButtons = document.getElementsByClassName("shop-item-btn");
-  for (var i = 0; i < addToCartButtons.length; i++) {
-    var button = addToCartButtons[i];
-    button.addEventListener("click", addToCartClicked);
-  }
+	loadProducts();
+	
+	  var removeCartItemButtons = document.getElementsByClassName("btn-danger");
+	  //   console.log(removeCartItemButtons);
+	  for (var i = 0; i < removeCartItemButtons.length; i++) {
+	    var button = removeCartItemButtons[i];
+	    button.addEventListener("click", removeButtonClicked);
+	  }
+	
+	  var quantityInput = document.getElementsByClassName("cart-input-quantity");
+	  for (var i = 0; i < quantityInput.length; i++) {
+	    var input = quantityInput[i];
+	    input.addEventListener("change", quantityChange);
+	  }
+	  var lengthInput = document.getElementsByClassName("cart-input-length");
+	  for (var i = 0; i < lengthInput.length; i++) {
+	    var input = lengthInput[i];
+	    input.addEventListener("change", lengthChange);
+	  }
+	
+	  var addToCartButtons = document.getElementsByClassName("shop-item-btn");
+	  for (var i = 0; i < addToCartButtons.length; i++) {
+	    var button = addToCartButtons[i];
+	    button.addEventListener("click", addToCartClicked);
+	  }
 }
 
 
@@ -162,4 +165,48 @@ function createShopItem(type, imageSrc, price) {
   shopItem
     .getElementsByClassName("cart-input-quantity")[0]
     .addEventListener("change", quantityChange);
+}
+
+
+/*********************************************************************************
+*	this function loads the 'products' from the DB
+*********************************************************************************/
+function loadProducts(){
+		var date = new Date().getTime();
+		var formdata = new FormData();
+		formdata.append("code", "0");
+		formdata.append("user", sessionStorage.getItem('username'));
+		formdata.append("sender", ""); 
+		formdata.append("message", "");
+		formdata.append("image", "");
+		formdata.append("date", date);
+		
+	    $.ajax({
+        url: 'ProductServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formdata,                         
+        type: 'post',
+        success: function(response){ 
+        			var products = JSON.parse(response);    
+        			alert(products);  			
+		            var form = document.getElementById("items");
+		            var length = products.length;
+		            for(var i = 0; i < length; i++){
+		            	var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
+		            	form.appendChild(item);					
+		            }
+    			}
+     });
+}
+
+/*********************************************************************************
+*	this function creates the item to be appended to 'items' section
+*	@param	product: JSON string that holds the info. about that product
+*********************************************************************************/
+function createItem(product){
+	var item;	
+	return item;
 }
