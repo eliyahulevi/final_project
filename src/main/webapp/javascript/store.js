@@ -4,6 +4,11 @@ if (document.readyState == "loading") {
   ready();
 }
 
+
+/*********************************************************************************
+*	this function fired up on document is ready. create a 'product' item,
+*	with 'length', 'qty', 'add' & 'remove' buttons
+*********************************************************************************/
 function ready() {
   var removeCartItemButtons = document.getElementsByClassName("btn-danger");
   //   console.log(removeCartItemButtons);
@@ -30,41 +35,65 @@ function ready() {
   }
 }
 
+
+/*********************************************************************************
+*	this function assign functionality to 'remove' button in 'product' item
+*********************************************************************************/
 function removeButtonClicked(event) {
   var buttonClicked = event.target;
   buttonClicked.parentElement.parentElement.remove();
 }
 
+
+/*********************************************************************************
+*	this function handles the 'qty' input event 
+*********************************************************************************/
 function quantityChange(event) {
   var input = event.target;
   if (isNaN(input.value) || input.value <= 0) {
     input.value = 1;
   }
 }
+
+
+/*********************************************************************************
+*	this function handles the 'length' input event 
+*********************************************************************************/
 function lengthChange(event) {
   var input = event.target;
   if (isNaN(input.value) || input.value <= 0 || input.value > 600) {
     input.value = 75;
   }
 }
+
+
+/*********************************************************************************
+*	this function handles 'add to cart' event
+*********************************************************************************/
 function addToCartClicked(event) {
-  var button = event.currentTarget;
-  var shopItem = button.parentElement.parentElement;
-  //   console.log(shopItem);
-  var title = shopItem.getElementsByClassName("shop-item-title")[0].innerText;
-  var length = shopItem
-    .getElementsByClassName("shop-item-details")[0]
-    .getElementsByClassName("input-length")[0].value;
-
-  var quantity = shopItem
-    .getElementsByClassName("shop-item-details")[0]
-    .getElementsByClassName("input-quantity")[0].value;
-
-  var imageSrc = shopItem.getElementsByClassName("shop-item-image")[0].src;
-
-  console.log(title, length, quantity, imageSrc);
-  addItemToCart(title, length, quantity, imageSrc);
+	alert("cart clicked");
+	var button = event.currentTarget;
+	var shopItem = button.parentElement.parentElement;
+	//   console.log(shopItem);
+	var title = shopItem.getElementsByClassName("shop-item-title")[0].innerText;
+	var length = shopItem
+	  .getElementsByClassName("shop-item-details")[0]
+	  .getElementsByClassName("input-length")[0].value;
+	
+	var quantity = shopItem
+	  .getElementsByClassName("shop-item-details")[0]
+	  .getElementsByClassName("input-quantity")[0].value;
+	
+	var imageSrc = shopItem.getElementsByClassName("shop-item-image")[0].src;
+	
+	console.log(title, length, quantity, imageSrc);
+	addItemToCart(title, length, quantity, imageSrc);
 }
+
+
+/*********************************************************************************
+*	this function handles 'add item to cart' event
+*********************************************************************************/
 function addItemToCart(title, length, quantity, imageSrc) {
   var cartRow = document.createElement("div");
   cartRow.classList.add("cart-row");
@@ -95,7 +124,11 @@ function addItemToCart(title, length, quantity, imageSrc) {
     .addEventListener("change", quantityChange);
 }
 
-//this function will be called when loading page and take items from database products or whe admin want to add new product
+
+/*********************************************************************************
+*	this function will be called when loading page and take items from database 
+*	products or whe admin want to add new product
+*********************************************************************************/
 function createShopItem(type, imageSrc, price) {
   var shopItem = document.createElement(div);
   shopItem.classList.add("shop-item");
