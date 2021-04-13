@@ -155,11 +155,12 @@ a {
   width: 75px;
   height: auto;
 }
-.cart-input {
+.cart-input-length,
+.cart-input-quantity {
   height: 34px;
   width: 75px;
   border: 1px solid #56ccf2;
-  background-color: #eee;
+  background-color: rgb(194, 193, 193);
   color: #333;
   padding: 0;
   text-align: center;
