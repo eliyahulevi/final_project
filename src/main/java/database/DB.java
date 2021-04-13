@@ -973,7 +973,7 @@ public class DB
 	*	ORDER related code here:  (insert, update, get all, etc. )
 	*************************************************************************/		
  	
-public AlternativeProduct getOrder(int orderID) {
+	public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;
 		try 
@@ -1017,7 +1017,13 @@ public AlternativeProduct getOrder(int orderID) {
  	/*
  	 * 	get all users orders
  	 */
- 	public List<Order> getOrders(String user) 
+ 	
+ 	/*
+ 	 * 	get all the orders related to specific user
+ 	 * 	@param	user	a string represent user name
+ 	 * 	return			a list of orders objects
+ 	 */
+	public List<Order> getOrders(String user) 
 	{
  		String productString = "";
 		List<Order> result = new ArrayList<Order>();
@@ -1050,7 +1056,8 @@ public AlternativeProduct getOrder(int orderID) {
 				order.setAddress(rs.getString(4));			// ship address
 				order.setIsSupplied(rs.getBoolean(5));		// is supplied
 				order.setComment(rs.getString(6));			// comment
-				productString = rs.getString(7);			// product string				
+				productString = rs.getString(7);			// product string	
+				order.setProducts(productsFromList(productString));
 				//String s = this.order2JSON(order);
 				// TODO: erase later
 				//System.out.println("DB >> msgs: " + s);
@@ -1082,6 +1089,12 @@ public AlternativeProduct getOrder(int orderID) {
 	
 	/*
 	 * 	insert a new order 
+	 */
+ 	
+	/*
+	 * 	inserts a new order instance to DB
+	 * 	@param	Order	order that holds all the info
+	 * 	return			none	
 	 */
  	public void insertOrder(Order order)
  	{
@@ -1128,7 +1141,7 @@ public AlternativeProduct getOrder(int orderID) {
 	 	}
 	 	catch(Exception e)
 	 	{
-	 		
+	 		e.printStackTrace();
 	 	}
 	 	finally
 	 	{
@@ -1147,10 +1160,10 @@ public AlternativeProduct getOrder(int orderID) {
 	 	}
  	}
 	
- 
+ 	
  	
 	/************************************************************************
-	*	ORDER related code here:  (insert, update, get all, etc. )
+	*	PRODUCT related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
  	/*
  	 * 	insert ordered product

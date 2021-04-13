@@ -30,6 +30,7 @@ import com.google.gson.stream.JsonReader;
 
 import database.DB;
 import model.message.*;
+import model.order.Order;
 
 /**
  * Servlet implementation class UserServlet
@@ -262,7 +263,7 @@ public class UserServlet extends HttpServlet
 				 {
 					 String json = "";
 					 System.out.println("user servlet >> code:" + code);
-					 List<String> list = db.getUserOrders(user);
+					 List<Order> list = db.getOrders(user);
 					 if( list.size() > 0)
 					 {
 						 json = new Gson().toJson(list);
