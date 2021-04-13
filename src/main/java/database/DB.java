@@ -85,13 +85,12 @@ public class DB
 			+ "    --Do Stuff\r\n"
 			+ "END";
 	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[tables.USERS.getValue()] + "("  
-			+ "USERNAME varchar(40),"
+			+ "USERNAME varchar(40) not null PRIMARY KEY,"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
 			+ "ADDRESS varchar(50),"
 			+ "PHOTO varchar(100),"
-			+ "DESCRIPTION varchar(200),"
-			+ "PRIMARY KEY(USERNAME)"
+			+ "DESCRIPTION varchar(200)"
 			+ ")";
 	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[tables.MESSAGES.getValue()] + "("
 			+ "USERDATE varchar(100) PRIMARY KEY,"
@@ -112,16 +111,17 @@ public class DB
 			+ "TYPE int,"
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
-			+ "COLOR varchar(10))"; 
+			+ "COLOR varchar(10)"
+			+ ")"; 
 	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.getValue()] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
 			+ "DATE bigint,"
-			+ "CUSTOMERNAME varchar(100),"
+			+ "USERNAME varchar(40),"
 			+ "SHIPADDREDD varchar(100),"
 			+ "STATUS boolean," 
 			+ "COMMENT varchar(200),"
 			+ "PRODUCTS varchar(500),"
-			+ "FOREIGN KEY (CUSTOMERNAME) REFERENCES PRODUCTS(PRODUCT_ID)" 
+			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
 			+ ")"; 
 	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.getValue()] + "("
 			+ "ORDERED_PRODUCT varchar (30) NOT NULL PRIMARY KEY, "
