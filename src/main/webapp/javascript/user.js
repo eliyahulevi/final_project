@@ -37,6 +37,58 @@ $(document).ready(function(){
 });
 
 
+
+/*********************************************************************************
+*	this function displays admin functionality: add product..
+*********************************************************************************/
+function showAddProduct(){
+	
+	var form = document.createElement('form');
+	var inputCat = document.createElement('input');
+	var inputType = document.createElement('input');
+	var inputLength = document.createElement('input');
+	var inputPrice = document.createElement('input');
+	var inputColors = document.createElement('input');
+	var btnUpload = document.createElement("button");
+	var btnCancel = document.createElement("button");
+	var p = document.createElement("p");
+	
+	form.setAttribute("id", "new-product");
+	
+	inputCat.setAttribute("type", "text");
+	inputCat.setAttribute("id", "catalog");
+    inputCat.setAttribute("placeholder", "insert catalog number");
+    
+    btnUpload.innerHTML = "add product";
+	btnUpload.setAttribute('id', 'add-product-btn');
+	btnUpload.setAttribute('type', 'button');
+	btnUpload.setAttribute('class', 'btn btn-success');
+	btnUpload.setAttribute("onclick", 'addProlduct()');
+	
+	btnCancel.innerHTML = "cancel";
+	btnCancel.setAttribute('id', 'cancel-product-btn');
+	btnCancel.setAttribute('type', 'button');
+	btnCancel.setAttribute('class', 'btn btn-danger');
+	btnCancel.setAttribute('style', 'float:right; padding-right:10px;');
+	btnCancel.setAttribute("onclick", 'cancelAddProduct()' );
+	
+	p.appendChild(btnUpload);
+	p.appendChild(btnCancel);
+	
+	form.appendChild(inputCat);
+	form.appendChild(inputType);
+	form.appendChild(inputPrice);
+	form.appendChild(inputLength);
+	form.appendChild(inputColors);
+	form.appendChild(p);
+
+	
+	var container = document.getElementById("products");
+	container.appendChild(form);
+	
+}
+
+
 /*********************************************************************************
 *	this function displays admin functionality: add product..
 *********************************************************************************/
@@ -52,7 +104,7 @@ function displayAdmin(){
 	
 	li.appendChild(a);
 	header.appendChild(li);
-	alert('display admin');
+	//alert('display admin');
 }
 
 
@@ -79,7 +131,7 @@ function loadUserOrders(){
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
-		alert('load products'); 
+		//alert('load products'); 
 		
 		$.ajax({    
         url: 'ProductServlet', 	// point to server-side
@@ -207,7 +259,7 @@ function createMessage(jsonMessage){
 	var messages  = document.getElementsByClassName('message');
 	
 		
-	alert(clicked);
+	//alert(clicked);
 	for(var i = 0; i < messages.length; i++){	
 		msgCount++;
 	}
@@ -297,11 +349,8 @@ function messageClicked(p){
 *********************************************************************************/
 function replyClicked(p){
 	var count = p;
-	var sender = document.getElementById('user' + count);
 	var date = document.getElementById('date' + count).innerHTML;
 	var user = sessionStorage.getItem('username');
-	var formData = new FormData();
-	
 	
 	
 	var existingNode = document.getElementById("message" + count);	
@@ -352,27 +401,6 @@ function replyClicked(p){
 	
 	//alert(user);
 	notifyMessageClicked(user, date);
-	
-	/*
-	formData.append("code", "3");
-	formData.append("user", (sender.innerHTML).slice(0,20)); 
-	formData.append("sender", user.slice(0,20));
-	formData.append("message", replyText.value);
-	formData.append("date", date); 
-	
-    $.ajax({
-	    url: 'UserServlet', 	// point to server-side 
-	    dataType: 'text',  		// what to expect back from the server, if anything
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    data: formData,                         
-	    type: 'post',
-	    success: function(response){
-	       			alert("file uploaded successfully!" + response); 
-    			}
- 	});
-	*/
 }
 
 
@@ -405,7 +433,7 @@ function notifyMessageClicked(user, date){
 	    data: formData,                         
 	    type: 'post',
 	    success: function(response){
-	       			alert("message clicked"); 
+	       			//alert("message clicked"); 
     			}
 	});
 
@@ -662,7 +690,7 @@ function loadUserDetails(){
 	let email      = sessionStorage.getItem('email');
 	let address	   = sessionStorage.getItem('address');
 	
-	alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
 	document.getElementById("user-details-header").innerHTML = name;
 	
 	document.getElementById("pt-user-name").value = name;
@@ -701,7 +729,6 @@ function loadUsers(){
 	formData.append("image", blob);
 	formData.append("date", date.getTime());
 	
-	alert(date.getTime());
 	
 	/*
 	for (var value of form_data.values()) {
@@ -782,7 +809,7 @@ function sendMessage(){
 	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
 	var form_data = new FormData();
 	
-	alert(date.toISOString().split('T')[0]);
+	//alert(date.toISOString().split('T')[0]);
 	form_data.append("code", "2");
 	form_data.append("sender", sender.slice(0,20)); 
 	form_data.append("user", usr.slice(0,20));
@@ -818,7 +845,7 @@ function sendMessage1(images){
 	var clicked   = false;
 	var formData  = new FormData();
 	
-	alert(date.getTime());
+	//alert(date.getTime());
 	formData.append("code", "1");
 	formData.append("sender", sender.slice(0,20)); 
 	formData.append("user", usr.slice(0,20));
