@@ -172,6 +172,7 @@ function createShopItem(type, imageSrc, price) {
 *	this function loads the 'products' from the DB
 *********************************************************************************/
 function loadProducts(){
+		
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "0");
@@ -180,8 +181,8 @@ function loadProducts(){
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
-		
-	    $.ajax({
+		alert(formdata.get("date"));
+	    $.ajax({    
         url: 'ProductServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
         cache: false,
@@ -199,7 +200,7 @@ function loadProducts(){
 		            	form.appendChild(item);					
 		            }
     			}
-     });
+     	});
 }
 
 /*********************************************************************************

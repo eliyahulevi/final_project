@@ -17,12 +17,13 @@
 *	the loadUsers function, in order to populate the users list
 *********************************************************************************/
 $(document).ready(function(){
-
+	
 	// hide the 'update' button in 'personal-details' section
 	document.getElementById("pt-update").style.display = "none";
 	document.getElementById("msg-text-upload").style.display = "none";
 	
 	// load user's personal details & messages
+	
 	loadUserOrders();
 	loadUserDetails();
 	loadUserMessages();
@@ -50,14 +51,35 @@ function onTextChange(){
 *	this function load all the users orders (past and present) from the server DB
 *********************************************************************************/
 function loadUserOrders(){
+		var date = new Date().getTime();
 		var formdata = new FormData();
-		formdata.append("code", "2");
+		formdata.append("code", "0");
 		formdata.append("user", sessionStorage.getItem('username'));
 		formdata.append("sender", ""); 
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
-
+		alert('load products'); 
+		
+		$.ajax({    
+        url: 'ProductServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formdata,                         
+        type: 'post',
+        success: function(response){ 
+        			var products = JSON.parse(response);    
+        			 			
+		            //var form = document.getElementById("items");
+		            var length = products.length;
+		            for(var i = 0; i < length; i++){
+		            	//var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
+		            	//form.appendChild(item);					
+		            }
+    			}
+     	});
 }
 
 

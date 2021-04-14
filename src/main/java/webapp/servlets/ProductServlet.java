@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import model.product.Product;
  * Servlet implementation class ProductServlet
  */
 @WebServlet("/ProductServlet")
+@MultipartConfig
 public class ProductServlet extends HttpServlet {
 	
 	DB db;
@@ -40,12 +42,6 @@ public class ProductServlet extends HttpServlet {
         db = new DB();
     }
 
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,12 +62,13 @@ public class ProductServlet extends HttpServlet {
 		String user 			= request.getParameter("user");
 		String sender 			= request.getParameter("sender");
 		String msg 				= request.getParameter("message");
-		long date 				= Long.parseLong(request.getParameter("date")); 
-		
+		//long date 				= Long.parseLong(request.getParameter("date")); 
+		String date 			= request.getParameter("date");
+		System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
 		
 		try 
 		{
-			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
+			
 			switch(code)
 			 {
 			 	case "0":		// get all products
@@ -131,7 +128,7 @@ public class ProductServlet extends HttpServlet {
 		{
 			try 
 			{
-				db.insertMessage(new Message(sender, user, msg, date, blob)); 
+				//db.insertMessage(new Message(sender, user, msg, date, blob)); 
 			} 
 			catch (Exception e1) 
 			{
