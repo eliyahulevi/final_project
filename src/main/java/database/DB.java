@@ -1362,7 +1362,7 @@ public class DB
 	
 	/*
 	 * shut down the database
-	*/
+	 */
 	public int shutDown()
 	{
 		int result = -1;

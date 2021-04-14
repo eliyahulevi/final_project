@@ -22,8 +22,9 @@ $(document).ready(function(){
 	document.getElementById("pt-update").style.display = "none";
 	document.getElementById("msg-text-upload").style.display = "none";
 	
-	// load user's personal details & messages
-	
+	if( sessionStorage.getItem('username') == 'admin' ){
+		displayAdmin();
+	}
 	loadUserOrders();
 	loadUserDetails();
 	loadUserMessages();
@@ -34,6 +35,25 @@ $(document).ready(function(){
 	});
   
 });
+
+
+/*********************************************************************************
+*	this function displays admin functionality: add product..
+*********************************************************************************/
+function displayAdmin(){
+	
+	var header = document.getElementById('nav-bar-items');
+	var li = document.createElement('li');
+	var a = document.createElement('a');
+	
+	li.setAttribute('id', 'add-product');
+	a.innerHTML = 'Add Product';
+	a.setAttribute('href', '#products');
+	
+	li.appendChild(a);
+	header.appendChild(li);
+	alert('display admin');
+}
 
 
 /*********************************************************************************
@@ -70,8 +90,7 @@ function loadUserOrders(){
         data: formdata,                         
         type: 'post',
         success: function(response){ 
-        			var products = JSON.parse(response);    
-        			 			
+        			var products = JSON.parse(response);    			 			
 		            //var form = document.getElementById("items");
 		            var length = products.length;
 		            for(var i = 0; i < length; i++){
