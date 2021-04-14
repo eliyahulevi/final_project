@@ -141,7 +141,7 @@ public class UserServlet extends HttpServlet
 					 break;
 				 }
 				 
-				 case "4":
+				 case "4":		// user past orders
 				 {
 					 String json = "";
 					 System.out.println("user servlet >> code:" + code);

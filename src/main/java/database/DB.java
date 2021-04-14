@@ -296,10 +296,10 @@ public class DB
 					if (!rs.next())
 					{
 						stat.executeUpdate(createQueryString[index]);
-						System.out.println("table: " + tables_str[index] + " created");
+						System.out.println("DB >>table: " + tables_str[index] + " created");
 					}
 					else
-						System.out.println("table: " + tables_str[index] + " exists");
+						System.out.println("DB >> table: " + tables_str[index] + " exists");
 				}
 			}
 		} 
@@ -430,7 +430,7 @@ public class DB
 			}
 			else
 			{
-				System.out.println("no connection to DB");
+				System.out.println("DB >> no connection to DB");
 			}
 			
 		} 
@@ -457,12 +457,15 @@ public class DB
 
 		return result;
 	}
+
 	
 	/************************************************************************
 	*	USER related code here: (insert, update, get all, etc. )
 	*************************************************************************/		
 	/*
-	 *	user to JSON format 
+	 *	converts User instance to string in JSON format
+	 *	@param	user	instance of User class
+	 *	return	String	the user object fields in a JSON format 
 	 */
 	private String user2JSON(User user)
 	{
@@ -481,7 +484,9 @@ public class DB
 	}
 	
 	/*
-	 *  get all users 
+	 *  get all users names
+	 *  @param	null
+	 *  return	List<string>	a list of strings of registered users names only
 	 */
 	public List<String> getUsersNames()
 	{
@@ -524,7 +529,10 @@ public class DB
 	}
 	
 	/*
-	 *  insert a new user 
+	 *  insert a new user to DB
+	 *  @param	user	an instance of the user to be inserted into DB
+	 *  @param	first	a boolean indicating initial DB instantiation (obsolete)
+	 *  return 	null
 	 */
  	public void insertUser(User user, boolean first) 
 	{
@@ -584,7 +592,10 @@ public class DB
 	}	
 	
  	/*
-	 *  find user 
+	 *  find IF a user with a specific password exist in DB
+	 *  @param	String name, the name of the requested user
+	 *  @param	String password, the password of the user
+	 *  return 	boolean, true/false if user name exist with the given password
 	 */
 	public boolean findUser(String name, String password)
 	{
@@ -594,7 +605,7 @@ public class DB
 				
 		try 
 		{
-			System.out.println("in db searching for user " + name + " with password " + password);
+			System.out.println("DB >> searching for user " + name + " with password " + password);
 			this.connect();
 			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
@@ -635,6 +646,13 @@ public class DB
 				
 		return result;
 	}
+	
+	/*
+	 * 	find USER DETAILS of a specific user
+	 * 	@param	String name, the name of the requested user
+	 *  @param	String password, the password of the user
+	 *  return	String, the user details in JSON format
+	 */
 	public String findUser1(String name, String password)
 	{
 		String result = "";
@@ -643,7 +661,7 @@ public class DB
 				
 		try 
 		{
-			System.out.println("in db searching for user " + name + " with password " + password);
+			System.out.println("DB >> searching for user " + name + " with password " + password);
 			if (this.connect() < 0)
 			{
 				System.out.println("cannot connect to database.. aborting");
@@ -694,6 +712,8 @@ public class DB
 	*************************************************************************/	
 	/*
 	 *  convert message to JSON format
+	 *  @param	Message message, a Message instance
+	 *	return String, the message details in a JSON format  	
 	 */
 	private String message2JSON(Message message)
 	{
@@ -724,7 +744,10 @@ public class DB
 	}
 	
 	/*
-	 *  get messages (for  a given user)
+	 *  get messages (of a given user)
+	 *  @param	String	user, the user name
+	 *  return	List<String>	a list of strings that holds all of the user
+	 *  						messages in a JSON format array
 	 */
 	public List<String> getUserMessages(String user)
 	{
@@ -783,7 +806,9 @@ public class DB
 	}
 	
 	/*
-	 *  insert user message
+	 *  insert a new message
+	 *  @param	Message	message, a message instance to be inserted
+	 *  return	int	non negative integer in case of success, -1 on failure
 	 */
 	public int insertMessage(Message message)
 	{
@@ -830,7 +855,11 @@ public class DB
 	}
 
 	/*
-	 * 	update 'message' clicked field
+	 * 	update 'message' clicked field of a specific user. function finds
+	 * 	the message with the signature string 'user''date' (concatenated) 
+	 * 	@param	String	user, user name
+	 * 	@param	long	date, the message date in miliseconds
+	 * 	return	int		non negative upon success, negative else
 	 */
 	public int messageClicked(String user, long date)
 	{

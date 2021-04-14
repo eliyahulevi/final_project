@@ -64,7 +64,7 @@ public class ProductServlet extends HttpServlet {
 		String msg 				= request.getParameter("message");
 		//long date 				= Long.parseLong(request.getParameter("date")); 
 		String date 			= request.getParameter("date");
-		System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
+		System.out.println("product servlet >> code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
 		
 		try 
 		{
@@ -78,7 +78,7 @@ public class ProductServlet extends HttpServlet {
 					 if( list.size() > 0)
 					 {
 						 json = new Gson().toJson(list);
-						 System.out.println(list);
+						 System.out.println("product servlet >> " + list);
 					 } 
 					
 					 response.getWriter().write(json);
