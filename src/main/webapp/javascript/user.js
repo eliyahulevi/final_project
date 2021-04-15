@@ -52,8 +52,53 @@ function showAddProduct(){
 	var btnUpload = document.createElement("button");
 	var btnCancel = document.createElement("button");
 	var p = document.createElement("p");
+	var tbl = document.createElement('table');
+	var trHeader = document.createElement('tr');
+	var trValues = document.createElement('tr');
+	var thCatalog = document.createElement('th');
+	var thType = document.createElement('th');
+	var thPrice = document.createElement('th');
+	var thLength = document.createElement('th');
+	var thColor = document.createElement('th');
+	var tdCatalogInput = document.createElement('td');
+	var tdTypeInput = document.createElement('td');
+	var tdPriceInput = document.createElement('td');
+	var tdLengthInput = document.createElement('td');
+	var tdColorInput = document.createElement('td');
+	var tb = document.createElement('tb');
 	
+	
+	tbl.setAttribute('style', 'width: 100%;');
+	thCatalog.innerHTML = 'Catalog';
+	thType.innerHTML = 'Type';
+	thPrice.innerHTML = 'Price';
+	thLength.innerHTML = 'Length';
+	thColor.innerHTML = 'Color';
+	
+	trHeader.appendChild(thCatalog);
+	trHeader.appendChild(thType);
+	trHeader.appendChild(thPrice);
+	trHeader.appendChild(thLength);
+	trHeader.appendChild(thColor);
+
+	//tdCatalogInput.setAttribute('align', 'center');
+	tdCatalogInput.appendChild(inputCat);
+	tdTypeInput.appendChild(inputType);
+	tdPriceInput.appendChild(inputLength);
+	tdLengthInput.appendChild(inputPrice);
+	tdColorInput.appendChild(inputColors);
+	
+	trValues.appendChild(tdCatalogInput);
+	trValues.appendChild(tdTypeInput);
+	trValues.appendChild(tdPriceInput);
+	trValues.appendChild(tdLengthInput);
+	trValues.appendChild(tdColorInput);
+		
+	tbl.appendChild(trHeader);
+	tbl.appendChild(trValues);
+  		
 	form.setAttribute("id", "new-product");
+	form.setAttribute('style', 'float:center;');
 	
 	inputCat.setAttribute("type", "text");
 	inputCat.setAttribute("id", "catalog");
@@ -75,13 +120,8 @@ function showAddProduct(){
 	p.appendChild(btnUpload);
 	p.appendChild(btnCancel);
 	
-	form.appendChild(inputCat);
-	form.appendChild(inputType);
-	form.appendChild(inputPrice);
-	form.appendChild(inputLength);
-	form.appendChild(inputColors);
+	form.appendChild(tbl);
 	form.appendChild(p);
-
 	
 	var container = document.getElementById("products");
 	container.appendChild(form);
