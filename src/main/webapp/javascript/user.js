@@ -39,6 +39,65 @@ $(document).ready(function(){
 
 
 /*********************************************************************************
+*	this function send added product to the server (and from there to the DB)
+*********************************************************************************/
+function addProduct(){
+
+		var form = document.getElementById('new-product');
+		
+		var productID = document.getElementById('product-id');
+		var productLength = document.getElementById('product-length');
+		var productType = document.getElementById('product-type');
+		var productPrice = document.getElementById('product-price');
+		var productColor = document.getElementById('product-color');
+		
+		
+		if(productLength.value === ''){
+			alert('productLength is empty');
+		}
+		if(productID.value == "" || productLength.value == "" || productType.value === "" || productPrice.value == "" || productColor.value == ""){
+			alert('please fill out ALL fields!');
+			alert('cat:' + productID.value+
+				  ' type:' + productType.value +
+				  ' length:' + productLength.value +
+				  ' price: ' + productPrice.value +
+				  ' color: ' + productColor.value);
+			return;
+		}
+		var date = new Date().getTime();
+		var formdata = new FormData();
+		formdata.append("code", "1");
+		formdata.append("catalog", productID.value);
+		formdata.append("type", productType.value); 
+		formdata.append("price", productPrice.value);
+		formdata.append("length", productLength.value);
+		formdata.append("color", productColor.value);
+		//alert('load products'); 
+		
+		$.ajax({    
+        url: 'ProductServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formdata,                         
+        type: 'post',
+        success: function(response){ 
+        			alert(response);
+    			}
+     	});
+}
+
+
+/*********************************************************************************
+*	this function cancel the adding product procedure
+*********************************************************************************/
+function cancelAddProduct(){
+	alert('TODO: implement cancel add product');
+}
+
+
+/*********************************************************************************
 *	this function displays admin functionality: add product..
 *********************************************************************************/
 function showAddProduct(){
@@ -48,7 +107,7 @@ function showAddProduct(){
 	var inputType = document.createElement('input');
 	var inputLength = document.createElement('input');
 	var inputPrice = document.createElement('input');
-	var inputColors = document.createElement('input');
+	var inputColor = document.createElement('input');
 	var btnUpload = document.createElement("button");
 	var btnCancel = document.createElement("button");
 	var p = document.createElement("p");
@@ -69,12 +128,12 @@ function showAddProduct(){
 	
 	
 	tbl.setAttribute('style', 'width: 100%;');
-	thCatalog.innerHTML = 'Catalog';
-	thType.innerHTML = 'Type';
-	thPrice.innerHTML = 'Price';
-	thLength.innerHTML = 'Length';
-	thColor.innerHTML = 'Color';
-	
+	thCatalog.innerHTML = 'Catalog [integer]';
+	thType.innerHTML = 'Type [integer]';
+	thPrice.innerHTML = 'Price [decimal]';
+	thLength.innerHTML = 'Length [decimal]';
+	thColor.innerHTML = 'Color [name]';
+
 	trHeader.appendChild(thCatalog);
 	trHeader.appendChild(thType);
 	trHeader.appendChild(thPrice);
@@ -84,31 +143,41 @@ function showAddProduct(){
 	//tdCatalogInput.setAttribute('align', 'center');
 	tdCatalogInput.appendChild(inputCat);
 	tdTypeInput.appendChild(inputType);
-	tdPriceInput.appendChild(inputLength);
-	tdLengthInput.appendChild(inputPrice);
-	tdColorInput.appendChild(inputColors);
+	tdLengthInput.appendChild(inputLength);
+	tdPriceInput.appendChild(inputPrice);
+	tdColorInput.appendChild(inputColor);
 	
 	trValues.appendChild(tdCatalogInput);
 	trValues.appendChild(tdTypeInput);
 	trValues.appendChild(tdPriceInput);
 	trValues.appendChild(tdLengthInput);
 	trValues.appendChild(tdColorInput);
-		
+
 	tbl.appendChild(trHeader);
 	tbl.appendChild(trValues);
-  		
+  			
 	form.setAttribute("id", "new-product");
 	form.setAttribute('style', 'float:center;');
-	
+
 	inputCat.setAttribute("type", "text");
-	inputCat.setAttribute("id", "catalog");
-    inputCat.setAttribute("placeholder", "insert catalog number");
+	inputCat.setAttribute("id", "product-id");
+    inputCat.setAttribute("placeholder", "insert catalog number");  
+    inputCat.setAttribute("required", "");
+    
+    inputType.setAttribute("id", "product-type");
+    inputType.setAttribute("required", "");
+    inputPrice.setAttribute("id", "product-price");
+    inputPrice.setAttribute("required", "");
+    inputLength.setAttribute("id", "product-length");
+    inputLength.setAttribute("required", "");
+    inputColor.setAttribute("id", "product-color");
+    inputColor.setAttribute("required", "");
     
     btnUpload.innerHTML = "add product";
 	btnUpload.setAttribute('id', 'add-product-btn');
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute("onclick", 'addProlduct()');
+	btnUpload.setAttribute("onclick", 'addProduct()');
 	
 	btnCancel.innerHTML = "cancel";
 	btnCancel.setAttribute('id', 'cancel-product-btn');
@@ -174,7 +243,7 @@ function loadUserOrders(){
 		//alert('load products'); 
 		
 		$.ajax({    
-        url: 'ProductServlet', 	// point to server-side
+        url: 'UserServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
         cache: false,
         contentType: false,

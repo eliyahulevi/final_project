@@ -28,6 +28,15 @@ public class Product
 		
 	}
 
+	public Product(int id, int type, float price, float length, String color) 
+	{
+		this.catalog = id;
+		this.type = type;
+		this.price = price;
+		this.length = length;
+		this.color = color;
+	}
+
 	public void setCatalog(int c) 	{ this.catalog = c; }
  	public void setType(int t) 		{ this.type = t; }
 	public void setPrice(float p) 	{ this.price = p; }

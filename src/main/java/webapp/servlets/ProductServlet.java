@@ -29,7 +29,8 @@ import model.product.Product;
  */
 @WebServlet("/ProductServlet")
 @MultipartConfig
-public class ProductServlet extends HttpServlet {
+public class ProductServlet extends HttpServlet 
+{
 	
 	DB db;
 	private static final long serialVersionUID = 1L;
@@ -46,25 +47,33 @@ public class ProductServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		InputStream fileContent = null;
 		Blob blob 				= null;
 		byte[] data 			= null;
 		
 		String code 			= request.getParameter("code");
-		String user 			= request.getParameter("user");
-		String sender 			= request.getParameter("sender");
-		String msg 				= request.getParameter("message");
-		//long date 				= Long.parseLong(request.getParameter("date")); 
-		String date 			= request.getParameter("date");
-		System.out.println("product servlet >> code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
+		int id	 				= Integer.parseInt(request.getParameter("catalog"));
+		int type 				= Integer.parseInt(request.getParameter("type"));
+		float price 			= Float.parseFloat(request.getParameter("price"));
+		float length 			= Float.parseFloat(request.getParameter("length"));
+		String color 			= request.getParameter("color");
+		 
+		System.out.println("product servlet >> "
+								+ "	catalog:" + id 
+								+ " type:" + type 
+								+ " price: " + price 
+								+ " length: " + length
+								+ " color " + color);
 		
 		try 
 		{
@@ -86,9 +95,11 @@ public class ProductServlet extends HttpServlet {
 			 	}
 				
 					 
-				 case "1":		// TBD
+				 case "1":		// add new product
 				 {
-					
+				 	Product product = new Product(id, type, price, length, color);
+					 db.insertProduct(product);
+					 System.out.println("product servlet >> add product");
 					 break;
 				 }
 				 
@@ -104,10 +115,11 @@ public class ProductServlet extends HttpServlet {
 					 break;
 				 }
 				 
-				 case "4":
+				 case "4":		// get all user products
 				 {
 					 String json = "";
 					 System.out.println("user servlet >> code:" + code);
+					 /*
 					 List<Order> list = db.getOrders(user);
 					 if( list.size() > 0)
 					 {
@@ -115,6 +127,7 @@ public class ProductServlet extends HttpServlet {
 						 System.out.println(list);
 					 }
 					 response.getWriter().write(json);
+					 */
 					 break;
 				 }
 				 

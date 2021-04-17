@@ -84,7 +84,7 @@ public class DB
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
-	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[tables.USERS.getValue()] + "("  
+	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[tables.USERS.value] + "("  
 			+ "USERNAME varchar(40) not null PRIMARY KEY,"
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
@@ -92,7 +92,7 @@ public class DB
 			+ "PHOTO varchar(100),"
 			+ "DESCRIPTION varchar(200)"
 			+ ")";
-	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[tables.MESSAGES.getValue()] + "("
+	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[tables.MESSAGES.value] + "("
 			+ "USERDATE varchar(100) PRIMARY KEY,"
 			+ "SENDER varchar(20),"
 			+ "USERNAME varchar(20),"
@@ -102,18 +102,18 @@ public class DB
 			+ "CLICKED boolean"
 			+ ")";
 
-	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.getValue()] + "("
+	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
-	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.PRODUCTS.getValue()] + "("
+	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.PRODUCTS.value] + "("
 			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE int,"
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
 			+ "COLOR varchar(10)"
 			+ ")"; 
-	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.getValue()] + "("
+	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.value] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
 			+ "DATE bigint,"
 			+ "USERNAME varchar(40),"
@@ -123,21 +123,21 @@ public class DB
 			+ "PRODUCTS varchar(500),"
 			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
 			+ ")"; 
-	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.getValue()] + "("
+	private final String CREATE_ORDERED_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.ORDERED_PRODUCT.value] + "("
 			+ "ORDERED_PRODUCT varchar (30) NOT NULL PRIMARY KEY, "
 			+ "PRODUCT_ID int NOT NULL,"
 			+ "QTY int NOT NULL,"
 			+ "COLOR varchar(20),"
 			+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)" 
 			+ ")"; 
-	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.IMAGES.getValue()] + "("
+	private final String CREATE_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.IMAGES.value] + "("
 			+ "IMAGE_ID int PRIMARY KEY,"
 			+ "IMG BLOB"
 			//+ "FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID)," 
 		    //+ "FOREIGN KEY (IMAGE_ID) REFERENCES ORDERS(ORDER_ID)"
 		    //+ "UNIQUE (PRODUCT_ID, ORDER_ID)"
 			+ ")"; 
-	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.USER_IMAGES.getValue()] + "("
+	private final String CREATE_USER_IMAGES_TABLE = "CREATE TABLE " + tables_str[tables.USER_IMAGES.value] + "("
 			+ "IMAGE_NAME varchar(100) PRIMARY KEY,"
 			+ "IMG BLOB,"
 			+ "USERNAME varchar(40),"
@@ -150,24 +150,24 @@ public class DB
 	/************************************************************************
 	 *	 					order	
 	 ***********************************************************************/
-	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[4] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[4] + " WHERE ORDER_ID=?";
-	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[4] + " WHERE USERNAME=?";
+	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE ORDER_ID=?";
+	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE USERNAME=?";
 	
 	/************************************************************************
 	 *	 					user	
 	 ***********************************************************************/
-	private String INSERT_USER = 			"INSERT INTO "   + tables_str[0] + " VALUES (?, ?, ?, ?, ?, ?)";
-	private String SELECT_USERS = 			"SELECT * FROM " + tables_str[0] ;
-	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[0];
-	private String SELECT_USER		=		"SELECT * FROM " + tables_str[0] + " WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_USER = 			"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
+	private String SELECT_USERS = 			"SELECT * FROM " + tables_str[tables.USERS.value] ;
+	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[tables.USERS.value];
+	private String SELECT_USER		=		"SELECT * FROM " + tables_str[tables.USERS.value] + " WHERE USERNAME=? AND PASSWORD=?";
 	
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM MESSAGES WHERE USERNAME=?";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO MESSAGES VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_MESSAGES = 		"SELECT * FROM MESSAGES";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
 	
 	/************************************************************************
 	 *	 					image
@@ -178,11 +178,11 @@ public class DB
 	/************************************************************************
 	 *	 					product
 	 ***********************************************************************/
-	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[5] + " VALUES (?, ?, ?, ?)";
-	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[5] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[5] + " VALUES (?, ?, ?, ?, ?)";
-	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[5] + " WHERE PRODUCT_ID=?";
-	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[5];
+	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
+	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?)";
+	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
+	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
 	
 	/************************************************************************
 	 *	 					general app queries
@@ -788,6 +788,10 @@ public class DB
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
+		}
+		finally
+		{
 			this.disconnect();
 			try 
 			{
@@ -905,7 +909,14 @@ public class DB
 	*	IMAGE related code here:  (insert, update, get all, etc. ), this 
 	*	section might by unified with MESSAGE section
 	*************************************************************************/	
- 	public int insertImage(String imgName, String user, Blob image)
+ 	/*
+ 	 * 	inserting an image with name, by specific user and source
+ 	 * 	@param	imgName String	file name
+ 	 * 	@param	user	String	the name of the user that uploaded
+ 	 * 	@param	image	Blob	the image source
+ 	 * 	return	int		non-negative on success, negative else
+ 	 */
+	public int insertImage(String imgName, String user, Blob image)
 	{
 		int result = -1;
 		int index = 0;
@@ -957,6 +968,12 @@ public class DB
 		
 		return result;
 	}
+	
+	/*
+	 * 	extract an image from the DB, in form of array of bytes
+	 * 	@param	name	String	the name of the image
+	 * 	return			Byte[]	the image source
+	 */
 	public byte[] getImage(String name)
 	{
 		int length = 10;
@@ -996,9 +1013,7 @@ public class DB
 	}
 	
 	
-	
-
-	
+		
 	/************************************************************************
 	*	ORDER related code here:  (insert, update, get all, etc. )
 	*************************************************************************/		
@@ -1189,8 +1204,63 @@ public class DB
 	/************************************************************************
 	*	PRODUCT related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
+ 	
  	/*
- 	 * 	insert ordered product
+ 	 * 	insert a new product to DB
+ 	 * 	@param	product	Product	a product object
+ 	 * 	return			int		non negative upon success, negative else	
+ 	 */
+ 	public int insertProduct(Product product)
+ 	{
+ 		int result = -1;
+ 		PreparedStatement ps = null;
+	 	try
+	 	{
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
+			ps = this.connection.prepareStatement(INSERT_PRODUCT);
+			
+			ps.setInt(1, product.getCatalog());
+			ps.setInt(2, product.getType());
+			ps.setFloat(3, product.getPrice());
+			ps.setFloat(4, product.getLength());
+			ps.setString(5, product.getColor());
+			result = ps.executeUpdate();
+			
+			if (result > 0)
+				System.out.println("DB >> product " + product.getCatalog() + " added");	
+			
+			
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		e.printStackTrace();
+	 	}
+	 	finally
+	 	{
+			try
+			{
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}		
+ 		return result;
+ 	}
+ 	
+ 	
+ 	/*
+ 	 * 	insert ordered product. ordered product is a table that binds a product
+ 	 * 	to a specific ordered length. 
+ 	 * 	@param	product		Product object that holds the product info
+ 	 * 	return				null
  	 */
  	public void insertOrderedProduct(Product product)
  	{
