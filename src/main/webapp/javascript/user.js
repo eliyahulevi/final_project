@@ -264,7 +264,7 @@ function loadUserOrders(){
 
 
 /*********************************************************************************
-*	this function sends the updated user details to the server
+*	this function load all users messages from the server for the registered user 
 *********************************************************************************/
 function loadUserMessages(){
 		var date = new Date().getTime();
@@ -319,15 +319,6 @@ function userExist(user){
 }
 
 
-
-/*********************************************************************************
-*	this function load all message of a specific 'sender' (user)
-*********************************************************************************/
-function onSenderChosen(){
-	alert();
-}
-
-
 /*********************************************************************************
 *	this function takes a message in JSON format and create an option 'sender'
 *********************************************************************************/
@@ -343,7 +334,8 @@ function createSender(jMessage){
 
 
 /*********************************************************************************
-*	this function takes a message in JSON format and create a message element
+*	this function takes a message in JSON format and create a message element, 
+*	with the message details including offset, content, etc.
 *********************************************************************************/
 function createMessage(jsonMessage){
 	
@@ -354,6 +346,7 @@ function createMessage(jsonMessage){
 	var clicked   = message.clicked;
 	var msg_text  = message.message;
 	var msgCount  = 0;
+	var offset    = message.offset;
 	
 	var frame 	  = document.createElement("div");
 	var userTag   = document.createElement("a");
@@ -403,7 +396,8 @@ function createMessage(jsonMessage){
 		p.appendChild(reply);
 	}
 
-	frame.setAttribute("class", "message");
+	frame.style.left = offset + 'px';
+	frame.setAttribute('class', 'message');
 	frame.setAttribute("id", "message" + msgCount);
 	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
 	frame.appendChild(userTag);
@@ -418,7 +412,8 @@ function createMessage(jsonMessage){
 
 
 /*********************************************************************************
-*	this function handles message element being clicked
+*	this function handles message element being clicked, notify server that message
+*	was clicked
 *********************************************************************************/
 function messageClicked(p){
 	var click = document.getElementById('clicked' + p);
@@ -460,6 +455,8 @@ function replyClicked(p){
 	var count = p;
 	var date = document.getElementById('date' + count).innerHTML;
 	var user = sessionStorage.getItem('username');
+	var dateMiliseconds	=	Date.parse(date);
+	alert(dateMiliseconds);
 	
 	
 	var existingNode = document.getElementById("message" + count);	
@@ -488,7 +485,7 @@ function replyClicked(p){
 	btnUpload.setAttribute('id', 'upload-file-btn' + count);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute("onclick", 'upload(' + count + ')');
+	btnUpload.setAttribute("onclick", 'replyMessage(' + count + ')');
 	
 	btnCancel.innerHTML = "cancel";
 	btnCancel.setAttribute('id', 'cancel-file-btn' + count);
@@ -509,8 +506,20 @@ function replyClicked(p){
 	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
 	
 	//alert(user);
-	notifyMessageClicked(user, date);
+	notifyMessageClicked(user, dateMiliseconds);
 }
+
+
+
+/*********************************************************************************
+*	this function handles the reply to a message: 
+*********************************************************************************/
+function replyMessage(p){
+	alert('reply to message' + p);
+	var	text	=	document.getElementById('msg-txt');
+	
+}
+
 
 
 /*********************************************************************************

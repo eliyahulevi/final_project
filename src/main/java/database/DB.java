@@ -99,7 +99,8 @@ public class DB
 			+ "CONTENT varchar(500),"
 			+ "DATE bigint,"
 			+ "IMAGE BLOB,"
-			+ "CLICKED boolean"
+			+ "CLICKED boolean,"
+			+ "OFFSET int"
 			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
@@ -166,7 +167,7 @@ public class DB
 	 *	 					message
 	 ***********************************************************************/
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
 	
 	/************************************************************************
@@ -500,8 +501,9 @@ public class DB
 			rs = statement.executeQuery();
 			while(rs.next())
 			{
-				System.out.println(rs.getString(1));
+				
 				String name = rs.getString(1); 
+				System.out.println(name);
 				result.add(name);
 			}
 		}
@@ -729,6 +731,7 @@ public class DB
 			map.put("date", Long.toString(message.getDate()));
 			map.put("message", message.getMessage());	
 			map.put("clicked", String.valueOf(message.getClicked()));
+			map.put("offset", String.valueOf(message.getOffset()));
 			if(blob == null)
 				map.put("image", "");
 			else 
@@ -779,6 +782,7 @@ public class DB
 				message.setDate(rs.getLong(5));					// date
 				message.setImage(rs.getBlob(6));				// image source
 				message.setClicked(rs.getBoolean(7));			// clicked
+				message.setOffset(rs.getInt(8));	 			// offset
 				
 				String s = this.message2JSON(message);
 				// TODO: erase later
@@ -835,6 +839,7 @@ public class DB
 			ps.setLong(5, message.getDate());
 			ps.setBlob(6, message.getImage());
 			ps.setBoolean(7, message.getClicked());
+			ps.setInt(8, message.getOffset()); 
 			ps.execute();
 			result = 0;
 		}

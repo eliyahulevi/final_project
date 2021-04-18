@@ -14,6 +14,7 @@ public class Message
 	long date;
 	Blob image;
 	boolean clicked;
+	int offset;
 	public static String WELCOME = "Welcome to the LumberYard !! please feel free to ask any question @SUPPORT";
 	
 	public Message() {}
@@ -25,6 +26,7 @@ public class Message
 		this.date = date;
 		this.image = img;
 		this.clicked = false;
+		this.offset = 0;
 	}
 	
 	/*
@@ -37,6 +39,7 @@ public class Message
 	public void setCode(int i) { this.code = i; }
 	public void setImage(Blob b) { this.image = b; }
 	public void setClicked(boolean b) { this.clicked = b; }
+	public void setOffset(int i) { this.offset = i; }
 
 	public int getCode() { return this.code; }
 	public String getUser() { return this.user;}
@@ -44,7 +47,8 @@ public class Message
 	public long getDate() { return this.date;}
 	public String getMessage() { return this.message; }
 	public Blob getImage() { return this.image; }
-	public boolean getClicked() { return this.clicked; } 
+	public boolean getClicked() { return this.clicked; }
+	public int getOffset() { return this.offset; } 
 
 
 }
