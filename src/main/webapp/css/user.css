@@ -57,8 +57,8 @@ input#file {
 	width: 100%;
 	padding-right: 10px;
 	background-color: #00ff00;
-    border-radius: 5px;
-    border: 1px solid #000000;
+    /*border-radius: 5px;
+    border: 1px solid #000000;*/
 }
 
 .messages-icon{

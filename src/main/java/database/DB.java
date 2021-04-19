@@ -100,7 +100,9 @@ public class DB
 			+ "DATE bigint,"
 			+ "IMAGE BLOB,"
 			+ "CLICKED boolean,"
-			+ "OFFSET int"
+			+ "OFFSET int,"
+			+ "REPLIEDTO varchar(100), "
+			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE)"
 			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
@@ -167,7 +169,7 @@ public class DB
 	 *	 					message
 	 ***********************************************************************/
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
 	
 	/************************************************************************
@@ -541,7 +543,7 @@ public class DB
  		int rs = -1;
  		long time = System.currentTimeMillis();
  		PreparedStatement state = null;
- 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null);
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null, 0, null);
  		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
@@ -732,6 +734,7 @@ public class DB
 			map.put("message", message.getMessage());	
 			map.put("clicked", String.valueOf(message.getClicked()));
 			map.put("offset", String.valueOf(message.getOffset()));
+			map.put("repliedTo", String.valueOf(message.getRepliedTo()));
 			if(blob == null)
 				map.put("image", "");
 			else 
@@ -783,7 +786,7 @@ public class DB
 				message.setImage(rs.getBlob(6));				// image source
 				message.setClicked(rs.getBoolean(7));			// clicked
 				message.setOffset(rs.getInt(8));	 			// offset
-				
+				message.setRepliedTo(rs.getString(9));			// replied to
 				String s = this.message2JSON(message);
 				// TODO: erase later
 				System.out.println("DB >> msgs: " + s);
@@ -840,6 +843,7 @@ public class DB
 			ps.setBlob(6, message.getImage());
 			ps.setBoolean(7, message.getClicked());
 			ps.setInt(8, message.getOffset()); 
+			ps.setString(9,  message.getRepliedTo()); 
 			ps.execute();
 			result = 0;
 		}

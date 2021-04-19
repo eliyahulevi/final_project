@@ -15,10 +15,11 @@ public class Message
 	Blob image;
 	boolean clicked;
 	int offset;
+	String repliedTo;
 	public static String WELCOME = "Welcome to the LumberYard !! please feel free to ask any question @SUPPORT";
 	
 	public Message() {}
-	public Message(String sender, String user, String msg, long date, Blob img)
+	public Message(String sender, String user, String msg, long date, Blob img, int offset, String repliedto)
 	{
 		this.sender = sender;
 		this.user = user;
@@ -26,7 +27,8 @@ public class Message
 		this.date = date;
 		this.image = img;
 		this.clicked = false;
-		this.offset = 0;
+		this.offset = offset;
+		this.repliedTo = repliedto;
 	}
 	
 	/*
@@ -40,6 +42,7 @@ public class Message
 	public void setImage(Blob b) { this.image = b; }
 	public void setClicked(boolean b) { this.clicked = b; }
 	public void setOffset(int i) { this.offset = i; }
+	public void setRepliedTo(String s) { this.repliedTo = s; }
 
 	public int getCode() { return this.code; }
 	public String getUser() { return this.user;}
@@ -49,6 +52,6 @@ public class Message
 	public Blob getImage() { return this.image; }
 	public boolean getClicked() { return this.clicked; }
 	public int getOffset() { return this.offset; } 
-
+	public String getRepliedTo() { return this.repliedTo; }
 
 }

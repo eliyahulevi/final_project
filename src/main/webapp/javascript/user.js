@@ -396,15 +396,15 @@ function createMessage(jsonMessage){
 		p.appendChild(reply);
 	}
 
-	frame.style.left = offset + 'px';
+	
 	frame.setAttribute('class', 'message');
-	frame.setAttribute("id", "message" + msgCount);
+	frame.setAttribute('id', 'messageElement' + msgCount);
 	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
 	frame.appendChild(userTag);
 	frame.appendChild(p);
 	frame.appendChild(clkd);
 	if(clicked == 'true'){
-		frame.setAttribute("style", "background: rgba(0.0, 0.0, 0.0, 0.0)");
+		frame.setAttribute('style', 'background: rgba(0.0, 0.0, 0.0, 0.0); left:' + offset + 'px;');
 	}
 	
 	return frame;	
@@ -456,10 +456,10 @@ function replyClicked(p){
 	var date = document.getElementById('date' + count).innerHTML;
 	var user = sessionStorage.getItem('username');
 	var dateMiliseconds	=	Date.parse(date);
-	alert(dateMiliseconds);
+	//alert(dateMiliseconds);
 	
 	
-	var existingNode = document.getElementById("message" + count);	
+	var existingNode = document.getElementById("messageElement" + count);	
 	var reply = document.createElement("div");
 	var replyText = document.createElement("textarea");
 	var form = document.createElement("form");
@@ -469,7 +469,7 @@ function replyClicked(p){
 	var btnUpload = document.createElement("button");
 	var btnCancel = document.createElement("button");
 	
-	replyText.setAttribute("id", "msg-txt");
+	replyText.setAttribute("id", "reply-msg-txt" + count);
 	replyText.setAttribute("name", "msg-txt");
 	replyText.setAttribute("onkeypress", "onTextChange()");
 	
@@ -515,9 +515,22 @@ function replyClicked(p){
 *	this function handles the reply to a message: 
 *********************************************************************************/
 function replyMessage(p){
-	alert('reply to message' + p);
-	var	text	=	document.getElementById('msg-txt');
-	
+
+	var senderName	= sessionStorage.getItem("username");			// who is sending
+	var userName 	= document.getElementById('user' + p);			// to whom
+	var	msgElement	= document.getElementById('messageElement' + p);
+	var dateMilis	= new Date().getTime();							// date in miliseconds
+	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
+	var jsonMessage = JSON.stringify({	user: userName.innerHTML, 
+										sender: senderName,
+										date: dateMilis,
+										clicked: false,
+										message: msgText.value,
+										offset: 10	});
+	var replyElement = createMessage(jsonMessage);
+	alert(jsonMessage);
+	cancel(p);
+	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
 }
 
 
@@ -555,62 +568,6 @@ function notifyMessageClicked(user, date){
     			}
 	});
 
-}
-
-
-/*********************************************************************************
-*	this function creates a new message element to be displayed and replied
-*********************************************************************************/
-function createMsgElement(message){
-
-var form = document.getElementById("msg-display");
-	
-	var user = sessionStorage.getItem('username');
-	var sender = sessionStorage.getItem('sender');
-	var date = new Date(); 
-	var msgCount = 0;
-	
-	var frame = document.createElement("div");
-	var userTag = document.createElement("a");
-	var replyUser = document.createElement("a");
-	var p = document.createElement("p");
-	var span = document.createElement("span");
-	var spanStart = document.createElement("span");
-	var spanEnd = document.createElement("span");
-	var reply = document.createElement("span");
-	var msg = document.createElement("p");	
-	var messages = document.getElementsByClassName('message');
-
-		
-	for(var i = 0; i < messages.length; i++){	
-		msgCount++;
-	}
-	
-	spanStart.innerHTML = "user ";
-	spanEnd.innerHTML = " on " + date;
-	
-	msg.innerHTML = " this is a test message ";
-	
-	userTag.setAttribute("href", "#");
-	userTag.innerHTML = user;
-	replyUser.setAttribute("href", "#");
-	replyUser.innerHTML = " reply";
-	
-	span.appendChild(userTag);
-	reply.appendChild(replyUser);
-	
-	p.appendChild(spanStart);
-	p.appendChild(span);
-	p.appendChild(spanEnd);
-	p.appendChild(reply);
-
-	frame.setAttribute('class', 'message');
-	frame.setAttribute('id', 'message' + msgCount);
-	frame.setAttribute('onclick', 'messageClicked(' + msgCount + ')' );
-	frame.appendChild(userTag);
-	frame.appendChild(p);
-	
-	return frame; 
 }
 
 
@@ -676,7 +633,7 @@ function upload(){
 
 
 /*********************************************************************************
-*	this function cretaes a JSON object of 'Message' type,  iterate over all images, 
+*	this function creates a JSON object of 'Message' type,  iterate over all images, 
 *	checked if chosen and sent to server
 *********************************************************************************/
 function uploadMessage(number){

@@ -99,10 +99,11 @@ public class UserServlet extends HttpServlet
 					 
 				 case "1":		// insert image
 				 {
-					Part image = request.getPart("image");
+					Part image 	= request.getPart("image");
+					int offset 	= Integer.parseInt(request.getParameter("offset"));
 					
 					if(image == null)
-						db.insertMessage(new Message(sender, user, msg, date, blob)); 
+						db.insertMessage(new Message(sender, user, msg, date, blob, offset, "")); 
 					
 					else if(!image.equals(""))
 					{
@@ -114,7 +115,7 @@ public class UserServlet extends HttpServlet
 							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
 							data = fileContent.readAllBytes();
 							blob = new SerialBlob(data);
-							db.insertMessage(new Message(sender, user, msg, date, blob));
+							db.insertMessage(new Message(sender, user, msg, date, blob,  offset, ""));
 						}
 					}
 					else
@@ -165,7 +166,8 @@ public class UserServlet extends HttpServlet
 		{
 			try 
 			{
-				db.insertMessage(new Message(sender, user, msg, date, blob)); 
+				int offset 	= Integer.parseInt(request.getParameter("offset"));
+				db.insertMessage(new Message(sender, user, msg, date, blob, offset, "")); 
 			} 
 			catch (Exception e1) 
 			{
