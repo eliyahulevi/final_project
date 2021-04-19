@@ -396,7 +396,7 @@ function createMessage(jsonMessage){
 		p.appendChild(reply);
 	}
 
-	
+	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + msgCount);
 	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
@@ -516,21 +516,26 @@ function replyClicked(p){
 *********************************************************************************/
 function replyMessage(p){
 
+	var	msgElement	= document.getElementById('messageElement' + p);
+	var offsetVal	= window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
 	var senderName	= sessionStorage.getItem("username");			// who is sending
 	var userName 	= document.getElementById('user' + p);			// to whom
-	var	msgElement	= document.getElementById('messageElement' + p);
 	var dateMilis	= new Date().getTime();							// date in miliseconds
 	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
+	var offs		= parseInt(offsetVal) + 10;
+	
 	var jsonMessage = JSON.stringify({	user: userName.innerHTML, 
 										sender: senderName,
 										date: dateMilis,
 										clicked: false,
 										message: msgText.value,
-										offset: 10	});
+										offset: offs });
 	var replyElement = createMessage(jsonMessage);
-	alert(jsonMessage);
+	alert('offset:' + offsetVal);
+	//alert('created new message:' + jsonMessage);
 	cancel(p);
 	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
+	
 }
 
 
