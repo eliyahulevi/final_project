@@ -372,8 +372,8 @@ function createMessage(jsonMessage){
 	clkd.setAttribute('style', 'visibility:hidden;');
 	clkd.innerHTML = clicked;
 	
-	spanStart.innerHTML = msg_text;
-	spanEnd.innerHTML = " on " + new Date(date);
+	spanStart.innerHTML = msg_text + " on ";
+	spanEnd.innerHTML =  new Date(date);
 	spanEnd.setAttribute("id", 'date' + msgCount );
 	
 	userTag.setAttribute('id', 'user' + msgCount);
@@ -416,10 +416,11 @@ function createMessage(jsonMessage){
 *	was clicked
 *********************************************************************************/
 function messageClicked(p){
-	var click = document.getElementById('clicked' + p);
-	var user = sessionStorage.getItem('username');
-	var date = sessionStorage.getItem('messageRealTime' + p)
-	var formData = new FormData();
+	var click 		= document.getElementById('clicked' + p);
+	var user 		= sessionStorage.getItem('username');
+	var dateElement = document.getElementById('date' + p);
+	var date		= new Date(dateElement.innerHTML).getTime();
+	var formData 	= new FormData();
 	
 	if(click.innerHTML == 'false'){
 		formData.append("code", "3");
@@ -437,9 +438,13 @@ function messageClicked(p){
 		    data: formData,                         
 		    type: 'post',
 		    success: function(response){
-       					var msg = document.getElementById('message' + p);
-						msg.setAttribute('style', 'background-color: #ffffff;');
+		    			
+       					var msg = document.getElementById('messageElement' + p);
+       					var compStyles = window.getComputedStyle(msg);
+       					var offset = compStyles.getPropertyValue('margin-left');
+						msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
 						click.innerHTML = 'true';
+						alert('success');
 	    			}
 	 	});
  	}
@@ -531,7 +536,7 @@ function replyMessage(p){
 										message: msgText.value,
 										offset: offs });
 	var replyElement = createMessage(jsonMessage);
-	alert('offset:' + offsetVal);
+	//alert('offset:' + offsetVal);
 	//alert('created new message:' + jsonMessage);
 	cancel(p);
 	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
