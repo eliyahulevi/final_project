@@ -275,6 +275,8 @@ function loadUserMessages(){
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
+		formdata.append("offset", 0);
+		formdata.append("repliedTo", "");
 	    $.ajax({
         url: 'UserServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
@@ -344,7 +346,7 @@ function createMessage(jsonMessage){
 	var sender	  = message.sender;
 	var date 	  = Number(message.date);
 	var clicked   = message.clicked;
-	var msg_text  = message.message;
+	var msg_text  = message.text;
 	var msgCount  = 0;
 	var offset    = message.offset;
 	
@@ -354,14 +356,14 @@ function createMessage(jsonMessage){
 	var p 		  = document.createElement("p");
 	var span 	  = document.createElement("span");
 	var spanStart = document.createElement("span");
-	var spanEnd   = document.createElement("span");
+	var spanDate   = document.createElement("span");
 	var reply 	  = document.createElement("span");
 	var msg       = document.createElement("p");	
 	var clkd      = document.createElement("a");
 	var messages  = document.getElementsByClassName('message');
 	
 		
-	//alert(clicked);
+	alert(date);
 	for(var i = 0; i < messages.length; i++){	
 		msgCount++;
 	}
@@ -372,9 +374,9 @@ function createMessage(jsonMessage){
 	clkd.setAttribute('style', 'visibility:hidden;');
 	clkd.innerHTML = clicked;
 	
-	spanStart.innerHTML = msg_text + " on ";
-	spanEnd.innerHTML =  new Date(date);
-	spanEnd.setAttribute("id", 'date' + msgCount );
+	spanStart.innerHTML = ": " + msg_text + " on ";
+	spanDate.innerHTML =  new Date(date);
+	spanDate.setAttribute("id", 'date' + msgCount );
 	
 	userTag.setAttribute('id', 'user' + msgCount);
 	userTag.setAttribute('href', '#user' + msgCount);
@@ -385,11 +387,9 @@ function createMessage(jsonMessage){
 	replyUser.setAttribute('onclick', 'replyClicked(' + msgCount + ')' );
 	replyUser.innerHTML = " reply";
 	
-	span.appendChild(userTag);
-	
+	p.appendChild(userTag);
 	p.appendChild(spanStart);
-	p.appendChild(span);
-	p.appendChild(spanEnd);
+	p.appendChild(spanDate);
 	
 	if(user == "admin" ){
 		reply.appendChild(replyUser);
@@ -400,7 +400,6 @@ function createMessage(jsonMessage){
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + msgCount);
 	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
-	frame.appendChild(userTag);
 	frame.appendChild(p);
 	frame.appendChild(clkd);
 	if(clicked == 'true'){
@@ -517,7 +516,58 @@ function replyClicked(p){
 
 
 /*********************************************************************************
-*	this function handles the reply to a message: 
+*	this function send a message in JSON format to the server to be inserted into
+*	the DB: format is: { user: 'user', sender: 'sender', text: 'text', date: 'date',
+*						 offset:'offset',  }
+*********************************************************************************/
+function sendUserReply(jmessage){
+	
+	var message 	= JSON.parse(jmessage);
+	var formData 	= new FormData();
+	var user 		= message.user;
+	var sender 		= message.sender;
+	var msg			= message.text;
+	var date		= new Date().getTime();
+	var offset		= message.offset;
+	var repliedTo	= message.repliedTo;
+	
+	//alert('user: ' + user);
+	
+	formData.append("code", "1");
+	formData.append("user", user); 	
+	formData.append("sender", sender);
+	formData.append("message", msg);	
+	formData.append("date", date);
+	formData.append("offset", offset); 
+	formData.append("repliedTo", repliedTo);  
+	//alert(message);
+	
+    $.ajax({
+    url: 'UserServlet', 	// point to server-side 
+    dataType: 'text',  		// what to expect back from the server, if anything
+    cache: false,
+    contentType: false,
+    processData: false,
+    data: formData,                         
+    type: 'post',
+    success: function(response){
+    			/*
+				var msg = document.getElementById('messageElement' + p);
+				var compStyles = window.getComputedStyle(msg);
+				var offset = compStyles.getPropertyValue('margin-left');
+				msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
+				click.innerHTML = 'true';
+				*/
+				//alert('success');
+			}
+	});
+	
+}
+
+
+
+/*********************************************************************************
+*	this function gather 'pop up' text area text, user ,sender etc. and send
 *********************************************************************************/
 function replyMessage(p){
 
@@ -528,16 +578,23 @@ function replyMessage(p){
 	var dateMilis	= new Date().getTime();							// date in miliseconds
 	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
 	var offs		= parseInt(offsetVal) + 10;
+	var date		= document.getElementById('date' + p).innerHTML;// message date
+	var n			= new Date(date).getTime();
+	//alert( 'send by: ' + userName.innerHTML + dateMilis + '\nreplied to: ' + userName.innerHTML + n );
 	
-	var jsonMessage = JSON.stringify({	user: userName.innerHTML, 
-										sender: senderName,
-										date: dateMilis,
-										clicked: false,
-										message: msgText.value,
-										offset: offs });
+	alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + Date.parse(date) );
+	
+	var jsonMessage = JSON.stringify({	user: 		userName.innerHTML, 
+										sender: 	senderName,
+										date: 		dateMilis,
+										clicked: 	false,
+										text: 		msgText.value,
+										offset: 	offs,
+										repliedTo:  userName.innerHTML + n});
 	var replyElement = createMessage(jsonMessage);
 	//alert('offset:' + offsetVal);
 	//alert('created new message:' + jsonMessage);
+	sendUserReply(jsonMessage);
 	cancel(p);
 	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
 	
@@ -885,6 +942,7 @@ function sendImages(images){
 /*********************************************************************************
 *	this function sends a new message to user: usr 
 *********************************************************************************/
+/*
 function sendMessage(){
 	var msg = document.getElementById("msg");
 	var usrs = document.getElementById("users");
@@ -915,6 +973,7 @@ function sendMessage(){
     			}
  	});
 }
+*/
 
 
 /*********************************************************************************

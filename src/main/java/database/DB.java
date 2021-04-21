@@ -802,9 +802,9 @@ public class DB
 			this.disconnect();
 			try 
 			{
-				if(!ps.isClosed())
+				if(ps != null && !ps.isClosed())
 					ps.close();
-				if(!rs.isClosed())
+				if(rs != null && !rs.isClosed())
 					rs.close();
 			} 
 			catch (SQLException e1) 
@@ -856,7 +856,7 @@ public class DB
 			this.disconnect();
 			try
 			{
-				if(!ps.isClosed())
+				if(ps != null && !ps.isClosed())
 					ps.close();
 			} catch (SQLException e) 
 			{
@@ -900,7 +900,7 @@ public class DB
 			this.disconnect();
 			try 
 			{
-				if(ps != null)
+				if(ps != null && !ps.isClosed())
 					ps.close();
 			} 
 			catch (SQLException e) 
@@ -960,11 +960,11 @@ public class DB
 		{
 			try 
 			{
-				if(rs != null)
+				if(rs != null && !rs.isClosed())
 					rs.close();
-				if(max != null)
+				if(max != null && !max.isClosed())
 					max.close();
-				if(insert != null)
+				if(insert != null && !insert.isClosed())
 					insert.close();
 			} 
 			catch (SQLException e) 
@@ -1007,7 +1007,7 @@ public class DB
 		{
 			try 
 			{
-				if(rs != null)
+				if(rs != null && !rs.isClosed())
 					rs.close();
 			} 
 			catch (SQLException e) {
@@ -1124,10 +1124,10 @@ public class DB
 		{
 			try
 			{
-				if(rs != null) rs.close();
-				if(ps != null) ps.close();
-				if(rs1 != null) rs1.close();
-				if(ps1 != null) ps1.close();
+				if(rs != null && !rs.isClosed()) rs.close();
+				if(ps != null && !ps.isClosed()) ps.close();
+				if(rs1 != null && !rs1.isClosed()) rs1.close();
+				if(ps1 != null && !ps1.isClosed()) ps1.close();
 				this.disconnect();
 			}
 			catch(Exception e)

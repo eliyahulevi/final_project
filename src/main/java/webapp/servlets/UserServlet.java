@@ -74,12 +74,14 @@ public class UserServlet extends HttpServlet
 		String user 			= request.getParameter("user");
 		String sender 			= request.getParameter("sender");
 		String msg 				= request.getParameter("message");
-		long date 				= Long.parseLong(request.getParameter("date")); 
-		
+		String dateString 		= request.getParameter("date"); 
+		String offset 			= request.getParameter("offset");
+		String repliedTo		= request.getParameter("repliedTo");
 		
 		try 
 		{
-			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg);
+			//long date = Long.parseLong(dateString);
+			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg + " date: " + dateString + " offset: " + offset + " replied to: " + repliedTo);
 			switch(code)
 			 {
 			 	case "0":		// get all users
@@ -100,10 +102,11 @@ public class UserServlet extends HttpServlet
 				 case "1":		// insert image
 				 {
 					Part image 	= request.getPart("image");
-					int offset 	= Integer.parseInt(request.getParameter("offset"));
+					int off = Integer.parseInt(offset);
+					long date = Long.parseLong(dateString);
 					
 					if(image == null)
-						db.insertMessage(new Message(sender, user, msg, date, blob, offset, "")); 
+						db.insertMessage(new Message(sender, user, msg, date, blob, off, repliedTo)); 
 					
 					else if(!image.equals(""))
 					{
@@ -115,7 +118,7 @@ public class UserServlet extends HttpServlet
 							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
 							data = fileContent.readAllBytes();
 							blob = new SerialBlob(data);
-							db.insertMessage(new Message(sender, user, msg, date, blob,  offset, ""));
+							db.insertMessage(new Message(sender, user, msg, date, blob,  off, repliedTo));
 						}
 					}
 					else
@@ -138,6 +141,7 @@ public class UserServlet extends HttpServlet
 				 
 				 case "3":		// message clicked
 				 {
+					 long date = Long.parseLong(dateString);
 					 db.messageClicked(user, date);
 					 break;
 				 }
@@ -155,7 +159,14 @@ public class UserServlet extends HttpServlet
 					 response.getWriter().write(json);
 					 break;
 				 }
-				 
+				 /*
+				 case "5":		// insert new message
+				 {
+					 System.out.println("user servlet >> code:" + code);
+					 db.insertMessage(message); 
+					 break;
+				 }
+				 */
 				 default:
 					 break;
 			}
@@ -166,8 +177,10 @@ public class UserServlet extends HttpServlet
 		{
 			try 
 			{
-				int offset 	= Integer.parseInt(request.getParameter("offset"));
-				db.insertMessage(new Message(sender, user, msg, date, blob, offset, "")); 
+				long date = Long.parseLong(dateString);
+				int off = Integer.parseInt(offset);
+				
+				db.insertMessage(new Message(sender, user, msg, date, blob, off, repliedTo)); 
 			} 
 			catch (Exception e1) 
 			{
