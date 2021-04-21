@@ -346,7 +346,7 @@ function createMessage(jsonMessage){
 	var sender	  = message.sender;
 	var date 	  = Number(message.date);
 	var clicked   = message.clicked;
-	var msg_text  = message.text;
+	var msg_text  = message.message;
 	var msgCount  = 0;
 	var offset    = message.offset;
 	
