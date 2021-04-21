@@ -363,32 +363,26 @@ function createMessage(jsonMessage){
 	var messages  = document.getElementsByClassName('message');
 	var rawDate	  = document.createElement("pre");
 	
-		
-	alert(date);
-	for(var i = 0; i < messages.length; i++){	
-		msgCount++;
-	}
+
 	
-	sessionStorage.setItem('messageRealTime' + msgCount, date);	
-	
-	clkd.setAttribute('id', 'clicked' + msgCount);
+	clkd.setAttribute('id', 'clicked' + date);
 	clkd.setAttribute('style', 'visibility:hidden;');
 	clkd.innerHTML = clicked;
 	
 	spanStart.innerHTML = ": " + msg_text + " on ";
 	spanDate.innerHTML =  new Date(date);
-	spanDate.setAttribute("id", 'date' + msgCount );
+	spanDate.setAttribute("id", 'date' + date );
 	
-	userTag.setAttribute('id', 'user' + msgCount);
-	userTag.setAttribute('href', '#user' + msgCount);
+	userTag.setAttribute('id', 'user' + date);
+	userTag.setAttribute('href', '#user' + date);
 	userTag.innerHTML = sender;
 	
-	replyUser.setAttribute('id', 'user-reply' + msgCount);
-	replyUser.setAttribute('href', '#reply' + msgCount);
-	replyUser.setAttribute('onclick', 'replyClicked(' + msgCount + ')' );
+	replyUser.setAttribute('id', 'user-reply' + date);
+	replyUser.setAttribute('href', '#reply' + date);
+	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
 	replyUser.innerHTML = " reply";
 	
-	rawDate.setAttribute('id', 'raw-date' + msgCount);
+	rawDate.setAttribute('id', 'raw-date' + date);
 	rawDate.setAttribute('style', 'display: none;');
 	rawDate.innerHTML = date;
 	
@@ -404,8 +398,8 @@ function createMessage(jsonMessage){
 
 	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
 	frame.setAttribute('class', 'message');
-	frame.setAttribute('id', 'messageElement' + msgCount);
-	frame.setAttribute("onclick", 'messageClicked(' + msgCount + ')' );
+	frame.setAttribute('id', 'messageElement' + date);
+	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
 	frame.appendChild(clkd);
 	if(clicked == 'true'){
@@ -421,6 +415,7 @@ function createMessage(jsonMessage){
 *	was clicked
 *********************************************************************************/
 function messageClicked(p){
+	alert(p);
 	var click 		= document.getElementById('clicked' + p);
 	var user 		= sessionStorage.getItem('username');
 	var dateElement = document.getElementById('date' + p);
@@ -449,7 +444,7 @@ function messageClicked(p){
        					var offset = compStyles.getPropertyValue('margin-left');
 						msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
 						click.innerHTML = 'true';
-						alert('success');
+						//alert('success');
 	    			}
 	 	});
  	}
@@ -587,9 +582,9 @@ function replyMessage(p){
 	var date		= document.getElementById('date' + p).innerHTML;// message date
 	var n			= new Date(date).getTime();
 	var rawDate	= document.getElementById('raw-date' + p);		// raw date
-	//alert( 'send by: ' + userName.innerHTML + dateMilis + '\nreplied to: ' + userName.innerHTML + n );
 	
-	alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + rawDate.innerHTML );
+	alert( 'message #: ' + p);
+	//alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + rawDate.innerHTML );
 	
 	var jsonMessage = JSON.stringify({	user: 		userName.innerHTML, 
 										sender: 	senderName,
