@@ -347,22 +347,19 @@ function createMessage(jsonMessage){
 	var date 	  = Number(message.date);
 	var clicked   = message.clicked;
 	var msg_text  = message.message;
-	var msgCount  = 0;
 	var offset    = message.offset;
 	
 	var frame 	  = document.createElement("div");
 	var userTag   = document.createElement("a");
 	var replyUser = document.createElement("a");
 	var p 		  = document.createElement("p");
-	var span 	  = document.createElement("span");
 	var spanStart = document.createElement("span");
 	var spanDate   = document.createElement("span");
 	var reply 	  = document.createElement("span");
 	var msg       = document.createElement("p");	
 	var clkd      = document.createElement("a");
-	var messages  = document.getElementsByClassName('message');
 	var rawDate	  = document.createElement("pre");
-	
+
 
 	
 	clkd.setAttribute('id', 'clicked' + date);
@@ -415,7 +412,7 @@ function createMessage(jsonMessage){
 *	was clicked
 *********************************************************************************/
 function messageClicked(p){
-	alert(p);
+
 	var click 		= document.getElementById('clicked' + p);
 	var user 		= sessionStorage.getItem('username');
 	var dateElement = document.getElementById('date' + p);
@@ -427,7 +424,7 @@ function messageClicked(p){
 		formData.append("user", user.slice(0,20)); 
 		formData.append("sender", user.slice(0,20));
 		formData.append("message", "");
-		formData.append("date", date); 
+		formData.append("date", p); 
 		
 	    $.ajax({
 		    url: 'UserServlet', 	// point to server-side 
