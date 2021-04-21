@@ -361,6 +361,7 @@ function createMessage(jsonMessage){
 	var msg       = document.createElement("p");	
 	var clkd      = document.createElement("a");
 	var messages  = document.getElementsByClassName('message');
+	var rawDate	  = document.createElement("pre");
 	
 		
 	alert(date);
@@ -387,9 +388,14 @@ function createMessage(jsonMessage){
 	replyUser.setAttribute('onclick', 'replyClicked(' + msgCount + ')' );
 	replyUser.innerHTML = " reply";
 	
+	rawDate.setAttribute('id', 'raw-date' + msgCount);
+	rawDate.setAttribute('style', 'display: none;');
+	rawDate.innerHTML = date;
+	
 	p.appendChild(userTag);
 	p.appendChild(spanStart);
 	p.appendChild(spanDate);
+	p.appendChild(rawDate);
 	
 	if(user == "admin" ){
 		reply.appendChild(replyUser);
@@ -580,9 +586,10 @@ function replyMessage(p){
 	var offs		= parseInt(offsetVal) + 10;
 	var date		= document.getElementById('date' + p).innerHTML;// message date
 	var n			= new Date(date).getTime();
+	var rawDate	= document.getElementById('raw-date' + p);		// raw date
 	//alert( 'send by: ' + userName.innerHTML + dateMilis + '\nreplied to: ' + userName.innerHTML + n );
 	
-	alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + Date.parse(date) );
+	alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + rawDate.innerHTML );
 	
 	var jsonMessage = JSON.stringify({	user: 		userName.innerHTML, 
 										sender: 	senderName,
@@ -590,7 +597,7 @@ function replyMessage(p){
 										clicked: 	false,
 										text: 		msgText.value,
 										offset: 	offs,
-										repliedTo:  userName.innerHTML + n});
+										repliedTo:  userName.innerHTML + rawDate.innerHTML});
 	var replyElement = createMessage(jsonMessage);
 	//alert('offset:' + offsetVal);
 	//alert('created new message:' + jsonMessage);
