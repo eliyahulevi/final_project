@@ -42,8 +42,6 @@ $(document).ready(function(){
 *	this function send added product to the server (and from there to the DB)
 *********************************************************************************/
 function addProduct(){
-
-		var form = document.getElementById('new-product');
 		
 		var productID = document.getElementById('product-id');
 		var productLength = document.getElementById('product-length');
@@ -64,7 +62,6 @@ function addProduct(){
 				  ' color: ' + productColor.value);
 			return;
 		}
-		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "1");
 		formdata.append("catalog", productID.value);
@@ -124,7 +121,7 @@ function showAddProduct(){
 	var tdPriceInput = document.createElement('td');
 	var tdLengthInput = document.createElement('td');
 	var tdColorInput = document.createElement('td');
-	var tb = document.createElement('tb');
+	
 	
 	
 	tbl.setAttribute('style', 'width: 100%;');
@@ -356,7 +353,6 @@ function createMessage(jsonMessage){
 	var spanStart = document.createElement("span");
 	var spanDate   = document.createElement("span");
 	var reply 	  = document.createElement("span");
-	var msg       = document.createElement("p");	
 	var clkd      = document.createElement("a");
 	var rawDate	  = document.createElement("pre");
 
@@ -415,8 +411,8 @@ function messageClicked(p){
 
 	var click 		= document.getElementById('clicked' + p);
 	var user 		= sessionStorage.getItem('username');
-	var dateElement = document.getElementById('date' + p);
-	var date		= new Date(dateElement.innerHTML).getTime();
+	
+
 	var formData 	= new FormData();
 	
 	if(click.innerHTML == 'false'){
@@ -576,8 +572,6 @@ function replyMessage(p){
 	var dateMilis	= new Date().getTime();							// date in miliseconds
 	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
 	var offs		= parseInt(offsetVal) + 10;
-	var date		= document.getElementById('date' + p).innerHTML;// message date
-	var n			= new Date(date).getTime();
 	var rawDate	= document.getElementById('raw-date' + p);		// raw date
 	
 	alert( 'message #: ' + p);
@@ -683,7 +677,7 @@ function edit(){
 *	this function iterate over all images, checked if chosen and sent to server
 *********************************************************************************/
 function upload(){
-	var formData	  = new FormData();		
+	
 	let arr 		  = [];
 	var ckbx 		  = document.getElementById("output").getElementsByTagName("input");
 	var images 		  = document.getElementById("output").getElementsByTagName("img");
@@ -704,7 +698,6 @@ function upload(){
 *********************************************************************************/
 function uploadMessage(number){
 	let arr 		 = [];
-	var msg 		 = document.getElementById('message' + number).value;
 	var ckbx 		 = document.getElementById("output").getElementsByTagName("input");
 	var images 		 = document.getElementById("output").getElementsByTagName("img");
 	for (var i=0; i<ckbx.length; i++) {
