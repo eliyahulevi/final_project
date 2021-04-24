@@ -294,9 +294,66 @@ function loadUserMessages(){
 	            		}
 		            	form.appendChild(msg);
 		            }
+		            
+        			/*
+        		    var form = document.getElementById("msg-display");
+		            var users_list = document.getElementById("users-list");
+        			var parsedMsgs = [];
+        			var messages = JSON.parse(response);   
+        			
+        			for(var ii = 0; ii < messages.length; ii++){
+        				var parsedMsg = JSON.parse(messages[ii]);
+        				parsedMsg.visited = 0;
+        				parsedMsgs[ii] = parsedMsg;
+        			}   			
+		            for(var i = 0; i < messages.length; i++){
+		            	//var parsedMsg = JSON.parse(messages[i]);
+		            	//var msg = createMessage([i]);
+		            	//alert(parsedMsgs[i]);
+		            	//var sender = createSender(parsedMsgs[i]);
+		            	var sender = createSender(messages[i]);
+		            	if(!userExist(sender.value) ){
+		            		users_list.add(sender);
+	            		}
+	            		var msg = createMessage(messages[i]);
+		            	form.appendChild(msg);
+		            	if(parsedMsgs[i].visited == 0){
+		            		var msg = createMessage(messages[i]);
+		            		form.appendChild(msg);
+		            	}
+		            	insertRepliedMessages(parsedMsgs, i);       	
+		            }
+		            */
         		}
+        		
      });
 }
+
+
+/*********************************************************************************
+*	this function inserts a message element into the document tree
+*********************************************************************************/
+function insertRepliedMessages(messages, index){
+
+	var msgin	= (messages[index]);
+	for(var i = 0; i < messages.length; i++){
+		if( i == index) { continue; }
+		var msgi 	= (messages[i]);
+		var msg = createMessage(msgi);
+		
+		if(msgin.user + msgin.date == msgi.repliedTo){
+			alert(msgin.user + msgin.date + 'offset: ' + msgi.offset);
+			var form = document.getElementById("msg-display");
+			var date = msgin.date;
+			var msgNode = document.getElementById('messageElement' + date);
+			//msgNode.parentNode.insertBefore(msg, msgNode.nextSibling);
+			form.appendChild(msg);
+			messages[i].visited = 1;
+			
+		}
+	}
+}
+
 
 
 /*********************************************************************************
@@ -321,10 +378,9 @@ function userExist(user){
 /*********************************************************************************
 *	this function takes a message in JSON format and create an option 'sender'
 *********************************************************************************/
-function createSender(jMessage){
+function createSender(message){
 
 	var result 	  = document.createElement("option");
-	var message   = JSON.parse(jMessage);
 	result.value  = message.sender;
 	result.innerHTML = message.sender;
 	return result;
@@ -355,7 +411,7 @@ function createMessage(jsonMessage){
 	var reply 	  = document.createElement("span");
 	var clkd      = document.createElement("a");
 	var rawDate	  = document.createElement("pre");
-
+	//alert(offset);
 
 	
 	clkd.setAttribute('id', 'clicked' + date);
@@ -396,7 +452,7 @@ function createMessage(jsonMessage){
 	frame.appendChild(p);
 	frame.appendChild(clkd);
 	if(clicked == 'true'){
-		frame.setAttribute('style', 'background: rgba(0.0, 0.0, 0.0, 0.0); left:' + offset + 'px;');
+		frame.setAttribute('style', 'background: rgba(0.0, 0.0, 0.0, 0.0); margin-left:' + offset + 'px;');
 	}
 	
 	return frame;	
