@@ -127,15 +127,16 @@ function showAddProduct(){
 	var tdPriceInput 	= document.createElement('td');
 	var tdLengthInput 	= document.createElement('td');
 	var tdColorInput 	= document.createElement('td');
+	var hr			 	= document.createElement('hr');
 	
 	
 	
-	tbl.setAttribute('style', 'width: 100%;');
+	tbl.setAttribute('class', 'Table');
 	thCatalog.innerHTML = 'Catalog [integer]';
-	thType.innerHTML = 'Type [integer]';
-	thPrice.innerHTML = 'Price [decimal]';
-	thLength.innerHTML = 'Length [decimal]';
-	thColor.innerHTML = 'Color [name]';
+	thType.innerHTML 	= 'Type [integer]';
+	thPrice.innerHTML 	= 'Price [decimal]';
+	thLength.innerHTML 	= 'Length [decimal]';
+	thColor.innerHTML 	= 'Color [name]';
 
 	trHeader.appendChild(thCatalog);
 	trHeader.appendChild(thType);
@@ -143,7 +144,7 @@ function showAddProduct(){
 	trHeader.appendChild(thLength);
 	trHeader.appendChild(thColor);
 
-	//tdCatalogInput.setAttribute('align', 'center');
+	tdCatalogInput.setAttribute('align', 'center');
 	tdCatalogInput.appendChild(inputCat);
 	tdTypeInput.appendChild(inputType);
 	tdLengthInput.appendChild(inputLength);
@@ -158,6 +159,8 @@ function showAddProduct(){
 
 	tbl.appendChild(trHeader);
 	tbl.appendChild(trValues);
+	
+	hr.setAttribute("class", "separator");
   			
 	form.setAttribute("id", "new-product");
 	form.setAttribute('style', 'float:center;');
@@ -192,6 +195,7 @@ function showAddProduct(){
 	p.appendChild(addProductBtn);
 	p.appendChild(cancelProductBtn);
 	
+	form.appendChild(hr);
 	form.appendChild(tbl);
 	form.appendChild(p);
 	

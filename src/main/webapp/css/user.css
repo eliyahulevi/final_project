@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+.separator{
+	height:2px;
+	border-width:0;
+	background-color:gray;
+}
+
+
 .Table{
     width: 100%;
     table-layout: fixed;
