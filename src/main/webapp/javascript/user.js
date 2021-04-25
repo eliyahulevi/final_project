@@ -90,7 +90,13 @@ function addProduct(){
 *	this function cancel the adding product procedure
 *********************************************************************************/
 function cancelAddProduct(){
-	alert('TODO: implement cancel add product');
+	var addProductBtn 		= document.getElementById('add-product-btn');
+	var cancelAddProductBtn = document.getElementById('cancel-product-btn');
+	var addProductFoprm 	= document.getElementById('new-product');
+	
+	addProductBtn.setAttribute('style', 'display:none;');
+	cancelAddProductBtn.setAttribute('style', 'display:none;');
+	addProductFoprm.setAttribute('style', 'display:none;');
 }
 
 
@@ -99,28 +105,28 @@ function cancelAddProduct(){
 *********************************************************************************/
 function showAddProduct(){
 	
-	var form = document.createElement('form');
-	var inputCat = document.createElement('input');
-	var inputType = document.createElement('input');
-	var inputLength = document.createElement('input');
-	var inputPrice = document.createElement('input');
-	var inputColor = document.createElement('input');
-	var btnUpload = document.createElement("button");
-	var btnCancel = document.createElement("button");
-	var p = document.createElement("p");
-	var tbl = document.createElement('table');
-	var trHeader = document.createElement('tr');
-	var trValues = document.createElement('tr');
-	var thCatalog = document.createElement('th');
-	var thType = document.createElement('th');
-	var thPrice = document.createElement('th');
-	var thLength = document.createElement('th');
-	var thColor = document.createElement('th');
-	var tdCatalogInput = document.createElement('td');
-	var tdTypeInput = document.createElement('td');
-	var tdPriceInput = document.createElement('td');
-	var tdLengthInput = document.createElement('td');
-	var tdColorInput = document.createElement('td');
+	var form 			= document.createElement('form');
+	var inputCat 		= document.createElement('input');
+	var inputType 		= document.createElement('input');
+	var inputLength 	= document.createElement('input');
+	var inputPrice 		= document.createElement('input');
+	var inputColor 		= document.createElement('input');
+	var addProductBtn 	= document.createElement("button");
+	var cancelProductBtn= document.createElement("button");
+	var p 				= document.createElement("p");
+	var tbl 			= document.createElement('table');
+	var trHeader 		= document.createElement('tr');
+	var trValues 		= document.createElement('tr');
+	var thCatalog 		= document.createElement('th');
+	var thType 			= document.createElement('th');
+	var thPrice 		= document.createElement('th');
+	var thLength 		= document.createElement('th');
+	var thColor 		= document.createElement('th');
+	var tdCatalogInput 	= document.createElement('td');
+	var tdTypeInput 	= document.createElement('td');
+	var tdPriceInput 	= document.createElement('td');
+	var tdLengthInput 	= document.createElement('td');
+	var tdColorInput 	= document.createElement('td');
 	
 	
 	
@@ -170,21 +176,21 @@ function showAddProduct(){
     inputColor.setAttribute("id", "product-color");
     inputColor.setAttribute("required", "");
     
-    btnUpload.innerHTML = "add product";
-	btnUpload.setAttribute('id', 'add-product-btn');
-	btnUpload.setAttribute('type', 'button');
-	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute("onclick", 'addProduct()');
+    addProductBtn.innerHTML = "add product";
+	addProductBtn.setAttribute('id', 'add-product-btn');
+	addProductBtn.setAttribute('type', 'button');
+	addProductBtn.setAttribute('class', 'btn btn-success');
+	addProductBtn.setAttribute("onclick", 'addProduct()');
 	
-	btnCancel.innerHTML = "cancel";
-	btnCancel.setAttribute('id', 'cancel-product-btn');
-	btnCancel.setAttribute('type', 'button');
-	btnCancel.setAttribute('class', 'btn btn-danger');
-	btnCancel.setAttribute('style', 'float:right; padding-right:10px;');
-	btnCancel.setAttribute("onclick", 'cancelAddProduct()' );
+	cancelProductBtn.innerHTML = "cancel";
+	cancelProductBtn.setAttribute('id', 'cancel-product-btn');
+	cancelProductBtn.setAttribute('type', 'button');
+	cancelProductBtn.setAttribute('class', 'btn btn-danger');
+	cancelProductBtn.setAttribute('style', 'float:right; padding-right:10px;');
+	cancelProductBtn.setAttribute("onclick", 'cancelAddProduct()' );
 	
-	p.appendChild(btnUpload);
-	p.appendChild(btnCancel);
+	p.appendChild(addProductBtn);
+	p.appendChild(cancelProductBtn);
 	
 	form.appendChild(tbl);
 	form.appendChild(p);
@@ -231,7 +237,7 @@ function onTextChange(){
 function loadUserOrders(){
 		var date = new Date().getTime();
 		var formdata = new FormData();
-		formdata.append("code", "0");
+		formdata.append("code", "4");
 		formdata.append("user", sessionStorage.getItem('username'));
 		formdata.append("sender", ""); 
 		formdata.append("message", "");

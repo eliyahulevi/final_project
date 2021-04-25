@@ -73,7 +73,23 @@
 	<p><img alt="" src="resources/product-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D">Products</h3><a href="#" onclick="showAddProduct()"> new</a>
 	<p></p>
 	<div class="container" id="products">
-		<form id="products-form">
+		<form id="existing-products-form">
+			<p> <b>existing products</b></p>
+			<hr style="height:1px;border-width:0;background-color:gray">
+			<table class="Table" id="products-table">
+				<thead>
+				<tr>
+					<th>catalog number</th>
+					<th>type</th>
+					<th>price</th>
+					<th>length</th>
+					<th>color</th>
+				</tr>
+				</thead>
+				<tbody>
+	      
+				</tbody>
+			</table>
 		</form>
 	</div>
 	
@@ -161,7 +177,7 @@
 	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#Comment-Modal"> new</a> 
 	
 	<div class="container">
-		<table class="table">
+		<table class="Table">
 			<thead>
 			<tr>
 				<th>order #</th>
@@ -180,7 +196,6 @@
 			</tbody>
 		</table>
 	</div>
-	
 	<!-- /orders -->
 
 	<!-- messages -->
