@@ -283,6 +283,7 @@ function loadUserMessages(){
         data: formdata,                         
         type: 'post',
         success: function(response){ 
+        			/* up 'till here displays messages NOT in thread order
         			var messages = JSON.parse(response);      			
 		            var form = document.getElementById("msg-display");
 		            var users_list = document.getElementById("users-list");
@@ -294,10 +295,9 @@ function loadUserMessages(){
 	            		}
 		            	form.appendChild(msg);
 		            }
-		            
-        			/*
+		            */
+        			
         		    var form = document.getElementById("msg-display");
-		            var users_list = document.getElementById("users-list");
         			var parsedMsgs = [];
         			var messages = JSON.parse(response);   
         			
@@ -305,27 +305,17 @@ function loadUserMessages(){
         				var parsedMsg = JSON.parse(messages[ii]);
         				parsedMsg.visited = 0;
         				parsedMsgs[ii] = parsedMsg;
-        			}   			
-		            for(var i = 0; i < messages.length; i++){
-		            	//var parsedMsg = JSON.parse(messages[i]);
-		            	//var msg = createMessage([i]);
-		            	//alert(parsedMsgs[i]);
-		            	//var sender = createSender(parsedMsgs[i]);
-		            	var sender = createSender(messages[i]);
-		            	if(!userExist(sender.value) ){
-		            		users_list.add(sender);
-	            		}
-	            		var msg = createMessage(messages[i]);
-		            	form.appendChild(msg);
+        			}   		
+        			
+		            for(var i = 0; i < parsedMsgs.length; i++){
+	            		var msg = createMessage(parsedMsgs[i]);
 		            	if(parsedMsgs[i].visited == 0){
-		            		var msg = createMessage(messages[i]);
+		            		var msg = createMessage(parsedMsgs[i]);
 		            		form.appendChild(msg);
 		            	}
 		            	insertRepliedMessages(parsedMsgs, i);       	
 		            }
-		            */
         		}
-        		
      });
 }
 
@@ -334,20 +324,17 @@ function loadUserMessages(){
 *	this function inserts a message element into the document tree
 *********************************************************************************/
 function insertRepliedMessages(messages, index){
-
-	var msgin	= (messages[index]);
+	
+	var msgin		= (messages[index]);
 	for(var i = 0; i < messages.length; i++){
 		if( i == index) { continue; }
 		var msgi 	= (messages[i]);
-		var msg = createMessage(msgi);
+		var msg 	= createMessage(msgi);
 		
 		if(msgin.user + msgin.date == msgi.repliedTo){
-			alert(msgin.user + msgin.date + 'offset: ' + msgi.offset);
-			var form = document.getElementById("msg-display");
 			var date = msgin.date;
 			var msgNode = document.getElementById('messageElement' + date);
-			//msgNode.parentNode.insertBefore(msg, msgNode.nextSibling);
-			form.appendChild(msg);
+			msgNode.parentNode.insertBefore(msg, msgNode.nextSibling);
 			messages[i].visited = 1;
 			
 		}
@@ -392,9 +379,9 @@ function createSender(message){
 *	this function takes a message in JSON format and create a message element, 
 *	with the message details including offset, content, etc.
 *********************************************************************************/
-function createMessage(jsonMessage){
+function createMessage(/*jsonMessage -previous version*/ message){
 	
-	var message   = JSON.parse(jsonMessage);
+	//var message   = JSON.parse(jsonMessage);
 	var user 	  = message.user;
 	var sender	  = message.sender;
 	var date 	  = Number(message.date);
@@ -419,7 +406,7 @@ function createMessage(jsonMessage){
 	clkd.innerHTML = clicked;
 	
 	spanStart.innerHTML = ": " + msg_text + " on ";
-	spanDate.innerHTML =  new Date(date);
+	spanDate.innerHTML =  new Date(date).toUTCString().split(' ').slice(0, 5);
 	spanDate.setAttribute("id", 'date' + date );
 	
 	userTag.setAttribute('id', 'user' + date);
@@ -572,7 +559,8 @@ function replyClicked(p){
 *********************************************************************************/
 function sendUserReply(jmessage){
 	
-	var message 	= JSON.parse(jmessage);
+	//var message 	= JSON.parse(jmessage);
+	var message 	= jmessage;
 	var formData 	= new FormData();
 	var user 		= message.user;
 	var sender 		= message.sender;
@@ -590,7 +578,7 @@ function sendUserReply(jmessage){
 	formData.append("date", date);
 	formData.append("offset", offset); 
 	formData.append("repliedTo", repliedTo);  
-	//alert(message);
+	alert(message);
 	
     $.ajax({
     url: 'UserServlet', 	// point to server-side 
@@ -627,23 +615,18 @@ function replyMessage(p){
 	var userName 	= document.getElementById('user' + p);			// to whom
 	var dateMilis	= new Date().getTime();							// date in miliseconds
 	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
-	var offs		= parseInt(offsetVal) + 10;
-	var rawDate	= document.getElementById('raw-date' + p);		// raw date
-	
-	alert( 'message #: ' + p);
-	//alert( 'date string: ' + new Date(date) + '\ndate miliseconds: ' + rawDate.innerHTML );
-	
-	var jsonMessage = JSON.stringify({	user: 		userName.innerHTML, 
-										sender: 	senderName,
-										date: 		dateMilis,
-										clicked: 	false,
-										text: 		msgText.value,
-										offset: 	offs,
-										repliedTo:  userName.innerHTML + rawDate.innerHTML});
+	var offs		= parseInt(offsetVal) + 20;						// offset
+	var rawDate		= document.getElementById('raw-date' + p);		// raw date
+	var jsonMessage = {	user: 		userName.innerHTML, 
+						sender: 	senderName,
+						date: 		dateMilis,
+						clicked: 	false,
+						message: 	msgText.value,
+						offset: 	offs,
+						repliedTo:  userName.innerHTML + rawDate.innerHTML};										
 	var replyElement = createMessage(jsonMessage);
-	//alert('offset:' + offsetVal);
-	//alert('created new message:' + jsonMessage);
-	sendUserReply(jsonMessage);
+
+	sendUserReply(jsonMessage);	
 	cancel(p);
 	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
 	
