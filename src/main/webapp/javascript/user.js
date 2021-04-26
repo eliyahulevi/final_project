@@ -25,6 +25,7 @@ $(document).ready(function(){
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
 	}
+	loadProducts();
 	loadUserOrders();
 	loadUserDetails();
 	loadUserMessages();
@@ -39,9 +40,52 @@ $(document).ready(function(){
 
 
 /*********************************************************************************
+*	this function loads all available product from DB
+*********************************************************************************/
+function loadProducts(){
+		var formdata = new FormData();
+		formdata.append("code", "0");
+		formdata.append("catalog", "0");
+		formdata.append("type", "0"); 
+		formdata.append("price", "0");
+		formdata.append("length", "0");
+		formdata.append("color", "");
+		//alert('load products'); 
+		
+		$.ajax({    
+        url: 'ProductServlet', 	
+        dataType: 'text',  		
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formdata,                         
+        type: 'post',
+        success: function(response){ 
+        			var products = JSON.parse(response);
+        			var table = document.getElementById("products-table");
+        			for(var i = 0; i < products.length; i++){
+        				var row = table.insertRow(i);
+        				var cell1 = row.insertCell(0);
+        				var cell2 = row.insertCell(1);
+        				var cell3 = row.insertCell(2);
+        				var cell4 = row.insertCell(3);
+        				var cell5 = row.insertCell(4);
+        				
+        				cell1.innerHTML = products[i].catalog;
+        				cell2.innerHTML = products[i].type;
+        				cell1.innerHTML = products[i].price;
+        				cell4.innerHTML = products[i].length;
+        				cell5.innerHTML = products[i].color;
+        			}
+    			}
+     	});
+}
+
+
+/*********************************************************************************
 *	this function send added product to the server (and from there to the DB)
 *********************************************************************************/
-function addProduct(){
+function addNewProduct(){
 		
 		var productID = document.getElementById('product-id');
 		var productLength = document.getElementById('product-length');
@@ -80,7 +124,7 @@ function addProduct(){
         data: formdata,                         
         type: 'post',
         success: function(response){ 
-        			alert(response);
+        			cancelAddProduct()
     			}
      	});
 }
@@ -183,7 +227,7 @@ function showAddProduct(){
 	addProductBtn.setAttribute('id', 'add-product-btn');
 	addProductBtn.setAttribute('type', 'button');
 	addProductBtn.setAttribute('class', 'btn btn-success');
-	addProductBtn.setAttribute("onclick", 'addProduct()');
+	addProductBtn.setAttribute("onclick", 'addNewProduct()');
 	
 	cancelProductBtn.innerHTML = "cancel";
 	cancelProductBtn.setAttribute('id', 'cancel-product-btn');
