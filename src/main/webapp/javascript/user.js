@@ -60,6 +60,7 @@ function loadProducts(){
         processData: false,
         data: formdata,                         
         type: 'post',
+        async: false,
         success: function(response){ 
         			var products = JSON.parse(response);
         			var table = document.getElementById("products-table");
@@ -301,6 +302,7 @@ function loadUserOrders(){
         processData: false,
         data: formdata,                         
         type: 'post',
+        async: false,
         success: function(response){ 
         			var products = JSON.parse(response);    			 			
 		            //var form = document.getElementById("items");
@@ -336,6 +338,7 @@ function loadUserMessages(){
         processData: false,
         data: formdata,                         
         type: 'post',
+        async: false,
         success: function(response){ 
         			/* up 'till here displays messages NOT in thread order
         			var messages = JSON.parse(response);      			

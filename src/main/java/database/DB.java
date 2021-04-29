@@ -18,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 
 import model.product.AlternativeProduct;
 import model.product.Product;
@@ -349,7 +350,7 @@ public class DB
 		}
 	}
 	@SuppressWarnings("deprecation")
-	private int connect()
+	private synchronized int connect()
 	{
 		int result = -1;
         try 
@@ -388,7 +389,7 @@ public class DB
         
         return result;
 	}
-	private int disconnect() 
+	private synchronized int disconnect() 
 	{
 		int result = -1;
 		try 
@@ -397,6 +398,7 @@ public class DB
 			{
 				try 
 				{
+					this.connection.commit();
 					this.connection.close();
 					System.out.println("DB >> disconnect from database: " + dbName);
 				} 
@@ -773,10 +775,12 @@ public class DB
 			message = new Message();
 			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
 			
+			this.connection.setAutoCommit(false); 
 			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE); 
 			ps.setString(1, user);
 			rs = ps.executeQuery();
 			
+			 
 			while(rs.next())
 			{
 				message.setSender(rs.getString(2));				// sender
@@ -792,9 +796,15 @@ public class DB
 				System.out.println("DB >> msgs: " + s);
 				result.add(s);
 			}
+			this.connection.commit();
 		}
-		catch(Exception e)
+		catch(SQLException e)
 		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.println("DB >> no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.println("DB >> operation next not permitted..");
+				
 			e.printStackTrace();
 		}
 		finally
@@ -809,6 +819,8 @@ public class DB
 			} 
 			catch (SQLException e1) 
 			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.println("DB >> result set is closed");
 				e1.printStackTrace();
 			}
 		}
