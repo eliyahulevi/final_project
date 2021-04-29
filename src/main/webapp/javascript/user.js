@@ -42,7 +42,7 @@ $(document).ready(function(){
 /*********************************************************************************
 *	this function loads all available product from DB
 *********************************************************************************/
-function loadProducts(){
+function loadProducts(sync){
 		var formdata = new FormData();
 		formdata.append("code", "0");
 		formdata.append("catalog", "0");
@@ -60,7 +60,7 @@ function loadProducts(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        async: false,
+        async: sync,
         success: function(response){ 
         			var products = JSON.parse(response);
         			var table = document.getElementById("products-table");
@@ -283,7 +283,7 @@ function onTextChange(){
 /*********************************************************************************
 *	this function load all the users orders (past and present) from the server DB
 *********************************************************************************/
-function loadUserOrders(){
+function loadUserOrders(sync){
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "4");
@@ -302,7 +302,7 @@ function loadUserOrders(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        async: false,
+        async: sync,
         success: function(response){ 
         			var products = JSON.parse(response);    			 			
 		            //var form = document.getElementById("items");
@@ -319,7 +319,7 @@ function loadUserOrders(){
 /*********************************************************************************
 *	this function load all users messages from the server for the registered user 
 *********************************************************************************/
-function loadUserMessages(){
+function loadUserMessages(sync){
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "2");
@@ -338,7 +338,7 @@ function loadUserMessages(){
         processData: false,
         data: formdata,                         
         type: 'post',
-        async: false,
+        async: sync,
         success: function(response){ 
         			/* up 'till here displays messages NOT in thread order
         			var messages = JSON.parse(response);      			
