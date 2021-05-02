@@ -22,13 +22,26 @@ $(document).ready(function(){
 	document.getElementById("pt-update").style.display = "none";
 	document.getElementById("msg-text-upload").style.display = "none";
 	
+	// Create WebSocket connection.
+	const socket = new WebSocket('ws://localhost:8080');
+	
+	// Connection opened
+	socket.addEventListener('open', function (event) {
+	    socket.send('Hello Server!');
+	});
+	
+	// Listen for messages
+	socket.addEventListener('message', function (event) {
+	    console.log('Message from server ', event.data);
+	});
+	
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
 	}
-	loadProducts();
-	loadUserOrders();
+	loadProducts(false);
+	loadUserOrders(false);
 	loadUserDetails();
-	loadUserMessages();
+	loadUserMessages(false);
 
 	// load users to 'send-message' modal
 	$("#send-Message-Modal").on('show.bs.modal', function(){
