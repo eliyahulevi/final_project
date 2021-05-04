@@ -18,15 +18,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLNonTransientConnectionException;
+//import java.sql.SQLNonTransientConnectionException;
 
 import model.product.AlternativeProduct;
 import model.product.Product;
 import model.users.*;
 import model.message.*;
 import model.order.Order;
-import appConstants.*;
-import jdk.internal.jshell.tool.StopDetectingInputStream.State;
+//import appConstants.*;
+//import jdk.internal.jshell.tool.StopDetectingInputStream.State;
 
 import org.json.simple.JSONValue;
 import java.util.HashMap;
@@ -246,7 +246,7 @@ public class DB
 		int count = 0;
 		this.map = new HashMap<String, String>();
 		DB.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
-		this.user = new User();
+		DB.user = new User();
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, createQueryString[count]); 
@@ -259,7 +259,7 @@ public class DB
 			this.createAdmin(); 		
 			this.createTables();
 			if (this.isEmpty("USERS"))
-				this.insertUser(this.user, true);
+				this.insertUser(DB.user, true);
 		} 
 		catch 
 		(Exception e) 
@@ -274,13 +274,13 @@ public class DB
 	}	
 	private void createAdmin()
 	{
-		this.user.setName("admin");
-		this.user.setNickName("administrator");
-		this.user.setAddress("1501 Yemmen road, Yemmen");
-		this.user.setEmail("israel@gmail.com");
-		this.user.setPassword("1234");
-		this.user.setPhone("050-55555351");
-		this.user.setDescription("Joey doesn't share food!!");
+		DB.user.setName("admin");
+		DB.user.setNickName("administrator");
+		DB.user.setAddress("1501 Yemmen road, Yemmen");
+		DB.user.setEmail("israel@gmail.com");
+		DB.user.setPassword("1234");
+		DB.user.setPhone("050-55555351");
+		DB.user.setDescription("Joey doesn't share food!!");
 	}
 	private void createTables()
 	{

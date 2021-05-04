@@ -18,7 +18,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import org.glassfish.json.JsonProviderImpl;
 
 
 @ApplicationScoped
@@ -33,8 +32,7 @@ public class DeviceWebSocketServer
     {
     	sessionHandler.addSession(session);
     }
-    
-	
+    	
 	@OnClose
     public void close(Session session) 
 	{

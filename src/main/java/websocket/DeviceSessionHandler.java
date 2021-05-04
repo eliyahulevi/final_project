@@ -2,16 +2,31 @@ package websocket;
 
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.imageio.ImageIO;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.json.JsonObject;
 import javax.json.spi.JsonProvider;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import javax.websocket.Session;
+
+import org.apache.commons.io.FileUtils;
+
 import model.device.*;
 
 import java.util.logging.Level;
@@ -24,15 +39,37 @@ public class DeviceSessionHandler
     private final Set<Session> sessions = new HashSet<>();
     private final Set<Device> devices = new HashSet<>();
     
-    public void addSession(Session session) {
+    public void addSession(Session session) 
+    {
         sessions.add(session);
-        for (Device device : devices) {
-            JsonObject addMessage = createAddMessage(device);
-            sendToSession(session, addMessage);
-        }
+    	Blob blob;
+		try 
+		{
+			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\mickey.txt";
+			String content = new String(Files.readAllBytes(Paths.get(path)));
+			blob = new SerialBlob(content.getBytes());
+			sendImage(session, blob);
+		} 
+		catch (SerialException e) 
+		{
+			e.printStackTrace();
+		} catch (SQLException e) 
+		{
+			e.printStackTrace();
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}  
+		
+        //for (Device device : devices) {
+            //JsonObject addMessage = createAddMessage(device);
+            //sendToSession(session, addMessage);
+        	
+        //}
     }
 
-    public void removeSession(Session session) {
+    public void removeSession(Session session) 
+    {
         sessions.remove(session);
     }
     
@@ -48,6 +85,7 @@ public class DeviceSessionHandler
         deviceId++;
         JsonObject addMessage = createAddMessage(device);
         sendToAllConnectedSessions(addMessage);
+        
     }
 
     public void removeDevice(int id) 
@@ -83,6 +121,32 @@ public class DeviceSessionHandler
         }
     }
 
+    public void sendImage(Session session, Blob img)
+    {
+        try 
+        {
+        	byte[] str = img.getBytes(0, (int)img.length()); 
+			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\donald.png";
+			//String content = new String(Files.readAllBytes(Paths.get(path)));
+			
+			byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
+			String encodedString = Base64.getEncoder().encodeToString(fileContent);
+			
+        	JsonProvider provider = JsonProvider.provider();
+            //String base64Image = Base64.getEncoder().encodeToString(content.getBytes());
+            JsonObject jimg = (JsonObject) provider.createObjectBuilder().add("action", "image")
+																		 .add("src", encodedString)
+																		 .build(); 
+            //ByteBuffer buf = ByteBuffer.wrap(base64Image.getBytes());
+            sendToSession(session, jimg); 
+            //session.getBasicRemote().sendBinary(buf); 
+        } 
+        catch (Exception e )
+        {
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+    
     private Device getDeviceById(int id) 
     {
     	for (Device device : devices) {
@@ -116,8 +180,10 @@ public class DeviceSessionHandler
 
     private void sendToSession(Session session, JsonObject message) 
     {
-    	try {
+    	try 
+    	{
             session.getBasicRemote().sendText(message.toString());
+            //session.getBasicRemote().sendBinary(message); 
         } 
     	catch (IOException ex) 
     	{
@@ -126,6 +192,4 @@ public class DeviceSessionHandler
         }
     }
     
-
-
 }

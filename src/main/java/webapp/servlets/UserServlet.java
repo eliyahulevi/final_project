@@ -19,14 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+/*import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader; 
+*/
 
 import database.DB;
 import model.message.*;
