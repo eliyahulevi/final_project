@@ -57,23 +57,36 @@ public class ProductServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
+		System.out.println("trying to get product from products servlet");
 		InputStream fileContent = null;
 		Blob blob 				= null;
 		byte[] data 			= null;
 		
 		String code 			= request.getParameter("code");
-		int id	 				= Integer.parseInt(request.getParameter("catalog"));
-		int type 				= Integer.parseInt(request.getParameter("type"));
-		float price 			= Float.parseFloat(request.getParameter("price"));
-		float length 			= Float.parseFloat(request.getParameter("length"));
-		String color 			= request.getParameter("color");
-		 
-		System.out.println("product servlet >> "
+		int id = 0;
+		int type = 0;
+		float price = 0;
+		float length = 0;
+		String color = null;
+//		InputStream image = null;
+		byte[] image = null;
+		if (code=="1") {
+			System.out.println("this is code string: " + code);
+			id	 				= Integer.parseInt(request.getParameter("catalog"));
+			System.out.println("this is id int: " + id);
+			type 				= Integer.parseInt(request.getParameter("type"));
+			price 			= Float.parseFloat(request.getParameter("price"));
+			length 			= Float.parseFloat(request.getParameter("length"));
+			color 			= request.getParameter("color");
+//			image 			= request.getInputStream();
+			System.out.println("what!???");
+			System.out.println("product servlet >> "
 								+ "	catalog:" + id 
 								+ " type:" + type 
 								+ " price: " + price 
 								+ " length: " + length
 								+ " color " + color);
+		}
 		
 		try 
 		{
@@ -82,10 +95,13 @@ public class ProductServlet extends HttpServlet
 			 {
 			 	case "0":		// get all products
 			 	{
-			 		List<Product> list = db.getProducts();
+			 		 List<Product> list = db.getProducts();
 					 String json = "";
 					 if( list.size() > 0)
 					 {
+						 for (int i = 0; i < list.size(); i++ ) {
+							 System.out.println(list.get(i).getImage().toString());
+						 }
 						 json = new Gson().toJson(list);
 						 System.out.println("product servlet >> " + list);
 					 } 
@@ -97,7 +113,7 @@ public class ProductServlet extends HttpServlet
 					 
 				 case "1":		// add new product
 				 {
-				 	Product product = new Product(id, type, price, length, color);
+				 	Product product = new Product(id, type, price, length, color, image);
 					 db.insertProduct(product);
 					 System.out.println("product servlet >> add product");
 					 break;

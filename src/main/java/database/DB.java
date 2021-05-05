@@ -9,6 +9,12 @@ import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Blob;
@@ -65,6 +71,7 @@ public class DB
 	
 	
 	static User user;
+	static Product p = new Product(5, 2, 12, 360, "blue", null);
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDERED_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
@@ -183,7 +190,7 @@ public class DB
 	 ***********************************************************************/
 	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
 	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?)";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
 	
@@ -255,10 +262,14 @@ public class DB
 		try 
 		{
 			//Class.forName(driverURL);
-			this.createAdmin(); 		
+			this.createAdmin(); 	
+			this.createP();
 			this.createTables();
-			if (this.isEmpty("USERS"))
+//			this.insertProduct(p);
+			if (this.isEmpty("USERS")) {
 				this.insertUser(this.user, true);
+				
+			}			
 		} 
 		catch 
 		(Exception e) 
@@ -280,6 +291,31 @@ public class DB
 		this.user.setPassword("1234");
 		this.user.setPhone("050-55555351");
 		this.user.setDescription("Joey doesn't share food!!");
+	}
+	
+	private void createP() throws FileNotFoundException {
+		this.p.setCatalog(112);
+		this.p.setColor("red");
+		this.p.setLength(360);
+		this.p.setPrice(5);
+		this.p.setType(3);
+		String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
+//		File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
+		InputStream is = new FileInputStream(new File(path));
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buf = new byte[32768];
+		int n = 0;
+		try {
+			while ((n = is.read(buf)) >= 0)
+			    baos.write(buf, 0, n);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		byte[] content = baos.toByteArray();
+		this.p.setImage(content);
+		
+		
 	}
 	private void createTables()
 	{
@@ -802,9 +838,9 @@ public class DB
 			this.disconnect();
 			try 
 			{
-				if(ps != null && !ps.isClosed())
+				if(!ps.isClosed())
 					ps.close();
-				if(rs != null && !rs.isClosed())
+				if(!rs.isClosed())
 					rs.close();
 			} 
 			catch (SQLException e1) 
@@ -856,7 +892,7 @@ public class DB
 			this.disconnect();
 			try
 			{
-				if(ps != null && !ps.isClosed())
+				if(!ps.isClosed())
 					ps.close();
 			} catch (SQLException e) 
 			{
@@ -900,7 +936,7 @@ public class DB
 			this.disconnect();
 			try 
 			{
-				if(ps != null && !ps.isClosed())
+				if(ps != null)
 					ps.close();
 			} 
 			catch (SQLException e) 
@@ -960,11 +996,11 @@ public class DB
 		{
 			try 
 			{
-				if(rs != null && !rs.isClosed())
+				if(rs != null)
 					rs.close();
-				if(max != null && !max.isClosed())
+				if(max != null)
 					max.close();
-				if(insert != null && !insert.isClosed())
+				if(insert != null)
 					insert.close();
 			} 
 			catch (SQLException e) 
@@ -1007,7 +1043,7 @@ public class DB
 		{
 			try 
 			{
-				if(rs != null && !rs.isClosed())
+				if(rs != null)
 					rs.close();
 			} 
 			catch (SQLException e) {
@@ -1124,10 +1160,10 @@ public class DB
 		{
 			try
 			{
-				if(rs != null && !rs.isClosed()) rs.close();
-				if(ps != null && !ps.isClosed()) ps.close();
-				if(rs1 != null && !rs1.isClosed()) rs1.close();
-				if(ps1 != null && !ps1.isClosed()) ps1.close();
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+				if(rs1 != null) rs1.close();
+				if(ps1 != null) ps1.close();
 				this.disconnect();
 			}
 			catch(Exception e)
@@ -1237,6 +1273,13 @@ public class DB
 			ps.setFloat(3, product.getPrice());
 			ps.setFloat(4, product.getLength());
 			ps.setString(5, product.getColor());
+			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
+//			File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
+			InputStream is = new FileInputStream(new File(path));
+//			InputStream in = new FileInputStream("E:\\images\\cat.jpg");
+//			this.p.setImage(img);
+//			ps.setBinaryStream(6, is, (int) img.length());
+			ps.setBlob(6, is);
 			result = ps.executeUpdate();
 			
 			if (result > 0)
@@ -1409,6 +1452,9 @@ public class DB
  				product.setPrice(rs.getFloat(3));
  				product.setLength(rs.getFloat(4));
  				product.setColor(rs.getString(5));
+ 				System.out.println("reading the blob...");
+// 				product.setImage(rs.getBinaryStream(6));
+ 				product.setImage(rs.getBytes(6));
  				result.add(product);
 	 		}
 		}

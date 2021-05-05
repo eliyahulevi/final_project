@@ -133,7 +133,7 @@ function addItemToCart(title, length, quantity, imageSrc) {
 *	products or whe admin want to add new product
 *********************************************************************************/
 function createShopItem(type, imageSrc, price) {
-  var shopItem = document.createElement(div);
+  var shopItem = document.createElement("div");
   shopItem.classList.add("shop-item");
   var shopItemContent = `<span class="shop-item-title">${type} type pine wood </span>
                         <img class="shop-item-image" src=${imageSrc} alt="">
@@ -157,14 +157,17 @@ function createShopItem(type, imageSrc, price) {
 
   shopItem.innerHTML = shopItemContent;
   var shopItems = document.getElementsByClassName("shop-items")[0];
-  shopItems.append(shopItems);
-
+  shopItems.append(shopItem);
+  //console.log(shopItem);
   shopItem
-    .getElementsByClassName("cart-input-length")[0]
+    .getElementsByClassName("input-length")[0]
     .addEventListener("change", lengthChange);
   shopItem
-    .getElementsByClassName("cart-input-quantity")[0]
+    .getElementsByClassName("input-quantity")[0]
     .addEventListener("change", quantityChange);
+  shopItem
+  	.getElementsByClassName("shop-item-btn")[0]
+  	.addEventListener("click", addToCartClicked);
 }
 
 
@@ -172,7 +175,7 @@ function createShopItem(type, imageSrc, price) {
 *	this function loads the 'products' from the DB
 *********************************************************************************/
 function loadProducts(){
-		
+		//console.log("fuck!!!");
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "0");
@@ -196,8 +199,19 @@ function loadProducts(){
 		            var form = document.getElementById("items");
 		            var length = products.length;
 		            for(var i = 0; i < length; i++){
-		            	var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
-		            	form.appendChild(item);					
+		            	//console.log(products[i]);
+		            	//console.log(products[i].image);
+		            	var imgSrc = btoa(products[i].image);
+		            	//var imgSrc = atob(products[i].image);
+		            	//var imgData ="data:image/png;base64," + products[i].image ;
+		            	var price = products[i].price;
+		            	var type = products[i].type;
+		            	//console.log(imgData);
+		            	createShopItem(type, imgSrc, price);
+		            	//createShopItem(type, imgData, price);
+		            	//createShopItem(products[i].type, products[i].imgSrc, products[i].price);
+		            	//console.log(products[i].price);
+		            				
 		            }
     			}
      	});
