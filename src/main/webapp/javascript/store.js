@@ -74,7 +74,7 @@ function lengthChange(event) {
 *	this function handles 'add to cart' event
 *********************************************************************************/
 function addToCartClicked(event) {
-	alert("cart clicked");
+	//alert("cart clicked");
 	var button = event.currentTarget;
 	var shopItem = button.parentElement.parentElement;
 	//   console.log(shopItem);
@@ -184,7 +184,7 @@ function loadProducts(){
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
-		alert(formdata.get("date"));
+		//alert(formdata.get("date"));
 	    $.ajax({    
         url: 'ProductServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
@@ -195,7 +195,7 @@ function loadProducts(){
         type: 'post',
         success: function(response){ 
         			var products = JSON.parse(response);    
-        			alert(products);  			
+        			//alert(products);  			
 		            var form = document.getElementById("items");
 		            var length = products.length;
 		            for(var i = 0; i < length; i++){
