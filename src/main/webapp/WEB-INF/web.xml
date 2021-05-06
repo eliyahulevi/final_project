@@ -1,6 +1,6 @@
 <web-app>    
   <welcome-file-list>  
-   <welcome-file>testWebsocket.html</welcome-file>  
+   <welcome-file>index.html</welcome-file>  
    <welcome-file>default.html</welcome-file>  
   </welcome-file-list> 
   <context-param>

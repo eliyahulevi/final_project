@@ -9,8 +9,10 @@
   	<link rel="icon" type="image/png" href="resources/planks.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<script src="javascript/message.js"></script> <!-- order of .js files must be kept !! -->
-	<script src="javascript/user.js"></script>
+	<script src="javascript/message.js"></script> 	<!-- order of .js files must be kept !! -->
+	<script src="javascript/websocket.js"></script> <!-- order of .js files must be kept !! -->
+	<script src="javascript/utils.js"></script> <!-- order of .js files must be kept !! -->
+	<script src="javascript/user.js"></script>		<!-- order of .js files must be kept !! -->
 
 
 
@@ -222,7 +224,7 @@
 			    </div>
 	  		</div>  		
   		</div>
-	<div class="container">
+	<div class="container" id="content">
 
 
 	</div>
@@ -248,7 +250,7 @@
 					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
 				</span>
 				<span style="float:right; padding-right:0px; ">
-					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
+					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancelMsgText()">cancel</button>
 				</span>		
 			</p>
 		</form>	

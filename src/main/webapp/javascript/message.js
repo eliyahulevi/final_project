@@ -2,6 +2,21 @@
  * 	file holds functionality to handle messages
  */
 
+/*********************************************************************************
+*	this function converts an image to Base64 encoding string
+*********************************************************************************/
+function encodeImageFileAsURL(image) {
+ 	var result;
+	var reader = new FileReader();
+	reader.onloadend = function() {
+    	result =  reader.result;
+  	}
+  	reader.readAsDataURL(image);
+  	alert(result);
+	return result;
+}
+
+
 
 /*********************************************************************************
 *	this function send a message in JSON format to the server to be inserted into

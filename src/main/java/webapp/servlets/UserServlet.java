@@ -113,7 +113,7 @@ public class UserServlet extends HttpServlet
 					{
 						fileContent = image.getInputStream();
 						if(fileContent.read() < 0)
-							System.out.println(">> image servlet: no data to read");
+							System.out.println(">> User servlet: unable to read image");
 						else
 						{
 							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
@@ -123,7 +123,7 @@ public class UserServlet extends HttpServlet
 						}
 					}
 					else
-						System.out.println("image servlet >>" + "no image file");
+						System.out.println("image servlet >> no image file");
 					 break;
 				 }
 				 

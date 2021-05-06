@@ -70,6 +70,11 @@ public class DeviceWebSocketServer
                 int id = (int) jsonMessage.getInt("id");
                 sessionHandler.toggleDevice(id);
             }
+            
+            if ("addImage".equals(jsonMessage.getString("action"))) {
+                int id = (int) jsonMessage.getInt("id");
+                sessionHandler.toggleDevice(id);
+            }
         }
 	}
 	

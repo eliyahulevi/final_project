@@ -45,7 +45,7 @@ public class DeviceSessionHandler
     	Blob blob;
 		try 
 		{
-			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\mickey.txt";
+			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\mickey.png";
 			String content = new String(Files.readAllBytes(Paths.get(path)));
 			blob = new SerialBlob(content.getBytes());
 			sendImage(session, blob);
@@ -78,6 +78,26 @@ public class DeviceSessionHandler
         return new ArrayList<>(devices);
     }
 
+    public void sendImage(int id)
+    {
+    	Device device = getDeviceById(id);
+        if (device != null) 
+        {
+        	/*
+			byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
+			String encodedString = Base64.getEncoder().encodeToString(fileContent);
+			
+        	JsonProvider provider = JsonProvider.provider();
+            //String base64Image = Base64.getEncoder().encodeToString(content.getBytes());
+            JsonObject jimg = (JsonObject) provider.createObjectBuilder().add("action", "image")
+																		 .add("src", encodedString)
+																		 .build(); 
+            //ByteBuffer buf = ByteBuffer.wrap(base64Image.getBytes());
+            sendToSession(session, jimg); 
+            */
+        }
+    }
+    
     public void addDevice(Device device) 
     {
         device.setId(deviceId);
@@ -125,12 +145,14 @@ public class DeviceSessionHandler
     {
         try 
         {
-        	byte[] str = img.getBytes(0, (int)img.length()); 
-			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\donald.png";
+        	
+        	byte[] str = img.getBytes(1, (int)img.length()); 
+			//String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\donald.png";
 			//String content = new String(Files.readAllBytes(Paths.get(path)));
 			
-			byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
-			String encodedString = Base64.getEncoder().encodeToString(fileContent);
+			//byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
+			//String encodedString = Base64.getEncoder().encodeToString(fileContent);
+        	String encodedString = Base64.getEncoder().encodeToString(str);
 			
         	JsonProvider provider = JsonProvider.provider();
             //String base64Image = Base64.getEncoder().encodeToString(content.getBytes());

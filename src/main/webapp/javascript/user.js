@@ -16,6 +16,8 @@
 *	binds the on.show event of the send message modal to fire up
 *	the loadUsers function, in order to populate the users list
 *********************************************************************************/
+
+
 $(document).ready(function(){
 	
 	// hide the 'update' button in 'personal-details' section
@@ -648,7 +650,7 @@ function sendUserReply(jmessage){
 	formData.append("date", date);
 	formData.append("offset", offset); 
 	formData.append("repliedTo", repliedTo);  
-	alert(message);
+	//alert(message);
 	
     $.ajax({
     url: 'UserServlet', 	// point to server-side 
@@ -790,6 +792,7 @@ function upload(){
 	let arr 		  = [];
 	var ckbx 		  = document.getElementById("output").getElementsByTagName("input");
 	var images 		  = document.getElementById("output").getElementsByTagName("img");
+	
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
@@ -797,7 +800,9 @@ function upload(){
   		}
 	}
 	//sendImages(arr);
-	sendMessage1(arr);
+	
+	sendMessage(arr);
+	alert(images.length);
 }
 
 
@@ -816,7 +821,7 @@ function uploadMessage(number){
   		}
 	}
 	//sendImages(arr);
-	sendMessage1(arr);
+	sendMessage(arr);
 }
 
 
@@ -836,6 +841,16 @@ function showMsgText(){
 	document.getElementById("msg-text-upload").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
+} 
+
+
+/*********************************************************************************
+*	this function simply shows the hidden elements to allow message text upload
+*********************************************************************************/
+function cancelMsgText(){
+	document.getElementById("msg-text-upload").style.display = "none";
+	document.getElementById("upload-file-btn").style.display = "none";
+	document.getElementById("cancel-file-btn").style.display = "none";
 } 
 
 
@@ -862,6 +877,7 @@ function onChange(input){
 *
 *********************************************************************************/
 function drop(event){
+	alert('drop');
     event.stopPropagation();
     event.preventDefault();
     
@@ -1021,7 +1037,8 @@ function sendImages(images){
 		var form_data = new FormData();
 		form_data.append("image", data);
 		form_data.append("user", "admin");
-		form_data.append("name", data.name); 
+		form_data.append("name", data.name);
+		form_data.append('offset', '0');  
 		//alert(data);
 	    $.ajax({
 	        url: 'ImageServlet', 	// point to server-side PHP script 
@@ -1053,7 +1070,7 @@ function sendMessage(){
 	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
 	var form_data = new FormData();
 	
-	//alert(date.toISOString().split('T')[0]);
+	alert(date.toISOString().split('T')[0]);
 	form_data.append("code", "2");
 	form_data.append("sender", sender.slice(0,20)); 
 	form_data.append("user", usr.slice(0,20));
@@ -1080,7 +1097,7 @@ function sendMessage(){
 /*********************************************************************************
 *	this function sends a new message to user: usr 
 *********************************************************************************/
-function sendMessage1(images){
+function sendMessage(images){
 
 	var msg 	  = document.getElementById("msg-txt").value;
 	var usrs 	  = document.getElementById("users");
@@ -1090,19 +1107,24 @@ function sendMessage1(images){
 	var clicked   = false;
 	var formData  = new FormData();
 	
-	//alert(date.getTime());
+	
 	formData.append("code", "1");
 	formData.append("sender", sender.slice(0,20)); 
 	formData.append("user", usr.slice(0,20));
 	formData.append("message", msg);
 	formData.append("date", date.getTime());
 	formData.append("clicked", clicked);
+	formData.append("offset", 0);
+	
 	
 	if( images.length > 0){
+		var imgs = [];
 		for(var i = 0; i < images.length; i++){
-			form_data.append("image", images[i]);
+			imgs[i] = images[i];
 		}		
+		formData.append("image", new Blob([ imgs ], {type: 'text/plain'}));
 	}
+	
 	
     $.ajax({
 	    url: 'UserServlet', 	// point to server-side PHP script 
@@ -1114,6 +1136,7 @@ function sendMessage1(images){
 	    type: 'post',
 	    success: function(response){
 	       			alert("file uploaded successfully!" + response); 
+	       			cancelMsgText();
     			}
  	});
 }
