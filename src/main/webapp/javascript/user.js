@@ -355,28 +355,15 @@ function loadUserMessages(sync){
         type: 'post',
         async: sync,
         success: function(response){ 
-        			/* up 'till here displays messages NOT in thread order
-        			var messages = JSON.parse(response);      			
-		            var form = document.getElementById("msg-display");
-		            var users_list = document.getElementById("users-list");
-		            for(var i = 0; i < messages.length; i++){
-		            	var msg = createMessage(messages[i]);
-		            	var sender = createSender(messages[i]);
-		            	if(!userExist(sender.value) ){
-		            		users_list.add(sender);
-	            		}
-		            	form.appendChild(msg);
-		            }
-		            */
-        			
+               			
         		    var form = document.getElementById("msg-display");
         			var parsedMsgs = [];
         			var messages = JSON.parse(response);   
         			
-        			for(var ii = 0; ii < messages.length; ii++){
-        				var parsedMsg = JSON.parse(messages[ii]);
+        			for(var i = 0; i < messages.length; i++){
+        				var parsedMsg = JSON.parse(messages[i]);
         				parsedMsg.visited = 0;
-        				parsedMsgs[ii] = parsedMsg;
+        				parsedMsgs[i] = parsedMsg;
         			}   		
         			
 		            for(var i = 0; i < parsedMsgs.length; i++){
@@ -400,7 +387,7 @@ function insertRepliedMessages(messages, index){
 	var msgin		= (messages[index]);
 	for(var i = 0; i < messages.length; i++){
 		if( i == index) { continue; }
-		var msgi 	= (messages[i]);
+		var msgi 	= messages[i];
 		var msg 	= createMessage(msgi);
 		
 		if(msgin.user + msgin.date == msgi.repliedTo){
@@ -460,18 +447,20 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	var clicked   = message.clicked;
 	var msg_text  = message.message;
 	var offset    = message.offset;
+	var images    = message.image;
 	
 	var frame 	  = document.createElement("div");
+	var imgsFrame = document.createElement("div");
 	var userTag   = document.createElement("a");
 	var replyUser = document.createElement("a");
 	var p 		  = document.createElement("p");
 	var spanStart = document.createElement("span");
-	var spanDate   = document.createElement("span");
+	var spanDate  = document.createElement("span");
 	var reply 	  = document.createElement("span");
 	var clkd      = document.createElement("a");
 	var rawDate	  = document.createElement("pre");
-	//alert(offset);
-
+	
+	//alert('create new message element ' + images);
 	
 	clkd.setAttribute('id', 'clicked' + date);
 	clkd.setAttribute('style', 'visibility:hidden;');
@@ -503,6 +492,13 @@ function createMessage(/*jsonMessage -previous version*/ message){
 		reply.appendChild(replyUser);
 		p.appendChild(reply);
 	}
+	if(images.length > 0 ) {
+		for(var i = 0; i < images.length; i++){
+			//alert(images[i]);		
+		}
+	}
+
+	
 
 	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
 	frame.setAttribute('class', 'message');
@@ -510,6 +506,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
 	frame.appendChild(clkd);
+	frame.appendChild(imgsFrame);
 	if(clicked == 'true'){
 		frame.setAttribute('style', 'background: rgba(0.0, 0.0, 0.0, 0.0); margin-left:' + offset + 'px;');
 	}
@@ -802,7 +799,7 @@ function upload(){
 	//sendImages(arr);
 	
 	sendMessage(arr);
-	alert(images.length);
+	//alert(images.length);
 }
 
 
@@ -877,7 +874,7 @@ function onChange(input){
 *
 *********************************************************************************/
 function drop(event){
-	alert('drop');
+	//alert('drop');
     event.stopPropagation();
     event.preventDefault();
     
@@ -917,6 +914,7 @@ function createCheckedImage(source, name){
 	newCheckbox.setAttribute("type", "checkbox");
 	newCheckbox.setAttribute("class", "custom-control-input");
 	newCheckbox.setAttribute("id", id);
+	newCheckbox.setAttribute("checked", true);
 	
 	newImg.setAttribute("alt", "#");
 	newImg.setAttribute("class", "thumb");
@@ -988,12 +986,6 @@ function loadUsers(){
 	formData.append("image", blob);
 	formData.append("date", date.getTime());
 	
-	
-	/*
-	for (var value of form_data.values()) {
-  		alert(value);
-	}*/
-	
     $.ajax({
         url: 'UserServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
@@ -1057,42 +1049,6 @@ function sendImages(images){
 }
 
 
-/*********************************************************************************
-*	this function sends a new message to user: usr 
-*********************************************************************************/
-/*
-function sendMessage(){
-	var msg = document.getElementById("msg");
-	var usrs = document.getElementById("users");
-	var usr = usrs.options[usrs.selectedIndex].text;
-	var sender = sessionStorage.getItem('username');
-	var date = new Date();
-	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
-	var form_data = new FormData();
-	
-	alert(date.toISOString().split('T')[0]);
-	form_data.append("code", "2");
-	form_data.append("sender", sender.slice(0,20)); 
-	form_data.append("user", usr.slice(0,20));
-	form_data.append("message", msg);
-	form_data.append("date", date.toISOString().split('T')[0]);
-	form_data.append("image", blob);
-	
-    $.ajax({
-	    url: 'UserServlet', 	// point to server-side PHP script 
-	    dataType: 'text',  		// what to expect back from the PHP script, if anything
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    data: form_data,                         
-	    type: 'post',
-	    success: function(response){
-	       			alert("file uploaded successfully!" + response); 
-    			}
- 	});
-}
-*/
-
 
 /*********************************************************************************
 *	this function sends a new message to user: usr 
@@ -1120,9 +1076,13 @@ function sendMessage(images){
 	if( images.length > 0){
 		var imgs = [];
 		for(var i = 0; i < images.length; i++){
-			imgs[i] = images[i];
+			imgs[i] = images[i].src;
+			alert(imgs[i]);
 		}		
-		formData.append("image", new Blob([ imgs ], {type: 'text/plain'}));
+		var b = new Blob(imgs, {type: 'image/png' });
+		alert(b);
+		formData.append("image", b);
+		
 	}
 	
 	
