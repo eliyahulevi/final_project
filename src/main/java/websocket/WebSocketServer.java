@@ -5,6 +5,7 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import java.io.StringReader;
@@ -22,15 +23,22 @@ import javax.json.JsonReader;
 
 @ApplicationScoped
 @ServerEndpoint("/messages")
-public class DeviceWebSocketServer 
+public class WebSocketServer 
 {
     @Inject
-    private DeviceSessionHandler sessionHandler = new DeviceSessionHandler();
+    private SessionHandler sessionHandler = new SessionHandler();
     
     @OnOpen
-    public void open(Session session) 
-    {
-    	sessionHandler.addSession(session);
+    public void open( Session session) 
+    {   	
+    	try  
+        {
+	    	sessionHandler.addSession(session);
+        }
+    	catch(Exception e)
+    	{
+    		System.out.println(e.toString());
+    	}
     }
     	
 	@OnClose
@@ -42,16 +50,47 @@ public class DeviceWebSocketServer
 	@OnError
     public void onError(Throwable error) 
 	{
-		Logger.getLogger(DeviceWebSocketServer.class.getName()).log(Level.SEVERE, null, error);
+		Logger.getLogger(WebSocketServer.class.getName()).log(Level.SEVERE, null, error);
 	}
 	
 	@OnMessage
     public void handleMessage(String message, Session session) 
 	{
-        try (JsonReader reader = Json.createReader(new StringReader(message))) 
+        try  
         {
+        	JsonReader reader = Json.createReader(new StringReader(message));
             JsonObject jsonMessage = reader.readObject();
+            String code =jsonMessage.getString("code"); 
+            System.out.println("websocket >> code:" + code);
+            
+            switch(code)
+            {
+	            case "0":
+	            {
+	            	sessionHandler.linkUser2Session(jsonMessage.getString("sender"), session); 
+	            	System.out.println("websocket >> link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
+	            }
+	            
+	            case "1":
+	            {
+	            	
+	            }
+	            
+	            case "2":
+	            {
+	            	
+	            }
+	            
+	            case "3":
+	            {
+	            	
+	            }
+	            
+	            default:
+	            	break;
+            }
 
+            /*
             if ("add".equals(jsonMessage.getString("action"))) {
                 Device device = new Device();
                 device.setName(jsonMessage.getString("name"));
@@ -75,6 +114,12 @@ public class DeviceWebSocketServer
                 int id = (int) jsonMessage.getInt("id");
                 sessionHandler.toggleDevice(id);
             }
+            */
+        }
+        catch(Exception e)
+        {
+        	System.out.println(e.toString());
+        	e.printStackTrace();
         }
 	}
 	

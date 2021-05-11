@@ -22,3 +22,9 @@ function encodeImageFileAsURL(image) {
 	return result;
 }
 
+
+
+
+
+
+

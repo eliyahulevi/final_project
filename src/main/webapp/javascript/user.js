@@ -1,6 +1,15 @@
 /********************** 	handles user page messages ***************************
- *	the message format is as follows (JSON):
- *	[{"code", "user", "message", "image"}]
+ *	the message format is a JSON object as follows:
+ *	{ 	
+ *		"code", 	message code,
+ *		"sender", 	sender, 
+ *		"user", 	user,
+ *		"message", 	message,
+ *		"date", 	date,
+ *		"clicked", 	clicked,
+ *		"image",	image(s),
+ *		"offset", 	0
+ *	}
  *
  *	the messages codes are as follows:
  *	0x0000 - load registered users into "send message" modal
@@ -10,32 +19,18 @@
  ********************************************************************************/
 
 
+var wsocket = null;
 
 /*********************************************************************************
 *	this function is the first to file up when the page is loaded, it
 *	binds the on.show event of the send message modal to fire up
 *	the loadUsers function, in order to populate the users list
 *********************************************************************************/
-
-
 $(document).ready(function(){
 	
 	// hide the 'update' button in 'personal-details' section
 	document.getElementById("pt-update").style.display = "none";
-	document.getElementById("msg-text-upload").style.display = "none";
-	
-	// Create WebSocket connection.
-	const socket = new WebSocket('ws://localhost:8080');
-	
-	// Connection opened
-	socket.addEventListener('open', function (event) {
-	    socket.send('Hello Server!');
-	});
-	
-	// Listen for messages
-	socket.addEventListener('message', function (event) {
-	    console.log('Message from server ', event.data);
-	});
+	document.getElementById("msg-text-upload").style.display = "none"; 
 	
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
@@ -49,8 +44,99 @@ $(document).ready(function(){
 	$("#send-Message-Modal").on('show.bs.modal', function(){
 		loadUsers();
 	});
+	
+	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages");
+	wsocket.onopen 		= onOpen; 	
+	wsocket.onclose		= onClose;
+	wsocket.onerror		= onError;	
+	wsocket.onmessage 	= onMessage;
   
 });
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is being started at the client
+*	side. 
+*	@parameter event: 	holds the socket data(?)
+*	return:				null
+*********************************************************************************/
+function onOpen(event) {
+
+	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "");
+	
+	wsocket.send(JSON.stringify(message));
+	
+}
+
+
+/*********************************************************************************
+*	this function handles the event when a message comes in from the server 
+*	endpoint. 
+*	@parameter event: 	holds the message data
+*	return:				null
+*********************************************************************************/
+function onMessage(event) 
+{	
+    var device = JSON.parse(event.data);
+    if (device.action === "add") {
+        printDeviceElement(device);
+    }
+    if (device.action === "remove") {
+        document.getElementById(device.id).remove();
+        //device.parentNode.removeChild(device);
+    }
+    if (device.action === "toggle") {
+        var node = document.getElementById(device.id);
+        var statusText = node.children[2];
+        if (device.status === "On") {
+            statusText.innerHTML = "Status: " + device.status + " (<a href=\"#\" OnClick=toggleDevice(" + device.id + ")>Turn off</a>)";
+        } else if (device.status === "Off") {
+            statusText.innerHTML = "Status: " + device.status + " (<a href=\"#\" OnClick=toggleDevice(" + device.id + ")>Turn on</a>)";
+        }
+    }
+	if(device.action == "image")
+	{
+		addImage(device.src);
+	}	
+}
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is closing at the client
+*	side. 
+*	@parameter event: 	holds the socket closing data(?)
+*	return:				null
+*********************************************************************************/
+function onClose(event) {
+	alert('closing socket' + event);
+}
+
+
+
+/*********************************************************************************
+*	this function handles the event of a socket error at the client side. 
+*	@parameter event: 	holds the socket error data(?)
+*	return:				null
+*********************************************************************************/
+function onError(event) {
+	alert('error in socket' + event);
+}
+
+
+/*********************************************************************************
+*	this function insert imcomming images from sever into 'content' div in page.
+*	for now, only png format is handled. 
+*	@parameter image: 	the image SOURCE encoded in Base64
+*	return:				null
+*********************************************************************************/
+function addImage(image)
+{
+	var content = document.getElementById("content");	
+	var img = document.createElement("img");
+	img.src = "data:image/png;base64," + image;
+	content.appendChild(img);
+	
+}
 
 
 

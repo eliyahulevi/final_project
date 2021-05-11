@@ -15,8 +15,10 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.json.JsonObject;
@@ -33,15 +35,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-public class DeviceSessionHandler 
+public class SessionHandler 
 {
-	private int deviceId = 0;
-    private final Set<Session> sessions = new HashSet<>();
-    private final Set<Device> devices = new HashSet<>();
+	int deviceId = 0;
+    final Set<Session> sessions 	= new HashSet<>();
+    final Set<Device> devices 		= new HashSet<>();
+    final Map<String, Session> map	= new HashMap<String, Session>();
     
     public void addSession(Session session) 
     {
         sessions.add(session);
+        System.out.println("websocket >> number of sesions: " + sessions.size());
+        System.out.println("websocket >> sesions: " + session);
     	Blob blob;
 		try 
 		{
@@ -146,13 +151,13 @@ public class DeviceSessionHandler
         try 
         {
         	
-        	byte[] str = img.getBytes(1, (int)img.length()); 
-			//String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\donald.png";
+        	//byte[] str = img.getBytes(1, (int)img.length()); 
+			String path = "C:\\Users\\shaha\\Documents\\github\\final_project\\src\\main\\java\\websocket\\donald.png";
 			//String content = new String(Files.readAllBytes(Paths.get(path)));
 			
-			//byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
-			//String encodedString = Base64.getEncoder().encodeToString(fileContent);
-        	String encodedString = Base64.getEncoder().encodeToString(str);
+			byte[] fileContent = FileUtils.readFileToByteArray(new File(path));
+			String encodedString = Base64.getEncoder().encodeToString(fileContent);
+        	//String encodedString = Base64.getEncoder().encodeToString(str);
 			
         	JsonProvider provider = JsonProvider.provider();
             //String base64Image = Base64.getEncoder().encodeToString(content.getBytes());
@@ -160,13 +165,20 @@ public class DeviceSessionHandler
 																		 .add("src", encodedString)
 																		 .build(); 
             //ByteBuffer buf = ByteBuffer.wrap(base64Image.getBytes());
-            sendToSession(session, jimg); 
+            //sendToSession(session, jimg);
+            System.out.println("websocket >> sending image..");
+            session.getBasicRemote().sendText(jimg.toString());
             //session.getBasicRemote().sendBinary(buf); 
         } 
         catch (Exception e )
         {
             System.out.println("Error: "+e.getMessage());
         }
+    }
+    
+    public void linkUser2Session(String name, Session session)
+    {
+    	this.map.put(name, session);
     }
     
     private Device getDeviceById(int id) 
@@ -210,7 +222,7 @@ public class DeviceSessionHandler
     	catch (IOException ex) 
     	{
             sessions.remove(session);
-            Logger.getLogger(DeviceSessionHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

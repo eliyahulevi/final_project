@@ -1,6 +1,9 @@
 /**
  * 	file holds functionality to handle messages
  */
+ 
+ 
+
 
 /*********************************************************************************
 *	this function converts an image to Base64 encoding string
@@ -57,6 +60,24 @@ function uploadMessage(message){
 	
 }
 */
+
+ /*********************************************************************************
+*	this function creates a JSON format message
+*********************************************************************************/
+function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset) {
+	//alert('create message');
+ 	var result =  {	
+ 					"code": 	code,
+ 					"sender": 	sender, 
+ 					"user": 	user,
+			 		"message": 	msg,
+			 		"date": 	date,
+			 		"clicked": 	clckd,
+			 		"image":	imgs,
+			 		"offset": 	offset
+			 		}
+	return result;
+}
 
 
 

@@ -2,12 +2,56 @@
  * 	handles the socket functionality
  */
 
-window.onload = init;
-var socket = new WebSocket("ws://localhost:8080/final-project/messages");
-socket.onmessage = onMessage;
+window.onload 		= init;
+var socket 			= new WebSocket("ws://localhost:8080/final-project/messages");
+socket.onppen 		= onOpen; 
+socket.onclose		= onClose;
+socket.onerror		= onError;
+socket.onmessage 	= onMessage;
 
 
 
+/*********************************************************************************
+*	this function handles the event a web socket is being started at the client
+*	side. 
+*	@parameter event: 	holds the socket data(?)
+*	return:				null
+*********************************************************************************/
+function onOpen(event) {
+	var message = JSON.stringify({ id: 'id' })
+	websocket.send(message);
+	alert('open socket' + event.data);
+}
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is closing at the client
+*	side. 
+*	@parameter event: 	holds the socket closing data(?)
+*	return:				null
+*********************************************************************************/
+function onClose(event) {
+	alert('closing socket' + event);
+}
+
+
+
+/*********************************************************************************
+*	this function handles the event of a socket error at the client side. 
+*	@parameter event: 	holds the socket error data(?)
+*	return:				null
+*********************************************************************************/
+function onError(event) {
+	alert('error in socket' + event);
+}
+
+
+/*********************************************************************************
+*	this function handles the event when a message comes in from the server 
+*	endpoint. 
+*	@parameter event: 	holds the message data
+*	return:				null
+*********************************************************************************/
 function onMessage(event) 
 {	
     var device = JSON.parse(event.data);
@@ -30,12 +74,28 @@ function onMessage(event)
 	if(device.action == "image")
 	{
 		addImage(device.src);
-	}
-	
+	}	
+}
+
+
+/*********************************************************************************
+*	this function insert imcomming images from sever into 'content' div in page.
+*	for now, only png format is handled. 
+*	@parameter image: 	the image SOURCE encoded in Base64
+*	return:				null
+*********************************************************************************/
+function addImage(image)
+{
+	var content = document.getElementById("content");	
+	var img = document.createElement("img");
+	img.src = "data:image/png;base64," + image;
+	content.appendChild(img);
 	
 }
 
-function addDevice(name, type, description) {
+
+/*
+function addDevice(name, type, description){
     var DeviceAction = {
         action: "add",
         name: name,
@@ -72,16 +132,10 @@ function image(){
     };
     socket.send(JSON.stringify(DeviceAction));	
 }
+*/
 
-function addImage(image)
-{
-	var content = document.getElementById("content");	
-	var img = document.createElement("img");
-	img.src = "data:image/png;base64," + image;
-	content.appendChild(img);
-	
-}
 
+/*
 function printDeviceElement(device) {
     var content = document.getElementById("content");
     
@@ -135,7 +189,7 @@ function formSubmit() {
     document.getElementById("addDeviceForm").reset();
     addDevice(name, type, description);
 }
-
+*/
 function init() {
     hideForm();
 }
