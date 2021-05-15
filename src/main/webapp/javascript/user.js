@@ -38,7 +38,7 @@ $(document).ready(function(){
 	loadProducts(false);
 	loadUserOrders(false);
 	loadUserDetails();
-	loadUserMessages(false);
+	//loadUserMessages(false);
 
 	// load users to 'send-message' modal
 	$("#send-Message-Modal").on('show.bs.modal', function(){
@@ -61,11 +61,8 @@ $(document).ready(function(){
 *	return:				null
 *********************************************************************************/
 function onOpen(event) {
-
-	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "");
-	
+	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "");	
 	wsocket.send(JSON.stringify(message));
-	
 }
 
 
@@ -75,28 +72,42 @@ function onOpen(event) {
 *	@parameter event: 	holds the message data
 *	return:				null
 *********************************************************************************/
-function onMessage(event) 
-{	
-    var device = JSON.parse(event.data);
-    if (device.action === "add") {
-        printDeviceElement(device);
+function onMessage(event) {	
+    var message = JSON.parse(event.data);
+    
+    if (message.action === "add") {
+
     }
-    if (device.action === "remove") {
-        document.getElementById(device.id).remove();
-        //device.parentNode.removeChild(device);
+    if (message.action === "remove") {
+
     }
-    if (device.action === "toggle") {
-        var node = document.getElementById(device.id);
-        var statusText = node.children[2];
-        if (device.status === "On") {
-            statusText.innerHTML = "Status: " + device.status + " (<a href=\"#\" OnClick=toggleDevice(" + device.id + ")>Turn off</a>)";
-        } else if (device.status === "Off") {
-            statusText.innerHTML = "Status: " + device.status + " (<a href=\"#\" OnClick=toggleDevice(" + device.id + ")>Turn on</a>)";
-        }
+    if (message.action === "messages") {
+    	
+    	var form 		= document.getElementById("msg-display");
+		var parsedMsgs 	= [];	
+		var messages 	= message.src;	
+		
+		
+		for(var i = 0; i < messages.length; i++){
+			var parsedMsg = JSON.parse(messages[i]);
+ 			parsedMsg.visited = 0;
+			parsedMsgs[i] = parsedMsg;
+			//alert(parsedMsgs[i].date);
+		}
+		
+        for(var i = 0; i < parsedMsgs.length; i++){
+			var msg = createMessage(parsedMsgs[i]);
+			if(parsedMsgs[i].visited == 0){
+				var msg = createMessage(parsedMsgs[i]);
+				form.appendChild(msg);
+			}
+			insertRepliedMessages(parsedMsgs, i);       	
+		}
     }
-	if(device.action == "image")
+	if(message.action === "image")
 	{
-		addImage(device.src);
+		
+		addImage(message.src);
 	}	
 }
 
@@ -1163,10 +1174,10 @@ function sendMessage(images){
 		var imgs = [];
 		for(var i = 0; i < images.length; i++){
 			imgs[i] = images[i].src;
-			alert(imgs[i]);
+			//alert(imgs[i]);
 		}		
 		var b = new Blob(imgs, {type: 'image/png' });
-		alert(b);
+		//alert(b);
 		formData.append("image", b);
 		
 	}
@@ -1187,3 +1198,10 @@ function sendMessage(images){
  	});
 }
 
+
+function testMessages(){
+	var message = createSocketMessage("1", sessionStorage.getItem('username'), "", "", "", "", "", "");	
+	//alert(message);
+	wsocket.send(JSON.stringify(message));
+	
+}

@@ -13,7 +13,7 @@ function encodeImageFileAsURL(image) {
 	var reader = new FileReader();
 	
 	reader.onload = function() { 
-		alert(image);    	
+		//alert(image);    	
 		result =  reader.result;
 		
   	}

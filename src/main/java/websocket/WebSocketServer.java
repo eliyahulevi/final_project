@@ -8,16 +8,26 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import com.google.gson.JsonArray;
+
 import java.io.StringReader;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import model.device.*;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
+
+import database.DB;
+
 
 
 
@@ -25,6 +35,8 @@ import javax.json.JsonReader;
 @ServerEndpoint("/messages")
 public class WebSocketServer 
 {
+	@Inject
+	private DB db = new DB(); 
     @Inject
     private SessionHandler sessionHandler = new SessionHandler();
     
@@ -60,7 +72,8 @@ public class WebSocketServer
         {
         	JsonReader reader = Json.createReader(new StringReader(message));
             JsonObject jsonMessage = reader.readObject();
-            String code =jsonMessage.getString("code"); 
+            String code = jsonMessage.getString("code");
+            String user = jsonMessage.getString("sender"); 
             System.out.println("websocket >> code:" + code);
             
             switch(code)
@@ -69,21 +82,39 @@ public class WebSocketServer
 	            {
 	            	sessionHandler.linkUser2Session(jsonMessage.getString("sender"), session); 
 	            	System.out.println("websocket >> link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
+	            	break;
 	            }
 	            
 	            case "1":
 	            {
-	            	
+	            	List<String> messages 			= db.getUserMessages(user);
+	            	JsonProvider provider 			= JsonProvider.provider();
+	            	JsonObjectBuilder job			= Json.createObjectBuilder();
+	            	javax.json.JsonArray jArr		= Json.createArrayBuilder(messages).build(); 
+            		int i = 0;
+	            	for(String str : messages)
+	            	{
+	            		JsonValue jmsg = (JsonValue)provider.createObjectBuilder().add("msg" + i, str).build();
+	            		job.add("msg" + i, jmsg);
+	            		//System.out.println("websocket >> " + jmsg);
+	            		i++;
+	            	}
+	            	//System.out.println("websocket >> " + job);
+	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																						 .add("src", jArr)
+																						 .build(); 
+	            	sessionHandler.sendToSession(session, msg);
+	            	break;
 	            }
 	            
 	            case "2":
 	            {
-	            	
+	            	break;
 	            }
 	            
 	            case "3":
 	            {
-	            	
+	            	break;
 	            }
 	            
 	            default:
