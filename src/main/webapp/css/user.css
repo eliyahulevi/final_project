@@ -1,11 +1,14 @@
 @charset "UTF-8";
 
+.image{
+	width: 50px;
+	height:50px;
+}
 .separator{
 	height:2px;
 	border-width:0;
 	background-color:gray;
 }
-
 
 .Table{
     width: 100%;

@@ -92,7 +92,7 @@ function onMessage(event) {
 			var parsedMsg = JSON.parse(messages[i]);
  			parsedMsg.visited = 0;
 			parsedMsgs[i] = parsedMsg;
-			//alert(parsedMsgs[i].date);
+			//alert(parsedMsgs[i].image);
 		}
 		
         for(var i = 0; i < parsedMsgs.length; i++){
@@ -140,13 +140,11 @@ function onError(event) {
 *	@parameter image: 	the image SOURCE encoded in Base64
 *	return:				null
 *********************************************************************************/
-function addImage(image)
-{
+function addImage(image){
 	var content = document.getElementById("content");	
 	var img = document.createElement("img");
 	img.src = "data:image/png;base64," + image;
-	content.appendChild(img);
-	
+	content.appendChild(img);	
 }
 
 
@@ -589,10 +587,12 @@ function createMessage(/*jsonMessage -previous version*/ message){
 		reply.appendChild(replyUser);
 		p.appendChild(reply);
 	}
-	if(images.length > 0 ) {
-		for(var i = 0; i < images.length; i++){
-			//alert(images[i]);		
-		}
+	
+	if(images.slice(0,9) === "ata:image" ) {		
+		var img = document.createElement("img");
+		img.setAttribute('class', 'image');
+		img.src = "d" + images;		
+		imgsFrame.appendChild(img);	
 	}
 
 	
@@ -1174,10 +1174,10 @@ function sendMessage(images){
 		var imgs = [];
 		for(var i = 0; i < images.length; i++){
 			imgs[i] = images[i].src;
-			//alert(imgs[i]);
+			alert(imgs[i]);
 		}		
 		var b = new Blob(imgs, {type: 'image/png' });
-		//alert(b);
+		alert(b);
 		formData.append("image", b);
 		
 	}

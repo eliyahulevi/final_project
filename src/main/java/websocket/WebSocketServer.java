@@ -78,13 +78,14 @@ public class WebSocketServer
             
             switch(code)
             {
+            	//	link user to specific session
 	            case "0":
 	            {
 	            	sessionHandler.linkUser2Session(jsonMessage.getString("sender"), session); 
 	            	System.out.println("websocket >> link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
 	            	break;
 	            }
-	            
+	            //	get all of the messages for a specific user 
 	            case "1":
 	            {
 	            	List<String> messages 			= db.getUserMessages(user);
@@ -106,7 +107,7 @@ public class WebSocketServer
 	            	sessionHandler.sendToSession(session, msg);
 	            	break;
 	            }
-	            
+	            //	insert a new message 
 	            case "2":
 	            {
 	            	break;

@@ -109,8 +109,8 @@ public class UserServlet extends HttpServlet
 				 case "1":		// insert image
 				 {
 					Part image 	= request.getPart("image");
-					int off = Integer.parseInt(offset);
-					long date = Long.parseLong(dateString);
+					int off	 	= Integer.parseInt(offset);
+					long date 	= Long.parseLong(dateString);
 					
 					if(image == null)
 						db.insertMessage(new Message(sender, user, msg, date, blob, off, repliedTo)); 
@@ -122,7 +122,7 @@ public class UserServlet extends HttpServlet
 							System.out.println(">> User servlet: unable to read image");
 						else
 						{
-							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
+							System.out.println("user servlet >> image source " + fileContent);		// TODO: erase if works
 							data = fileContent.readAllBytes();
 							blob = new SerialBlob(data);
 							db.insertMessage(new Message(sender, user, msg, date, blob,  off, repliedTo));
@@ -130,7 +130,7 @@ public class UserServlet extends HttpServlet
 					}
 					else
 						System.out.println("image servlet >> no image file");
-					 break;
+					break;
 				 }
 				 
 				 case "2":		// get user messages
