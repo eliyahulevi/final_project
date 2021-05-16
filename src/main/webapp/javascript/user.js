@@ -587,14 +587,14 @@ function createMessage(/*jsonMessage -previous version*/ message){
 		reply.appendChild(replyUser);
 		p.appendChild(reply);
 	}
-	
+	/*
 	for(var i = 0; i < images.length; i++){
 		var img 	= null;
 		if(images[i] === 'ata:image/png;base64,'){
 			img = document.createElement("img");
 			img.src 	= 'data:image/png;base64,' + jimg[i];
 		}  
-		else if(images[i] === 'pata:image/png;base64,'){
+		else if(images[i] === 'data:image/png;base64,'){
 			img = document.createElement("img");
 			img.src 	= 'data:image/png;base64,' + jimg[i];
 		}
@@ -602,17 +602,21 @@ function createMessage(/*jsonMessage -previous version*/ message){
 		img.setAttribute('class', 'image');
 		imgsFrame.appendChild(img);	
 	}
+	*/
 	
-	/*
 	var jimg	= images.split(	"ata:image/png;base64," );
+	//alert('number of messages: ' + jimg.length);
+	//alert('create message: ' + jimg);
 	for(var i = 0; i < jimg.length; i++){
-		//alert(jimg[i]);
+		if( jimg[i] === "" ) { continue; }
+		alert('message number ' + i + '\nis: ' + jimg[i]);
+		
 		var img 	= document.createElement("img");
 		img.src 	= 'data:image/png;base64,' + jimg[i];
 		img.setAttribute('class', 'image');
 		imgsFrame.appendChild(img);	
 	}
-	*/
+	
 	/*
 	if(images.slice(0,9) === "ata:image" ) {		
 		//alert(jimg.length);

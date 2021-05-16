@@ -21,7 +21,7 @@ function login(){
 	var name = document.getElementById("sign-in-model-name").value;
 	var password = document.getElementById("sign-in-model-password").value;
 	var requestString = 'name=' + name + ',password=' + password;
-	//alert("requestString:" + requestString);
+	alert("requestString:" + requestString);
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', 'LoginServlet2', true);
