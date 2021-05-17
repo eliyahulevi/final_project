@@ -544,6 +544,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	var offset    = message.offset;
 	var images    = message.image;
 	
+	
 	var frame 	  = document.createElement("div");
 	var imgsFrame = document.createElement("div");
 	var userTag   = document.createElement("a");
@@ -554,8 +555,14 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	var reply 	  = document.createElement("span");
 	var clkd      = document.createElement("a");
 	var rawDate	  = document.createElement("pre");
-	
+	var del	  = document.createElement("a");
 	//alert('create new message element ' + images);
+	
+	del.setAttribute('id', 'delete' + date);
+	del.setAttribute('href', '#delete' + date);
+	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
+	del.setAttribute('onclick', 'deleteMessage(' + date + ')');
+	del.innerHTML = ' delete';
 	
 	clkd.setAttribute('id', 'clicked' + date);
 	clkd.setAttribute('style', 'visibility:hidden;');
@@ -572,6 +579,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	replyUser.setAttribute('id', 'user-reply' + date);
 	replyUser.setAttribute('href', '#reply' + date);
 	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
+	replyUser.setAttribute('style', 'color:green;');
 	replyUser.innerHTML = " reply";
 	
 	rawDate.setAttribute('id', 'raw-date' + date);
@@ -586,6 +594,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	if(user == "admin" ){
 		reply.appendChild(replyUser);
 		p.appendChild(reply);
+		p.appendChild(del);
 	}
 	/*
 	for(var i = 0; i < images.length; i++){
@@ -609,7 +618,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	//alert('create message: ' + jimg);
 	for(var i = 0; i < jimg.length; i++){
 		if( jimg[i] === "" ) { continue; }
-		alert('message number ' + i + '\nis: ' + jimg[i]);
+		//alert('message number ' + i + '\nis: ' + jimg[i]);
 		
 		var img 	= document.createElement("img");
 		img.src 	= 'data:image/png;base64,' + jimg[i];
@@ -640,6 +649,16 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	}
 	
 	return frame;	
+}
+
+
+/*********************************************************************************
+*	this function deletes a given message
+*********************************************************************************/
+function deleteMessage(id){
+	alert('delete message:' + id);
+	var msg = document.getElementById('messageElement' + id);
+	msg.remove();
 }
 
 
