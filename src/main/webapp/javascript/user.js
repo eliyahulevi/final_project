@@ -945,6 +945,9 @@ function uploadMessage(number){
 *	this function simply shows the hidden elements to allow images upload
 *********************************************************************************/
 function showFileLoad(){
+	document.getElementById("msg-text-upload").style.display = "block";
+	document.getElementById("upload-file-btn").style.display = "block";
+	document.getElementById("cancel-file-btn").style.display = "block";
 	document.getElementById("file-upload-area").style.display = "block";
 } 
 
@@ -967,6 +970,7 @@ function cancelMsgText(){
 	document.getElementById("msg-text-upload").style.display = "none";
 	document.getElementById("upload-file-btn").style.display = "none";
 	document.getElementById("cancel-file-btn").style.display = "none";
+	document.getElementById("file-upload-area").style.display = "none";
 } 
 
 
