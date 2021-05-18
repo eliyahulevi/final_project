@@ -534,9 +534,8 @@ function createSender(message){
 *	this function takes a message in JSON format and create a message element, 
 *	with the message details including offset, content, etc.
 *********************************************************************************/
-function createMessage(/*jsonMessage -previous version*/ message){
+function createMessage(message){
 	
-	//var message   = JSON.parse(jsonMessage);
 	var user 	  = message.user;
 	var sender	  = message.sender;
 	var date 	  = Number(message.date);
@@ -601,7 +600,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 	images		= 'd' + images;
 	var jimg	= images.split(	'data:image/png;base64,' );
 	for(var i = 0; i < jimg.length; i++){
-		if( jimg[i] === "" ) { continue; }
+		if( jimg[i] === "" || jimg[i] === "d") { continue; }
 		
 		var img 	= document.createElement("img");
 		img.src 	= 'data:image/png;base64,' + jimg[i];
@@ -945,10 +944,10 @@ function uploadMessage(number){
 *	this function simply shows the hidden elements to allow images upload
 *********************************************************************************/
 function showFileLoad(){
-	document.getElementById("msg-text-upload").style.display = "block";
+	document.getElementById("file-upload-area").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
-	document.getElementById("file-upload-area").style.display = "block";
+	document.getElementById("msg-text-upload").style.display = "none";
 } 
 
 
@@ -960,6 +959,7 @@ function showMsgText(){
 	document.getElementById("msg-text-upload").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
+	document.getElementById("file-upload-area").style.display = "block";
 } 
 
 
