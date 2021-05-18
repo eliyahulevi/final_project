@@ -119,7 +119,7 @@ public class UserServlet extends HttpServlet
 					{
 						fileContent = image.getInputStream();
 						if(fileContent.read() < 0)
-							System.out.println(">> User servlet: unable to read image");
+							System.out.println("User servlet >> unable to read image");
 						else
 						{
 							System.out.println("user servlet >> image source " + fileContent);		// TODO: erase if works

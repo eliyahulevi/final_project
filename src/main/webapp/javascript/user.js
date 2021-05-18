@@ -105,9 +105,8 @@ function onMessage(event) {
 		}
     }
 	if(message.action === "image")
-	{
-		
-		addImage(message.src);
+	{	
+		//addImage(message.src);
 	}	
 }
 
@@ -596,46 +595,17 @@ function createMessage(/*jsonMessage -previous version*/ message){
 		p.appendChild(reply);
 		p.appendChild(del);
 	}
-	/*
-	for(var i = 0; i < images.length; i++){
-		var img 	= null;
-		if(images[i] === 'ata:image/png;base64,'){
-			img = document.createElement("img");
-			img.src 	= 'data:image/png;base64,' + jimg[i];
-		}  
-		else if(images[i] === 'data:image/png;base64,'){
-			img = document.createElement("img");
-			img.src 	= 'data:image/png;base64,' + jimg[i];
-		}
-		
-		img.setAttribute('class', 'image');
-		imgsFrame.appendChild(img);	
-	}
-	*/
 	
-	var jimg	= images.split(	"ata:image/png;base64," );
-	//alert('number of messages: ' + jimg.length);
-	//alert('create message: ' + jimg);
+	images		= 'd' + images;
+	var jimg	= images.split(	'data:image/png;base64,' );
 	for(var i = 0; i < jimg.length; i++){
 		if( jimg[i] === "" ) { continue; }
-		//alert('message number ' + i + '\nis: ' + jimg[i]);
 		
 		var img 	= document.createElement("img");
 		img.src 	= 'data:image/png;base64,' + jimg[i];
 		img.setAttribute('class', 'image');
 		imgsFrame.appendChild(img);	
 	}
-	
-	/*
-	if(images.slice(0,9) === "ata:image" ) {		
-		//alert(jimg.length);
-		var img 	= document.createElement("img");
-		img.src 	= "d" + images;
-		img.setAttribute('class', 'image');
-		imgsFrame.appendChild(img);	
-	}
-	*/
-	
 
 	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
 	frame.setAttribute('class', 'message');
@@ -1224,11 +1194,9 @@ function sendMessage(images){
 		var imgs = [];
 		for(var i = 0; i < images.length; i++){
 			imgs[i] = images[i].src;
-			alert(imgs[i]);
 		}		
-		var b = new Blob(imgs, {type: 'image/png' });
-		alert(b);
-		formData.append("image", b);
+		var blob = new Blob(imgs, {type: 'image/png' });
+		formData.append("image", blob);
 		
 	}
 	
