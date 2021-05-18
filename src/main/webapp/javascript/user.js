@@ -86,15 +86,17 @@ function onMessage(event) {
     	var form 		= document.getElementById("msg-display");
 		var parsedMsgs 	= [];	
 		var messages 	= message.src;	
+		var numberOfMessages = messages.length;
 		
-		
+		document.getElementById('numberOfMessages').innerHTML = numberOfMessages;
 		for(var i = 0; i < messages.length; i++){
 			var parsedMsg = JSON.parse(messages[i]);
  			parsedMsg.visited = 0;
 			parsedMsgs[i] = parsedMsg;
-			//alert(parsedMsgs[i].image);
 		}
-		
+	    while (form.firstChild) {
+        	form.removeChild(form.firstChild);
+    	}
         for(var i = 0; i < parsedMsgs.length; i++){
 			var msg = createMessage(parsedMsgs[i]);
 			if(parsedMsgs[i].visited == 0){
