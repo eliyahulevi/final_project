@@ -64,7 +64,7 @@ function uploadMessage(message){
  /*********************************************************************************
 *	this function creates a JSON format message
 *********************************************************************************/
-function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset) {
+function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo) {
 	//alert('create message');
  	var result =  {	
  					"code": 	code,
@@ -74,8 +74,13 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset)
 			 		"date": 	date,
 			 		"clicked": 	clckd,
 			 		"image":	imgs,
-			 		"offset": 	offset
-			 		}
+			 		"offset": 	offset,
+			 		"repliedTo": repliedTo
+			 		};
+			 		
+	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
+						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
+						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
 	return result;
 }
 

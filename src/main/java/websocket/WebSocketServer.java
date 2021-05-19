@@ -10,7 +10,9 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.google.gson.JsonArray;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Blob;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,8 +27,10 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
+import javax.sql.rowset.serial.SerialBlob;
 
 import database.DB;
+import model.message.Message;
 
 
 
@@ -66,16 +70,25 @@ public class WebSocketServer
 	}
 	
 	@OnMessage
-    public void handleMessage(String message, Session session) 
+    public void handleMessage(String stringMessage, Session session) 
 	{
         try  
         {
-        	JsonReader reader = Json.createReader(new StringReader(message));
+        	JsonReader reader = Json.createReader(new StringReader(stringMessage));
             JsonObject jsonMessage = reader.readObject();
-            String code = jsonMessage.getString("code");
-            String user = jsonMessage.getString("sender"); 
-            System.out.println("websocket >> code:" + code);
+            String code 		= jsonMessage.getString("code");
+            String user 		= jsonMessage.getString("user"); 
+            String sender		= jsonMessage.getString("sender");
+            String message		= jsonMessage.getString("message");
+            String dateString	= jsonMessage.getString("date");
+            String offset		= jsonMessage.getString("offset");
+            String repliedTo	= jsonMessage.getString("repliedTo");
             
+    		InputStream fileContent = null;
+    		Blob blob 				= null;
+    		byte[] data 			= null;
+            
+    		System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + message + " date: " + dateString + " offset: " + offset + " replied to: " + repliedTo);
             switch(code)
             {
             	//	link user to specific session
@@ -88,28 +101,36 @@ public class WebSocketServer
 	            //	get all of the messages for a specific user 
 	            case "1":
 	            {
-	            	List<String> messages 			= db.getUserMessages(user);
+	            	List<String> messages 			= db.getUserMessages(sender);
 	            	JsonProvider provider 			= JsonProvider.provider();
 	            	JsonObjectBuilder job			= Json.createObjectBuilder();
 	            	javax.json.JsonArray jArr		= Json.createArrayBuilder(messages).build(); 
-            		int i = 0;
-	            	for(String str : messages)
-	            	{
-	            		JsonValue jmsg = (JsonValue)provider.createObjectBuilder().add("msg" + i, str).build();
-	            		job.add("msg" + i, jmsg);
-	            		//System.out.println("websocket >> " + jmsg);
-	            		i++;
-	            	}
-	            	//System.out.println("websocket >> " + job);
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
-																						 .add("src", jArr)
-																						 .build(); 
+																				.add("src", jArr)
+																				.build(); 
 	            	sessionHandler.sendToSession(session, msg);
 	            	break;
 	            }
-	            //	insert a new message 
+	            //	insert a new message into DB and send to user via session
 	            case "2":
 	            {
+	                String image = jsonMessage.getString("image");
+	                long date 	 = Long.parseLong(dateString); 
+	                int off	 	 = Integer.parseInt(offset);
+	                
+					if(image == null)
+						db.insertMessage(new Message(sender, user, message, date, blob, off, repliedTo)); 
+					
+					else if(!image.equals(""))
+					{
+						System.out.println("user servlet >> image source " + fileContent);		// TODO: erase if works
+						data = image.getBytes();
+						blob = new SerialBlob(data);
+						db.insertMessage(new Message(sender, user, message, date, blob,  off, repliedTo));	
+					}
+					else
+						System.out.println("image servlet >> no image file");
+					
 	            	break;
 	            }
 	            

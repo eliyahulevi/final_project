@@ -61,7 +61,7 @@ $(document).ready(function(){
 *	return:				null
 *********************************************************************************/
 function onOpen(event) {
-	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "");	
+	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "", "");	
 	wsocket.send(JSON.stringify(message));
 }
 
@@ -914,10 +914,7 @@ function upload(){
   			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
-	//sendImages(arr);
-	
 	sendMessage(arr);
-	//alert(images.length);
 }
 
 
@@ -1207,6 +1204,12 @@ function sendMessage(images){
 	}
 	
 	
+	var message = createSocketMessage("2", sender, usr, msg, date, clicked, blob, "", "");	
+	wsocket.send(JSON.stringify(message));
+	alert("file uploaded successfully!" + response); 
+	cancelMsgText();
+	
+	/*
     $.ajax({
 	    url: 'UserServlet', 	// point to server-side PHP script 
 	    dataType: 'text',  		// what to expect back from the PHP script, if anything
@@ -1220,12 +1223,14 @@ function sendMessage(images){
 	       			cancelMsgText();
     			}
  	});
+ 	*/
 }
 
 
 function testMessages(){
-	var message = createSocketMessage("1", sessionStorage.getItem('username'), "", "", "", "", "", "");	
-	//alert(message);
-	wsocket.send(JSON.stringify(message));
 	
+	var user = sessionStorage.getItem('username');
+	var message = createSocketMessage("1", user, "", "", "", "", "", "", "");	
+	wsocket.send(JSON.stringify(message));
+	alert(message);
 }
