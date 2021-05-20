@@ -250,7 +250,7 @@ public class DB
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, createQueryString[count]); 
-			System.out.println("tabel: " + s + " has query "+ createQueryString[count]);
+			System.out.println("DB >> tabel: " + s + " has query "+ createQueryString[count]);
 			count++;
 		}
 		try 
@@ -457,7 +457,7 @@ public class DB
 					e.printStackTrace();
 				}
 			this.disconnect();
-			System.out.println("tabel " + tabelName + " has " + count + " records");
+			System.out.println("DB >> tabel " + tabelName + " has " + count + " records");
 		}
 
 		return result;
@@ -623,7 +623,7 @@ public class DB
 				// TODO: erase after debug!!
 				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
 				{
-					System.out.println("user " + name + "  found"); 
+					System.out.println("DB >> user " + name + "  found"); 
 					result = true;
 				}
 			}
@@ -670,7 +670,7 @@ public class DB
 			System.out.println("DB >> searching for user " + name + " with password " + password);
 			if (this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return result;
 			}
 			state = this.connection.prepareStatement(SELECT_USER);
@@ -1239,7 +1239,7 @@ public class DB
 	 	{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return result;
 			}
 			ps = this.connection.prepareStatement(INSERT_PRODUCT);
@@ -1290,7 +1290,7 @@ public class DB
 	 	{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return;
 			}
 			ps = this.connection.prepareStatement(INSERT_ORDERED_PRODUCT);
@@ -1338,7 +1338,7 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return null;
 			}
 					
@@ -1407,7 +1407,7 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return null;
 			}
 			ps = this.connection.prepareStatement(SELECT_ALL_PRODUCTS);	

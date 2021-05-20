@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,8 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.json.spi.JsonProvider;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
@@ -31,17 +35,21 @@ import javax.websocket.Session;
 import org.apache.commons.io.FileUtils;
 
 import model.device.*;
+import model.message.Message;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+
 
 @ApplicationScoped
 public class SessionHandler 
 {
 	int deviceId = 0;
-    final Set<Session> sessions 	= new HashSet<>();
-    final Set<Device> devices 		= new HashSet<>();
-    final Map<String, Session> map	= new HashMap<String, Session>();
+    final Set<Session> sessions 		= new HashSet<>();
+    final Set<Device> devices 			= new HashSet<>();
+    static  Map<String, Session> map	= new HashMap<String, Session>();
     
     private JsonObject createAddMessage(Device device) 
     {
@@ -59,9 +67,10 @@ public class SessionHandler
     
     public void addSession(Session session) 
     {
+    	//session.getUserProperties().put("user", user);
         sessions.add(session);
-        System.out.println("websocket >> number of sesions: " + sessions.size());
-        System.out.println("websocket >> sesions: " + session);
+        System.out.println("session handler >> number of sesions: " + sessions.size());
+        System.out.println("session handler >> current session: " + session);
     	Blob blob;
 		try 
 		{
@@ -125,7 +134,8 @@ public class SessionHandler
     
     public void linkUser2Session(String name, Session session)
     {
-    	this.map.put(name, session);
+    	map.put(name, session);
+    	System.out.println("session handler >> user-sessions map: " + map);		// TODO: erase if works
     }
     
     private void sendToAllConnectedSessions(JsonObject message) 
@@ -161,5 +171,43 @@ public class SessionHandler
             Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    public void sendToSession(Session session, Message message) 
+    {
+    	try 
+    	{
+    		String msgString = message.toJson();
+    		System.out.println("SessionHandler >> sent message to session: " + msgString);
+        	JsonProvider provider 	= JsonProvider.provider();
+            JsonObject jsonMessage 	= (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				 .add("src", msgString)
+																				 .build(); 
+            session.getBasicRemote().sendText(jsonMessage.toString());
+        } 
+    	catch (IOException ex) 
+    	{
+            sessions.remove(session);
+            Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
+    public Session getUserSession(String user)
+    {
+    	Session result = null;
+    	
+    	try
+    	{
+    		for (Session session : sessions) {
+    			System.out.println("session handler >> session id: " + session.getId());	
+            }
+    		result = map.get(user);
+    		System.out.println("session handler >> all sessions: " + sessions);						// TODO: erase if works
+    		System.out.println("session handler >> session for user: " + user + " is " + result);	// TODO: erase if works
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	
+    	return result;
+    }
 }

@@ -1,5 +1,7 @@
 package model.message;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Blob;
 
 
@@ -29,6 +31,49 @@ public class Message
 		this.clicked = false;
 		this.offset = offset;
 		this.repliedTo = repliedto;
+	}
+	
+	public String toJson()
+	{
+		int length;
+		String result = "";
+		StringBuilder sb = new StringBuilder();
+		
+		
+        Field[] fields = this.getClass().getDeclaredFields();
+        System.out.printf("%d fields:%n", fields.length);
+        length = fields.length;
+        
+        try 
+        {
+	        sb.append("{");
+	        for (int i = 0; i < length - 1; i++) 
+	        {
+	        	String fieldValue = "";
+	        	Object f = fields[i].get(this);
+	        	if( f == null )
+	            	fieldValue = "no data";
+	        	else
+	        		fieldValue = f.toString();
+	        	sb.append(fields[i].getName() + " : " + fieldValue);
+	        	if( i < length - 2)
+	        		sb.append(", ");
+	        }
+	        sb.append("}");
+	        result = sb.toString();
+	        System.out.println("Message >> " + sb);
+		} 
+        catch (IllegalArgumentException e) 
+        {
+			e.printStackTrace();
+		} 
+        catch (IllegalAccessException e) 
+        {
+			e.printStackTrace();
+		}
+        
+        
+		return result;
 	}
 	
 	/*

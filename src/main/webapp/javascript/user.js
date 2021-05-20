@@ -61,7 +61,8 @@ $(document).ready(function(){
 *	return:				null
 *********************************************************************************/
 function onOpen(event) {
-	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", "", "", "", "", "");	
+	var date = new Date().getTime();
+	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", date, "", "", 0, "");	
 	wsocket.send(JSON.stringify(message));
 }
 
@@ -88,6 +89,7 @@ function onMessage(event) {
 		var messages 	= message.src;	
 		var numberOfMessages = messages.length;
 		
+		alert('on message: ' + messages);
 		document.getElementById('numberOfMessages').innerHTML = numberOfMessages;
 		for(var i = 0; i < messages.length; i++){
 			var parsedMsg = JSON.parse(messages[i]);
@@ -532,7 +534,14 @@ function createSender(message){
 
 /*********************************************************************************
 *	this function takes a message in JSON format and create a message element, 
-*	with the message details including offset, content, etc.
+*	with the message details including offset, content, etc. as follows:
+*	user 	  : user;
+*	sender	  : sender;
+*	date 	  : date;
+*	clicked   : clicked;
+*	msg_text  : message;
+*	offset    : offset;
+*	images    : image;
 *********************************************************************************/
 function createMessage(message){
 	
@@ -1175,16 +1184,17 @@ function sendImages(images){
 *********************************************************************************/
 function sendMessage(images){
 
-	var msg 	  = document.getElementById("msg-txt").value;
-	var usrs 	  = document.getElementById("users");
-	var usr  	  = usrs.options[usrs.selectedIndex].text;
-	var sender	  = sessionStorage.getItem('username');
-	var date	  = new Date();
-	var clicked   = false;
-	var formData  = new FormData();
+	var msg 	  	= document.getElementById("msg-txt").value;
+	var usrs 	  	= document.getElementById("users");
+	var usr  	  	= usrs.options[usrs.selectedIndex].text;
+	var sender	  	= sessionStorage.getItem('username');
+	var date	  	= new Date();
+	var clicked   	= 'false';
+	var formData  	= new FormData();
+	var blob		= '';
+	var imgs 		= [];
 	
-	
-	formData.append("code", "1");
+	formData.append("code", "2");
 	formData.append("sender", sender.slice(0,20)); 
 	formData.append("user", usr.slice(0,20));
 	formData.append("message", msg);
@@ -1194,17 +1204,22 @@ function sendMessage(images){
 	
 	
 	if( images.length > 0){
-		var imgs = [];
+		
 		for(var i = 0; i < images.length; i++){
 			imgs[i] = images[i].src;
 		}		
-		var blob = new Blob(imgs, {type: 'image/png' });
-		formData.append("image", blob);
+		blob = new Blob(imgs, {type: 'image/png' });
+		//formData.append("image", blob);
 		
+	}
+	else{
+		
+		blob = new Blob(imgs, {type: 'image/png' });
+		alert(blob);
 	}
 	
 	
-	var message = createSocketMessage("2", sender, usr, msg, date, clicked, blob, "", "");	
+	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, blob, 0, "");	
 	wsocket.send(JSON.stringify(message));
 	alert("file uploaded successfully!" + response); 
 	cancelMsgText();
@@ -1230,7 +1245,7 @@ function sendMessage(images){
 function testMessages(){
 	
 	var user = sessionStorage.getItem('username');
-	var message = createSocketMessage("1", user, "", "", "", "", "", "", "");	
+	var message = createSocketMessage("1", user, "", "", new Date().getTime(), "", "", 0, "");	
 	wsocket.send(JSON.stringify(message));
 	alert(message);
 }

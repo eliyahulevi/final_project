@@ -21,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
@@ -76,19 +77,22 @@ public class WebSocketServer
         {
         	JsonReader reader = Json.createReader(new StringReader(stringMessage));
             JsonObject jsonMessage = reader.readObject();
-            String code 		= jsonMessage.getString("code");
-            String user 		= jsonMessage.getString("user"); 
-            String sender		= jsonMessage.getString("sender");
-            String message		= jsonMessage.getString("message");
-            String dateString	= jsonMessage.getString("date");
-            String offset		= jsonMessage.getString("offset");
-            String repliedTo	= jsonMessage.getString("repliedTo");
+            String code 			= jsonMessage.getString("code");
+            String user 			= jsonMessage.getString("user"); 
+            String sender			= jsonMessage.getString("sender");
+            String message			= jsonMessage.getString("message");
+            String repliedTo		= jsonMessage.getString("repliedTo");
+            String clicked			= jsonMessage.getString("clicked");
+            
+            
+			JsonNumber dateString	= jsonMessage.getJsonNumber("date");
+			JsonNumber offset		= jsonMessage.getJsonNumber("offset");
             
     		InputStream fileContent = null;
     		Blob blob 				= null;
     		byte[] data 			= null;
             
-    		System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + message + " date: " + dateString + " offset: " + offset + " replied to: " + repliedTo);
+    		System.out.println("websocket >> code:" + code + " user:" + user + " sender: " + sender + " message: " + message + " date: " + dateString.longValue() + " offset: " + offset + " replied to: " + repliedTo);
             switch(code)
             {
             	//	link user to specific session
@@ -114,22 +118,24 @@ public class WebSocketServer
 	            //	insert a new message into DB and send to user via session
 	            case "2":
 	            {
-	                String image = jsonMessage.getString("image");
-	                long date 	 = Long.parseLong(dateString); 
-	                int off	 	 = Integer.parseInt(offset);
+	                String image 	= jsonMessage.getString("image", ""); 
+	                long date		= dateString.longValue();
+	                int off	 		= offset.intValue();
 	                
 					if(image == null)
 						db.insertMessage(new Message(sender, user, message, date, blob, off, repliedTo)); 
 					
 					else if(!image.equals(""))
 					{
-						System.out.println("user servlet >> image source " + fileContent);		// TODO: erase if works
+						System.out.println("websocket >> image source " + fileContent);		// TODO: erase if works
 						data = image.getBytes();
 						blob = new SerialBlob(data);
 						db.insertMessage(new Message(sender, user, message, date, blob,  off, repliedTo));	
 					}
-					else
-						System.out.println("image servlet >> no image file");
+					Session userSession = sessionHandler.getUserSession(user);
+					System.out.println("websocket >> user session " + userSession);		// TODO: erase if works
+					Message userMessage = new Message(sender, user, message, date, blob,  off, repliedTo);
+					sessionHandler.sendToSession(userSession, userMessage); 
 					
 	            	break;
 	            }
