@@ -83,29 +83,36 @@ function onMessage(event) {
 
     }
     if (message.action === "messages") {
-    	
+    	alert('on message:..');
     	var form 		= document.getElementById("msg-display");
 		var parsedMsgs 	= [];	
 		var messages 	= message.src;	
 		var numberOfMessages = messages.length;
+		var parsed		= JSON.parse(messages);
 		
-		alert('on message: ' + messages);
+		//alert('on message, \nmessages length: ' + messages.length + '\nmessages: ' + messages);
+		//alert('on message, \nparsed length: ' + parsed.length + '\nmessages: ' + parsed);
+		
 		document.getElementById('numberOfMessages').innerHTML = numberOfMessages;
 		for(var i = 0; i < messages.length; i++){
 			var parsedMsg = JSON.parse(messages[i]);
+			alert(parsedMsg);
  			parsedMsg.visited = 0;
 			parsedMsgs[i] = parsedMsg;
 		}
+		
 	    while (form.firstChild) {
         	form.removeChild(form.firstChild);
     	}
+    	
         for(var i = 0; i < parsedMsgs.length; i++){
 			var msg = createMessage(parsedMsgs[i]);
 			if(parsedMsgs[i].visited == 0){
 				var msg = createMessage(parsedMsgs[i]);
 				form.appendChild(msg);
 			}
-			insertRepliedMessages(parsedMsgs, i);       	
+			insertRepliedMessages(parsedMsgs, i);    
+				
 		}
     }
 	if(message.action === "image")
@@ -1219,7 +1226,8 @@ function sendMessage(images){
 	}
 	
 	
-	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, blob, 0, "");	
+	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, blob, 0, null);	
+	alert("preparing to send message");
 	wsocket.send(JSON.stringify(message));
 	alert("file uploaded successfully!" + response); 
 	cancelMsgText();

@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,14 +44,14 @@ public class WebSocketServer
 	@Inject
 	private DB db = new DB(); 
     @Inject
-    private SessionHandler sessionHandler = new SessionHandler();
+    private SessionHandler sh = new SessionHandler();
     
     @OnOpen
     public void open( Session session) 
     {   	
     	try  
         {
-	    	sessionHandler.addSession(session);
+	    	sh.addSession(session);
         }
     	catch(Exception e)
     	{
@@ -61,7 +62,7 @@ public class WebSocketServer
 	@OnClose
     public void close(Session session) 
 	{
-		sessionHandler.removeSession(session);
+		sh.removeSession(session);
 	}
 	
 	@OnError
@@ -81,7 +82,7 @@ public class WebSocketServer
             String user 			= jsonMessage.getString("user"); 
             String sender			= jsonMessage.getString("sender");
             String message			= jsonMessage.getString("message");
-            String repliedTo		= jsonMessage.getString("repliedTo");
+            String repliedTo		= jsonMessage.getString("repliedTo", "");
             String clicked			= jsonMessage.getString("clicked");
             
             
@@ -98,7 +99,7 @@ public class WebSocketServer
             	//	link user to specific session
 	            case "0":
 	            {
-	            	sessionHandler.linkUser2Session(jsonMessage.getString("sender"), session); 
+	            	sh.linkUser2Session(jsonMessage.getString("sender"), session); 
 	            	System.out.println("websocket >> link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
 	            	break;
 	            }
@@ -107,20 +108,22 @@ public class WebSocketServer
 	            {
 	            	List<String> messages 			= db.getUserMessages(sender);
 	            	JsonProvider provider 			= JsonProvider.provider();
-	            	JsonObjectBuilder job			= Json.createObjectBuilder();
 	            	javax.json.JsonArray jArr		= Json.createArrayBuilder(messages).build(); 
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
 																				.add("src", jArr)
 																				.build(); 
-	            	sessionHandler.sendToSession(session, msg);
+	            	sh.sendToSession(session, msg);
 	            	break;
 	            }
 	            //	insert a new message into DB and send to user via session
 	            case "2":
 	            {
-	                String image 	= jsonMessage.getString("image", ""); 
-	                long date		= dateString.longValue();
-	                int off	 		= offset.intValue();
+	                String image 			= jsonMessage.getString("image", ""); 
+	                long date				= dateString.longValue();
+	                int off	 				= offset.intValue();
+	                JsonProvider provider 	= JsonProvider.provider();
+	                List<String> messages	= new ArrayList<String>();
+	                javax.json.JsonArray jArr;
 	                
 					if(image == null)
 						db.insertMessage(new Message(sender, user, message, date, blob, off, repliedTo)); 
@@ -132,10 +135,15 @@ public class WebSocketServer
 						blob = new SerialBlob(data);
 						db.insertMessage(new Message(sender, user, message, date, blob,  off, repliedTo));	
 					}
-					Session userSession = sessionHandler.getUserSession(user);
+					Session userSession = sh.getUserSession(user);
 					System.out.println("websocket >> user session " + userSession);		// TODO: erase if works
 					Message userMessage = new Message(sender, user, message, date, blob,  off, repliedTo);
-					sessionHandler.sendToSession(userSession, userMessage); 
+					messages.add(userMessage.toJson());
+	            	jArr = Json.createArrayBuilder(messages).build(); 
+	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				.add("src", jArr)
+																				.build(); 
+					sh.sendToSession(userSession, msg); 
 					
 	            	break;
 	            }

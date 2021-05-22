@@ -3,6 +3,13 @@ package model.message;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Blob;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.json.JsonObject;
+import javax.json.spi.JsonProvider;
+
+import org.json.simple.JSONValue;
 
 
 
@@ -35,17 +42,40 @@ public class Message
 	
 	public String toJson()
 	{
-		int length;
-		String result = "";
-		StringBuilder sb = new StringBuilder();
+		String result 		= "";
+		StringBuilder sb 	= new StringBuilder();
 		
-		
+		/*
         Field[] fields = this.getClass().getDeclaredFields();
         System.out.printf("%d fields:%n", fields.length);
         length = fields.length;
-        
-        try 
-        {
+        */
+
+		Blob blob = this.getImage();
+		Map<String,String> map = new HashMap<String,String>();
+		System.out.println("Message >> " + this.getUser());
+		try
+		{
+			map.put("user", this.getUser());
+			map.put("sender", this.getSender());
+			map.put("date", Long.toString(this.getDate()));
+			map.put("message", this.getMessage());	
+			map.put("clicked", String.valueOf(this.getClicked()));
+			map.put("offset", String.valueOf(this.getOffset()));
+			map.put("repliedTo", String.valueOf(this.getRepliedTo()));
+			if(blob == null)
+				map.put("image", "");
+			else 
+				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		} 
+		
+		result = JSONValue.toJSONString(map);
+		return result;
+        	/*
 	        sb.append("{");
 	        for (int i = 0; i < length - 1; i++) 
 	        {
@@ -55,25 +85,15 @@ public class Message
 	            	fieldValue = "no data";
 	        	else
 	        		fieldValue = f.toString();
-	        	sb.append(fields[i].getName() + " : " + fieldValue);
+	        	sb.append(quotationMark + fields[i].getName() + quotationMark + " : " + quotationMark + fieldValue + quotationMark);
 	        	if( i < length - 2)
 	        		sb.append(", ");
 	        }
 	        sb.append("}");
 	        result = sb.toString();
 	        System.out.println("Message >> " + sb);
-		} 
-        catch (IllegalArgumentException e) 
-        {
-			e.printStackTrace();
-		} 
-        catch (IllegalAccessException e) 
-        {
-			e.printStackTrace();
-		}
-        
-        
-		return result;
+	        */
+
 	}
 	
 	/*
