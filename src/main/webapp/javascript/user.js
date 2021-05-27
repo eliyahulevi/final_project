@@ -62,8 +62,8 @@ $(document).ready(function(){
 *********************************************************************************/
 function onOpen(event) {
 	var date = new Date().getTime();
-	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", date, "", "", 0, "");	
-	//wsocket.send((message));
+	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, "", "", 0, "");	
+	wsocket.send((message));
 }
 
 
@@ -1246,7 +1246,7 @@ function sendMessage(images){
 	}
 	
 	
-	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, null);	
+	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "");	
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);
 	var messageArray	= new Uint8Array(msgBuffer);

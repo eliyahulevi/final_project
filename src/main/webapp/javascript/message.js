@@ -87,4 +87,34 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset,
 }
 
 
+ /*********************************************************************************
+*	this function creates a JSON format message, and places it into a byte array
+*********************************************************************************/
+function createSocketMessageByteArray(code, sender, user, msg, date, clckd, imgs, offset, repliedTo) {
+ 	var message	=  JSON.stringify({	
+ 					"code": 	code,
+ 					"sender": 	sender, 
+ 					"user": 	user,
+			 		"message": 	msg,
+			 		"date": 	date,
+			 		"clicked": 	clckd,
+			 		"image":	imgs,
+			 		"offset": 	offset,
+			 		"repliedTo": repliedTo
+			 		});
+	var msgByteArr		= [...message];
+	var msgBuffer		= new ArrayBuffer(message.length);
+	var messageArray	= new Uint8Array(msgBuffer);
+	for(var i = 0; i < msgByteArr.length; i++){
+		messageArray[i] = message.charCodeAt(i);
+	}
+	/*		 		
+	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
+						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
+						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
+	*/
+	return messageArray;
+}
+
+
 
