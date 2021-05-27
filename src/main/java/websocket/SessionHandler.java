@@ -69,8 +69,8 @@ public class SessionHandler
     {
     	//session.getUserProperties().put("user", user);
         sessions.add(session);
-        System.out.println("session handler >> number of sesions: " + sessions.size());
-        System.out.println("session handler >> current session: " + session);
+        //System.out.println("session handler >> number of sesions: " + sessions.size());
+        //System.out.println("session handler >> current session: " + session);
     	Blob blob;
 		try 
 		{
@@ -122,7 +122,7 @@ public class SessionHandler
 																		 .build(); 
             //ByteBuffer buf = ByteBuffer.wrap(base64Image.getBytes());
             //sendToSession(session, jimg);
-            System.out.println("websocket >> sending image..");
+            System.out.println("session handler >> sending image..");
             session.getBasicRemote().sendText(jimg.toString());
             //session.getBasicRemote().sendBinary(buf); 
         } 
@@ -137,14 +137,14 @@ public class SessionHandler
     	map.put(name, session);
     	System.out.println("session handler >> user-sessions map: " + map);		// TODO: erase if works
     }
-    
+    /*
     private void sendToAllConnectedSessions(JsonObject message) 
     {
     	for (Session session : sessions) {
             sendToSession(session, message);
         }
     }
-
+    
     public void sendToSession(Session session, JsonObject message) 
     {
     	try 
@@ -185,6 +185,45 @@ public class SessionHandler
         } 
     	catch (IOException ex) 
     	{
+            sessions.remove(session);
+            Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    */
+    
+
+    public void sendToSession(Session session, String message)
+    {
+    	try 
+    	{ 
+    		session.getAsyncRemote().sendObject(message);
+            //session.getBasicRemote().sendText(message);
+            //System.out.println("SessionHandler >> message sent");
+        } 
+    	catch (Exception ex) 
+    	{
+    		System.out.println("SessionHandler >> error sending message");
+            sessions.remove(session);
+            Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void sendToUser(String user, JsonObject message) 
+    {
+    	Session session = null;
+    	try 
+    	{ 
+    		Session session1 = getUserSession(user);
+    		System.out.println("SessionHandler >> sent message to session: " + message.toString());
+        	JsonProvider provider 	= JsonProvider.provider();
+            JsonObject jsonMessage 	= (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				 .add("src", message)
+																				 .build(); 
+            session1.getBasicRemote().sendText(jsonMessage.toString());
+        } 
+    	catch (IOException ex) 
+    	{
+    		System.out.println("SessionHandler >> error sending message");
             sessions.remove(session);
             Logger.getLogger(SessionHandler.class.getName()).log(Level.SEVERE, null, ex);
         }

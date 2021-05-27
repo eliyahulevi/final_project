@@ -57,7 +57,7 @@ function uploadMessage(message){
 				alert('success');
 			}
 	});
-	
+	 
 }
 */
 
@@ -65,7 +65,7 @@ function uploadMessage(message){
 *	this function creates a JSON format message
 *********************************************************************************/
 function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo) {
-	//alert('create message');
+	//alert('create message: imgs ' + imgs.type);
  	var result =  {	
  					"code": 	code,
  					"sender": 	sender, 
@@ -77,11 +77,13 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset,
 			 		"offset": 	offset,
 			 		"repliedTo": repliedTo
 			 		};
-			 		
+	//alert('message.js >> images: ' + (imgs));
+	/*		 		
 	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
 						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
 						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
-	return result;
+	*/
+	return JSON.stringify(result);
 }
 
 

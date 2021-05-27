@@ -3,11 +3,13 @@ package model.message;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.JsonObject;
 import javax.json.spi.JsonProvider;
+import javax.sql.rowset.serial.SerialException;
 
 import org.json.simple.JSONValue;
 
@@ -39,7 +41,49 @@ public class Message
 		this.offset = offset;
 		this.repliedTo = repliedto;
 	}
+	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto)
+	{
+		this.sender = sender;
+		this.user = user;
+		this.message = msg;
+		this.date = date;
+		this.clicked = false;
+		this.offset = offset;
+		this.repliedTo = repliedto;
+		Blob blob = null;
+		try {
+			blob = new javax.sql.rowset.serial.SerialBlob(img.getBytes());
+		} catch (SerialException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.image = blob;
+	}
 	
+	
+	public void print()
+	{
+		Field[] fields		= this.getClass().getDeclaredFields();
+		
+		System.out.println("Message >> print message:");
+		try 
+		{
+			for( Field f : fields)
+			{
+				System.out.println(f.getName() + ": " + (f.get(Message.class)).toString());
+			}
+		} 
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} 
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Message >> print message:");
+	}
 	public String toJson()
 	{
 		String result 		= "";

@@ -545,7 +545,7 @@ public class DB
  		int rs = -1;
  		long time = System.currentTimeMillis();
  		PreparedStatement state = null;
- 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null, 0, null);
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, (Blob)null, 0, null);
  		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
@@ -741,6 +741,9 @@ public class DB
 				map.put("image", "");
 			else 
 				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+			
+			// TODO: try map.put("image", new String(blob.getBytes(0, (int)blob.length() - 1 )));
+			// and correct client side
 		}
 		catch(Exception e)
 		{

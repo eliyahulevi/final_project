@@ -45,7 +45,7 @@ $(document).ready(function(){
 		loadUsers();
 	});
 	
-	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages");
+	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages2");
 	wsocket.onopen 		= onOpen; 	
 	wsocket.onclose		= onClose;
 	wsocket.onerror		= onError;	
@@ -63,7 +63,7 @@ $(document).ready(function(){
 function onOpen(event) {
 	var date = new Date().getTime();
 	var message = createSocketMessage("0", sessionStorage.getItem('username'), "", "", date, "", "", 0, "");	
-	wsocket.send(JSON.stringify(message));
+	//wsocket.send((message));
 }
 
 
@@ -74,7 +74,9 @@ function onOpen(event) {
 *	return:				null
 *********************************************************************************/
 function onMessage(event) {	
+	
     var message = JSON.parse(event.data);
+    //alert('on message..' + message.action);
     
     if (message.action === "add") {
 
@@ -83,20 +85,18 @@ function onMessage(event) {
 
     }
     if (message.action === "messages") {
-    	alert('on message:..');
+    	
     	var form 		= document.getElementById("msg-display");
 		var parsedMsgs 	= [];	
-		var messages 	= message.src;	
+		var messages 	= message.src;			
 		var numberOfMessages = messages.length;
-		var parsed		= JSON.parse(messages);
-		
+
+		//alert(messages);
 		//alert('on message, \nmessages length: ' + messages.length + '\nmessages: ' + messages);
-		//alert('on message, \nparsed length: ' + parsed.length + '\nmessages: ' + parsed);
 		
 		document.getElementById('numberOfMessages').innerHTML = numberOfMessages;
 		for(var i = 0; i < messages.length; i++){
 			var parsedMsg = JSON.parse(messages[i]);
-			alert(parsedMsg);
  			parsedMsg.visited = 0;
 			parsedMsgs[i] = parsedMsg;
 		}
@@ -129,7 +129,7 @@ function onMessage(event) {
 *	return:				null
 *********************************************************************************/
 function onClose(event) {
-	alert('closing socket' + event);
+	alert('closing socket: ' + event.code);
 }
 
 
@@ -572,7 +572,7 @@ function createMessage(message){
 	var clkd      = document.createElement("a");
 	var rawDate	  = document.createElement("pre");
 	var del	  = document.createElement("a");
-	//alert('create new message element ' + images);
+	
 	
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
@@ -613,15 +613,20 @@ function createMessage(message){
 		p.appendChild(del);
 	}
 	
-	images		= 'd' + images;
-	var jimg	= images.split(	'data:image/png;base64,' );
-	for(var i = 0; i < jimg.length; i++){
-		if( jimg[i] === "" || jimg[i] === "d") { continue; }
-		
-		var img 	= document.createElement("img");
-		img.src 	= 'data:image/png;base64,' + jimg[i];
-		img.setAttribute('class', 'image');
-		imgsFrame.appendChild(img);	
+	alert(images);
+	if( images != '{}' )
+	{
+		//alert('create new message element images not empty ' + images);
+		images		= 'd' + images;
+		var jimg	= images.split(	'data:image/png;base64,' );
+		for(var i = 0; i < jimg.length; i++){
+			if( jimg[i] === "" || jimg[i] === "d") { continue; }
+			
+			var img 	= document.createElement("img");
+			img.src 	= 'data:image/png;base64,' + jimg[i];
+			img.setAttribute('class', 'image');
+			imgsFrame.appendChild(img);	
+		}
 	}
 
 	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
@@ -1200,6 +1205,14 @@ function sendMessage(images){
 	var formData  	= new FormData();
 	var blob		= '';
 	var imgs 		= [];
+	var	imagesObj	= {};
+	var byteArray	= [];
+	var data		= null; 
+	var size 		= 0;
+	var imageBuffer = null;
+	var msgBuffer 	= null;
+	var numOfImages	= images.length;
+	
 	
 	formData.append("code", "2");
 	formData.append("sender", sender.slice(0,20)); 
@@ -1211,42 +1224,43 @@ function sendMessage(images){
 	
 	
 	if( images.length > 0){
+		for(var i = 0; i < numOfImages; i++){
+			size += images[i].src.length;
+		}
+		imageBuffer = new ArrayBuffer(size + 2 + (numOfImages - 1));
+		data	   	= new Uint8Array(imageBuffer);
+		var step 	= 0;
 		
-		for(var i = 0; i < images.length; i++){
+		for(var i = 0; i < numOfImages; i++){
 			imgs[i] = images[i].src;
+			for( j = 0; j < imgs[i].length; j++, step++ ){
+				data[step] = (imgs[i].charCodeAt(j));
+			}
 		}		
-		blob = new Blob(imgs, {type: 'image/png' });
-		//formData.append("image", blob);
-		
 	}
 	else{
 		
-		blob = new Blob(imgs, {type: 'image/png' });
-		alert(blob);
+		//blob = new Blob(imgs, {type: 'image/png' });
+		blob	= { 'images': '', 'type': 'image/png' };
+		alert('no images chosen..');
 	}
 	
 	
-	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, blob, 0, null);	
-	alert("preparing to send message");
-	wsocket.send(JSON.stringify(message));
-	alert("file uploaded successfully!" + response); 
+	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, null);	
+	var msgByteArr		= [...message];
+	var msgBuffer		= new ArrayBuffer(message.length);
+	var messageArray	= new Uint8Array(msgBuffer);
+	
+	for(var i = 0; i < msgByteArr.length; i++){
+		//alert(message.charCodeAt(i));
+		messageArray[i] = message.charCodeAt(i);
+	}
+	
+	alert(messageArray);
 	cancelMsgText();
 	
-	/*
-    $.ajax({
-	    url: 'UserServlet', 	// point to server-side PHP script 
-	    dataType: 'text',  		// what to expect back from the PHP script, if anything
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    data: formData,                         
-	    type: 'post',
-	    success: function(response){
-	       			alert("file uploaded successfully!" + response); 
-	       			cancelMsgText();
-    			}
- 	});
- 	*/
+	wsocket.send(messageArray);
+	
 }
 
 
@@ -1255,5 +1269,5 @@ function testMessages(){
 	var user = sessionStorage.getItem('username');
 	var message = createSocketMessage("1", user, "", "", new Date().getTime(), "", "", 0, "");	
 	wsocket.send(JSON.stringify(message));
-	alert(message);
+	//alert(message);
 }

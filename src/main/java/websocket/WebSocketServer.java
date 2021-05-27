@@ -76,15 +76,15 @@ public class WebSocketServer
 	{
         try  
         {
-        	JsonReader reader = Json.createReader(new StringReader(stringMessage));
-            JsonObject jsonMessage = reader.readObject();
+        	JsonReader reader 		= Json.createReader(new StringReader(stringMessage));
+            JsonObject jsonMessage 	= reader.readObject();
             String code 			= jsonMessage.getString("code");
             String user 			= jsonMessage.getString("user"); 
             String sender			= jsonMessage.getString("sender");
             String message			= jsonMessage.getString("message");
             String repliedTo		= jsonMessage.getString("repliedTo", "");
             String clicked			= jsonMessage.getString("clicked");
-            
+            JsonObject	img			= jsonMessage.getJsonObject("image").asJsonObject();
             
 			JsonNumber dateString	= jsonMessage.getJsonNumber("date");
 			JsonNumber offset		= jsonMessage.getJsonNumber("offset");
@@ -112,13 +112,13 @@ public class WebSocketServer
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
 																				.add("src", jArr)
 																				.build(); 
-	            	sh.sendToSession(session, msg);
+	            	//sh.sendToSession(session, msg);
 	            	break;
 	            }
 	            //	insert a new message into DB and send to user via session
 	            case "2":
 	            {
-	                String image 			= jsonMessage.getString("image", ""); 
+	                String image 			= jsonMessage.getString("image"); 
 	                long date				= dateString.longValue();
 	                int off	 				= offset.intValue();
 	                JsonProvider provider 	= JsonProvider.provider();
@@ -126,8 +126,14 @@ public class WebSocketServer
 	                javax.json.JsonArray jArr;
 	                
 					if(image == null)
+					{
+						System.out.println("websocket >> no image source " + image);		// TODO: erase if works
 						db.insertMessage(new Message(sender, user, message, date, blob, off, repliedTo)); 
-					
+					}
+					else if(image.equals(""))
+					{
+						System.out.println("websocket >> image empty " + image);		// TODO: erase if works
+					}
 					else if(!image.equals(""))
 					{
 						System.out.println("websocket >> image source " + fileContent);		// TODO: erase if works
@@ -143,7 +149,7 @@ public class WebSocketServer
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
 																				.add("src", jArr)
 																				.build(); 
-					sh.sendToSession(userSession, msg); 
+					//sh.sendToSession(userSession, msg); 
 					
 	            	break;
 	            }
