@@ -192,13 +192,14 @@ public class SessionHandler
     */
     
 
-    public void sendToSession(Session session, String message)
+    public void sendToSession(Session session, JsonObject msg)
     {
     	try 
     	{ 
-    		session.getAsyncRemote().sendObject(message);
-            //session.getBasicRemote().sendText(message);
-            //System.out.println("SessionHandler >> message sent");
+    		//session.getAsyncRemote().sendObject(msg);
+    		System.out.println("SessionHandler >> message sent to: " + session);
+    		session.getBasicRemote().sendText(msg.toString());
+            
         } 
     	catch (Exception ex) 
     	{

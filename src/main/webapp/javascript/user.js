@@ -552,26 +552,27 @@ function createSender(message){
 *********************************************************************************/
 function createMessage(message){
 	
-	var user 	  = message.user;
-	var sender	  = message.sender;
-	var date 	  = Number(message.date);
-	var clicked   = message.clicked;
-	var msg_text  = message.message;
-	var offset    = message.offset;
-	var images    = message.image;
+	var user 	  	= message.user;
+	var sender	  	= message.sender;
+	var date 	  	= Number(message.date);
+	var clicked   	= message.clicked;
+	var msg_text  	= message.message;
+	var offset    	= message.offset;
+	var images    	= message.image;
+	var imagesSrc	= "";
 	
 	
-	var frame 	  = document.createElement("div");
-	var imgsFrame = document.createElement("div");
-	var userTag   = document.createElement("a");
-	var replyUser = document.createElement("a");
-	var p 		  = document.createElement("p");
-	var spanStart = document.createElement("span");
-	var spanDate  = document.createElement("span");
-	var reply 	  = document.createElement("span");
-	var clkd      = document.createElement("a");
-	var rawDate	  = document.createElement("pre");
-	var del	  = document.createElement("a");
+	var frame 	  	= document.createElement("div");
+	var imgsFrame 	= document.createElement("div");
+	var userTag   	= document.createElement("a");
+	var replyUser 	= document.createElement("a");
+	var p 		  	= document.createElement("p");
+	var spanStart 	= document.createElement("span");
+	var spanDate  	= document.createElement("span");
+	var reply 	  	= document.createElement("span");
+	var clkd      	= document.createElement("a");
+	var rawDate	  	= document.createElement("pre");
+	var del	  		= document.createElement("a");
 	
 	
 	del.setAttribute('id', 'delete' + date);
@@ -613,13 +614,14 @@ function createMessage(message){
 		p.appendChild(del);
 	}
 	
-	alert(images);
 	if( images != '{}' )
 	{
-		//alert('create new message element images not empty ' + images);
-		images		= 'd' + images;
-		var jimg	= images.split(	'data:image/png;base64,' );
+		imagesSrc	= images.slice(2, images.length - 4);	
+		var jimg	= imagesSrc.split( "data:image/png;base64," );
 		for(var i = 0; i < jimg.length; i++){
+			var mLength = jimg[i].length;
+			//alert('message number: ' + i + '\nof length: ' + mLength + '\nis: ' + jimg[i]);
+			//alert('last char: ' + jimg[i][mLength - 1]);
 			if( jimg[i] === "" || jimg[i] === "d") { continue; }
 			
 			var img 	= document.createElement("img");
@@ -1203,10 +1205,7 @@ function sendMessage(images){
 	var date	  	= new Date();
 	var clicked   	= 'false';
 	var formData  	= new FormData();
-	var blob		= '';
 	var imgs 		= [];
-	var	imagesObj	= {};
-	var byteArray	= [];
 	var data		= null; 
 	var size 		= 0;
 	var imageBuffer = null;
@@ -1246,7 +1245,7 @@ function sendMessage(images){
 	}
 	
 	
-	var message = createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "");	
+	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "");	
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);
 	var messageArray	= new Uint8Array(msgBuffer);
@@ -1267,7 +1266,7 @@ function sendMessage(images){
 function testMessages(){
 	
 	var user = sessionStorage.getItem('username');
-	var message = createSocketMessage("1", user, "", "", new Date().getTime(), "", "", 0, "");	
-	wsocket.send(JSON.stringify(message));
+	var message = createSocketMessageByteArray("1", user, "", "", new Date().getTime(), "", "", 0, "");	
+	wsocket.send(message);
 	//alert(message);
 }
