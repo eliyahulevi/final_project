@@ -616,18 +616,21 @@ function createMessage(message){
 	
 	if( images != '{}' )
 	{
+		var src		= null;	
 		imagesSrc	= images.slice(2, images.length - 4);	
-		var jimg	= imagesSrc.split( "data:image/png;base64," );
-		for(var i = 0; i < jimg.length; i++){
-			var mLength = jimg[i].length;
-			//alert('message number: ' + i + '\nof length: ' + mLength + '\nis: ' + jimg[i]);
-			//alert('last char: ' + jimg[i][mLength - 1]);
-			if( jimg[i] === "" || jimg[i] === "d") { continue; }
+		var jimg	= imagesSrc.split( 'data:image/png;base64,' );
+
+		for(var i = 0; i < jimg.length; i++){	
+			if( jimg[i] === "") { continue; }
 			
+			if( i < jimg.length ){
+				//alert('message number: ' + i + '\nof length: ' + jimg[i].length + '\nstarts with: ' + jimg[i][0] + ' \nends with: ' + jimg[i][jimg[i].length - 1] + '\nis: ' + jimg[i]);
+				src	= jimg[i].replace('","', '');
+			}
 			var img 	= document.createElement("img");
-			img.src 	= 'data:image/png;base64,' + jimg[i];
+			img.src 	= 'data:image/png;base64,' + src;//jimg[i];
 			img.setAttribute('class', 'image');
-			imgsFrame.appendChild(img);	
+			imgsFrame.appendChild(img);
 		}
 	}
 
