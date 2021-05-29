@@ -560,6 +560,8 @@ function createMessage(message){
 	var offset    	= message.offset;
 	var images    	= message.image;
 	var imagesSrc	= "";
+	var src			= null;	
+	var splitImg	= null;
 	
 	
 	var frame 	  	= document.createElement("div");
@@ -615,20 +617,18 @@ function createMessage(message){
 	}
 	
 	if( images != '{}' )
-	{
-		var src		= null;	
+	{	
 		imagesSrc	= images.slice(2, images.length - 4);	
-		var jimg	= imagesSrc.split( 'data:image/png;base64,' );
+		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
 
-		for(var i = 0; i < jimg.length; i++){	
-			if( jimg[i] === "") { continue; }
-			
-			if( i < jimg.length ){
-				//alert('message number: ' + i + '\nof length: ' + jimg[i].length + '\nstarts with: ' + jimg[i][0] + ' \nends with: ' + jimg[i][jimg[i].length - 1] + '\nis: ' + jimg[i]);
-				src	= jimg[i].replace('","', '');
+		for(var i = 0; i < splitImg.length; i++){	
+			if( splitImg[i] === "") { continue; }		
+			if( i < splitImg.length ){
+				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
+				src	= splitImg[i].replace('","', '');
 			}
 			var img 	= document.createElement("img");
-			img.src 	= 'data:image/png;base64,' + src;//jimg[i];
+			img.src 	= 'data:image/png;base64,' + src;
 			img.setAttribute('class', 'image');
 			imgsFrame.appendChild(img);
 		}
