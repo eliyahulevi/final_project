@@ -549,6 +549,10 @@ function createSender(message){
 *	msg_text  : message;
 *	offset    : offset;
 *	images    : image;
+*	images source extraction in 3 steps:
+*		1. remove '"[' from the beginning and '"]"' from the end
+*		2. split on 'data:image/png;base64,'
+*		3. for each source string remove the '","' tail end 
 *********************************************************************************/
 function createMessage(message){
 	
