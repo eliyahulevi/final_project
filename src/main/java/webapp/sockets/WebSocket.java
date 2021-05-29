@@ -145,7 +145,7 @@ public class WebSocket
 	            {
 	            	sh.linkUser2Session(jsonMessage.getString("sender"), session); 
 	            	System.out.println("websocket >> link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
-	            	break;
+	            	//break;
 	            }
 	            //	get all of the messages for a specific user 
 	            case "1":
@@ -195,7 +195,7 @@ public class WebSocket
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
 																				.add("src", jArr)
 																				.build(); 
-					//sh.sendToSession(userSession, msg); 
+					sh.sendToSession(userSession, msg); 
 					
 	            	break;
 	            }

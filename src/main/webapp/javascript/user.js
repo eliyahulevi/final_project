@@ -625,7 +625,7 @@ function createMessage(message){
 		imagesSrc	= images.slice(2, images.length - 4);	
 		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
 
-		for(var i = 0; i < splitImg.length; i++){	
+		for(var i = 1; i < splitImg.length; i++){	
 			if( splitImg[i] === "") { continue; }		
 			if( i < splitImg.length ){
 				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
@@ -1233,6 +1233,7 @@ function sendMessage(images){
 		for(var i = 0; i < numOfImages; i++){
 			size += images[i].src.length;
 		}
+		
 		imageBuffer = new ArrayBuffer(size + 2 + (numOfImages - 1));
 		data	   	= new Uint8Array(imageBuffer);
 		var step 	= 0;
@@ -1245,9 +1246,6 @@ function sendMessage(images){
 		}		
 	}
 	else{
-		
-		//blob = new Blob(imgs, {type: 'image/png' });
-		blob	= { 'images': '', 'type': 'image/png' };
 		alert('no images chosen..');
 	}
 	
@@ -1258,15 +1256,11 @@ function sendMessage(images){
 	var messageArray	= new Uint8Array(msgBuffer);
 	
 	for(var i = 0; i < msgByteArr.length; i++){
-		//alert(message.charCodeAt(i));
 		messageArray[i] = message.charCodeAt(i);
 	}
-	
-	alert(messageArray);
+	alert('message size is: ' + messageArray.length);
 	cancelMsgText();
-	
 	wsocket.send(messageArray);
-	
 }
 
 
