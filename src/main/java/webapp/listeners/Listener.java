@@ -41,7 +41,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
     public void contextInitialized(ServletContextEvent sce)  
     { 
     	
-        System.out.println("context initialized..");
+        System.out.printf("%-15s %s%n", "listener >> " ,"context initialized..");
 
         try 
         {
@@ -50,9 +50,9 @@ public class Listener implements ServletContextListener, HttpSessionListener
 			Context env = (Context) context.lookup("java:comp/env");
 			String dbPath = (String)env.lookup("DB-PATH");
 			String dbName = (String)env.lookup("DB-NAME");
-			System.out.println("database full path: " +  dbPath + dbName );		// TODO: erase after debug
+			System.out.printf("%-15s %s%n", "listener >>", "database full path: " +  dbPath + dbName );		// TODO: erase after debug
 			this.db = new DB(driverURL, dbPath + dbName);
-			System.out.println("data base created: " + dbName);					// TODO: erase after debug
+			System.out.printf("%-15s %s%n", "listener >>", "data base created: " + dbName);					// TODO: erase after debug
 			
 		} 
         catch (Exception e) 

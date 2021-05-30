@@ -250,7 +250,7 @@ public class DB
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, createQueryString[count]); 
-			System.out.println("DB >> tabel: " + s + " has query "+ createQueryString[count]);
+			System.out.printf("%-15s %s%n", "DB >> ", "tabel: " + s + " has query "+ createQueryString[count]);
 			count++;
 		}
 		try 
@@ -300,10 +300,10 @@ public class DB
 					if (!rs.next())
 					{
 						stat.executeUpdate(createQueryString[index]);
-						System.out.println("DB >>table: " + tables_str[index] + " created");
+						System.out.printf("%-15s %s%n", "DB >>", "table: " + tables_str[index] + " created");
 					}
 					else
-						System.out.println("DB >> table: " + tables_str[index] + " exists");
+						System.out.printf("%-15s %s%n", "DB >>",  "table: " + tables_str[index] + " exists");
 				}
 			}
 		} 
@@ -356,27 +356,27 @@ public class DB
         try 
         {
         	Class.forName(DB.driverURL).newInstance();
-			System.out.println("DB >> database url: " + DB.dbURL);	
+			System.out.printf("%-15s %s%n", "DB >>", "database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("DB >> already connected to database: " + DB.dbName);	
+				System.out.printf("%-15s %s%n", "DB >>", "already connected to database: " + DB.dbName);	
 			result = 0;
 			
         }
         catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-        	System.out.println("\n>>DB >>  error: " + e.getMessage());
+        	System.out.printf("%-15s %s%n", "DB >>", "error: " + e.getMessage());
         	if(((SQLException) e).getSQLState().equals("XJ040"))
         	{
-        		System.out.println("DB >> db exist already");
+        		System.out.printf("%-15s %s%n", "DB >>", "db exist already");
         		try 
         		{
         			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
     				DB.dbURL = "jdbc:derby:" + "C:/final_project/ClientsDB";//DB.dbPath + ";";
-    				System.out.println("DB >> dbURL: " + DB.dbURL);
+    				System.out.printf("%-15s %s%n", "DB >>", "dbURL: " + DB.dbURL);
 					this.connection = DriverManager.getConnection(DB.dbURL);
 				} 
         		catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
@@ -400,7 +400,7 @@ public class DB
 				{
 					this.connection.commit();
 					this.connection.close();
-					System.out.println("DB >> disconnect from database: " + dbName);
+					System.out.printf("%-15s %s%n", "DB >>", "disconnect from database: " + dbName);
 				} 
 				catch (SQLException e) 
 				{
@@ -435,7 +435,7 @@ public class DB
 			}
 			else
 			{
-				System.out.println("DB >> no connection to DB");
+				System.out.printf("%-15s %s%n", "DB >>", "no connection to DB");
 			}
 			
 		} 
@@ -457,7 +457,7 @@ public class DB
 					e.printStackTrace();
 				}
 			this.disconnect();
-			System.out.println("DB >> tabel " + tabelName + " has " + count + " records");
+			System.out.printf("%-15s %s%n", "DB >>", "tabel " + tabelName + " has " + count + " records");
 		}
 
 		return result;
@@ -546,13 +546,13 @@ public class DB
  		long time = System.currentTimeMillis();
  		PreparedStatement state = null;
  		Message message = new Message("admin", user.getName(), Message.WELCOME, time, (Blob)null, 0, null);
- 		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
+ 		System.out.printf("%-15s %s%n", "DB >>", "initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
 			// connect to db
 			if (this.connect() < 0 )
 			{
-				System.out.println("DB >> cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return;
 			}
 			// insert user			
@@ -568,7 +568,7 @@ public class DB
 			if (rs > 0)
 			{
 				this.insertMessage(message);
-				System.out.println("DB >> user " + user.getName() + " added");	
+				System.out.printf("%-15s %s%n", "DB >>", "user " + user.getName() + " added");	
 			}
 						
 		} 
@@ -576,12 +576,12 @@ public class DB
 		{
 			if (e.getSQLState().equals("42X05"))
 			{
-				System.out.println("DB >> error >> need to update table");
+				System.out.printf("%-15s %s%n", "DB >>", "error >> need to update table");
 				this.createTable(CREATE_USERS_TABLE);
 				this.insertUser(user, first);
 			}
 			else if(e.getSQLState() == "23505")
-				System.out.println("DB >> warning >> user alerady exist");
+				System.out.printf("%-15s %s%n", "DB >>", "warning >> user alerady exist");
 			else
 				e.printStackTrace();
 		}
@@ -611,7 +611,7 @@ public class DB
 				
 		try 
 		{
-			System.out.println("DB >> searching for user " + name + " with password " + password);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for user " + name + " with password " + password);
 			this.connect();
 			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
@@ -623,7 +623,7 @@ public class DB
 				// TODO: erase after debug!!
 				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
 				{
-					System.out.println("DB >> user " + name + "  found"); 
+					System.out.printf("%-15s %s%n", "DB >>", "user " + name + "  found"); 
 					result = true;
 				}
 			}
@@ -667,10 +667,10 @@ public class DB
 				
 		try 
 		{
-			System.out.println("DB >> searching for user " + name + " with password " + password);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for user " + name + " with password " + password);
 			if (this.connect() < 0)
 			{
-				System.out.println("DB >> cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return result;
 			}
 			state = this.connection.prepareStatement(SELECT_USER);
@@ -771,10 +771,10 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("DB >> cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				System.exit(-1);
 			}
-			System.out.println("DB >> getting messages for: " + user);
+			System.out.printf("%-15s %s%n", "DB >>", "getting messages for: " + user);
 			message = new Message();
 			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
 			
@@ -804,9 +804,9 @@ public class DB
 		catch(SQLException e)
 		{
 			if("08003".equals(e.getSQLState())) 
-				System.out.println("DB >> no connection..");
+				System.out.printf("%-15s %s%n", "DB >>", "no connection..");
 			else if("XCL16".equals(e.getSQLState()))
-				System.out.println("DB >> operation next not permitted..");
+				System.out.printf("%-15s %s%n", "DB >>", "operation next not permitted..");
 				
 			e.printStackTrace();
 		}
@@ -823,7 +823,7 @@ public class DB
 			catch (SQLException e1) 
 			{
 				if(e1.getSQLState().equals("XCL16"))
-					System.out.println("DB >> result set is closed");
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
 				e1.printStackTrace();
 			}
 		}
@@ -949,10 +949,10 @@ public class DB
 		ResultSet rs = null;
 		try
 		{
-			System.out.println("DB >> upload image");
+			System.out.printf("%-15s %s%n", "DB >>", "upload image");
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return result;
 			}
 
@@ -984,7 +984,7 @@ public class DB
 			} 
 			catch (SQLException e) 
 			{
-				System.out.println("result set failed to close");
+				System.out.printf("%-15s %s%n", "DB >> ", "result set failed to close");
 			}
 			this.disconnect();	
 		}
@@ -1047,7 +1047,7 @@ public class DB
 		ResultSet res = null;
 		try 
 		{
-			System.out.println("in db searching for order id " + orderID);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for order id " + orderID);
 			this.connect();
 			PreparedStatement state = this.connection.prepareStatement(SELECT_ORDER);
 			state.setInt(1, orderID);
@@ -1188,7 +1188,7 @@ public class DB
 			{
 				Product p = order.getProducts().get(i);
 				String productQty = "," + p.getCatalog() + Float.toString(p.getLength());
-				System.out.println(productQty);
+				System.out.printf("%-15s %s%n", "DB >> ", productQty);
 			}
 			
 	 		// 3. fire up the insert query
@@ -1255,7 +1255,7 @@ public class DB
 			result = ps.executeUpdate();
 			
 			if (result > 0)
-				System.out.println("DB >> product " + product.getCatalog() + " added");	
+				System.out.printf("%-15s %s%n", "DB >> ", "product " + product.getCatalog() + " added");	
 			
 			
 	 	}
@@ -1465,19 +1465,19 @@ public class DB
 		{
         	Class.forName(DB.driverURL);
         	DB.dbURL = "jdbc:derby:;shutdown=true";
-			System.out.println("DB >> database url: " + DB.dbURL);	
+			System.out.printf("%-15s %s%n", "DB >> ", "database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("DB >> connected to database: " + DB.dbName);	
+				System.out.printf("%-15s %s%n", "DB >> ", "connected to database: " + DB.dbName);	
 			result = 0;
 		}
 		catch(Exception e)
 		{
 			if(((SQLException) e).getSQLState().equals("XJ015")) {
-				System.out.println("DB >> shutting down..");
+				System.out.printf("%-15s %s%n", "DB >> ", "shutting down..");
 	        }
 		}
 		
