@@ -88,7 +88,14 @@ public class UserServlet extends HttpServlet
 		try 
 		{
 			
-			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg + " date: " + dateString + " offset: " + offset + " replied to: " + repliedTo);
+			System.out.printf("%-15s %s%n", "user servlet >> ", "imcoming message:");
+			System.out.printf("%-15s %s%n", "", "\ncode: " + code); 
+			System.out.printf("%-15s %s%n", "", "\nuser: " + user); 
+			System.out.printf("%-15s %s%n", "", "\nsender: " + sender); 
+			System.out.printf("%-15s %s%n", "", "\nmessage: " + msg); 
+			System.out.printf("%-15s %s%n", "", "\ndate: " + dateString); 
+			System.out.printf("%-15s %s%n", "", "\noffset: " + offset); 
+			System.out.printf("%-15s %s%n", "" ,"\nreplied to: " + repliedTo);
 			switch(code)
 			 {
 			 	case "0":		// get all users
@@ -119,24 +126,24 @@ public class UserServlet extends HttpServlet
 					{
 						fileContent = image.getInputStream();
 						if(fileContent.read() < 0)
-							System.out.println("User servlet >> unable to read image");
+							System.out.printf("%-15s %s%n", "User servlet>> " ,"unable to read image");
 						else
 						{
-							System.out.println("user servlet >> image source " + fileContent);		// TODO: erase if works
+							System.out.printf("%-15s %s%n", "user servlet>> ", "image source " + fileContent);		// TODO: erase if works
 							data = fileContent.readAllBytes();
 							blob = new SerialBlob(data);
 							db.insertMessage(new Message(sender, user, msg, date, blob,  off, repliedTo));
 						}
 					}
 					else
-						System.out.println("image servlet >> no image file");
+						System.out.printf("%-15s %s%n", "image servlet>> ", "no image file");
 					break;
 				 }
 				 
 				 case "2":		// get user messages
 				 {
 					 String json = "";
-					 System.out.println("user servlet >> code:" + code + " message: " + msg);
+					 System.out.printf("%-15s %s%n", "user servlet>> ", "code:" + code + " message: " + msg);
 					 List<String> list = db.getUserMessages(user);
 					 if( list.size() > 0)
 					 {
@@ -156,7 +163,7 @@ public class UserServlet extends HttpServlet
 				 case "4":		// user past orders
 				 {
 					 String json = "";
-					 System.out.println("user servlet >> code:" + code);
+					 System.out.printf("%-15s %s%n", "user servlet >> ", "code:" + code);
 					 List<Order> list = db.getOrders(user);
 					 if( list.size() > 0)
 					 {

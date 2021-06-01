@@ -78,11 +78,11 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset,
 			 		"repliedTo": repliedTo
 			 		};
 	//alert('message.js >> images: ' + (imgs));
-	/*		 		
+			 		
 	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
 						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
 						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
-	*/
+	
 	return JSON.stringify(result);
 }
 

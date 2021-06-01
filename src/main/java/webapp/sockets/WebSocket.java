@@ -121,12 +121,13 @@ public class WebSocket
         String sender			= jsonMessage.getString("sender");
         String message			= jsonMessage.getString("message");
         String repliedTo		= jsonMessage.getString("repliedTo");
-        String clicked			= jsonMessage.getString("clicked");
+        boolean clicked			= jsonMessage.getBoolean("clicked");
         long date				= jsonMessage.getLong("date");
 		int offset				= jsonMessage.getInt("offset");
 		byte[] data				= null;
 		Blob blob				= null;
-    	
+		
+		
 		try 
 		{
 			if("".equals(repliedTo)) repliedTo = null;

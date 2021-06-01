@@ -78,20 +78,22 @@ input#file {
 
 
 .container {
-  padding: 2px 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+	--parentWidth: 100%;
+	width: var(--parentWidth);
+	padding: 2px 16px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	position: relative;
 }
 
-
+/*
 .message{
-	width: 100%;
-	padding-right: 10px;
+	width: 90%;
 	background-color: #00ff00;
     border-radius: 5px;
-    /*border: 1px solid #000000;*/
+    border: 1px solid #000000;
 }
-
+*/
 .messages-icon{
 	width:4%;
 	float: left;

@@ -238,6 +238,8 @@ public class DB
 		init();
 	}
 	
+	
+	
 	/************************************************************************
 	 *	 					private class methods	
 	 ***********************************************************************/
@@ -463,6 +465,7 @@ public class DB
 		return result;
 	}
 
+	
 	
 	/************************************************************************
 	*	USER related code here: (insert, update, get all, etc. )
@@ -713,6 +716,7 @@ public class DB
 	}
 	
 	
+	
 	/************************************************************************
 	*	MESSAGE related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
@@ -726,7 +730,7 @@ public class DB
 		String result = "";
 		Blob blob = message.getImage();
 		Map<String,String> map = new HashMap<String,String>();
-		System.out.println("DB >> " + message.getUser());
+		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
 		try
 		{
 			
@@ -771,10 +775,10 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
 				System.exit(-1);
 			}
-			System.out.printf("%-15s %s%n", "DB >>", "getting messages for: " + user);
+			System.out.printf("%-15s %s%n", "DB>>", "getting messages for: " + user);
 			message = new Message();
 			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
 			
@@ -796,7 +800,7 @@ public class DB
 				message.setRepliedTo(rs.getString(9));			// replied to
 				String s = this.message2JSON(message);
 				// TODO: erase later
-				System.out.println("DB >> msgs: " + s);
+				System.out.printf("%-15s %s%n", "DB>>", "msgs: " + s);
 				result.add(s);
 			}
 			this.connection.commit();
@@ -804,9 +808,9 @@ public class DB
 		catch(SQLException e)
 		{
 			if("08003".equals(e.getSQLState())) 
-				System.out.printf("%-15s %s%n", "DB >>", "no connection..");
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
 			else if("XCL16".equals(e.getSQLState()))
-				System.out.printf("%-15s %s%n", "DB >>", "operation next not permitted..");
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
 				
 			e.printStackTrace();
 		}
@@ -1448,6 +1452,7 @@ public class DB
  		
  		return result;
  	}
+ 	
  	
  	
  	/**************************************************************************
