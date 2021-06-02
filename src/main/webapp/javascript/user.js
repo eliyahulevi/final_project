@@ -684,7 +684,7 @@ function createMessage(message){
 	userTag.innerHTML = sender;
 	
 	replyUser.setAttribute('id', 'user-reply' + date);
-	replyUser.setAttribute('href', '#reply' + date);
+	replyUser.setAttribute('href', '#reply-msg-txt' + date);
 	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
 	replyUser.setAttribute('style', 'color:green;');
 	replyUser.innerHTML = " reply";
@@ -739,10 +739,6 @@ function createMessage(message){
 	frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
 	frame.appendChild(rawDate);
-
-	
-	//alert('message test: ' + msg_text + '\nmessage offset: ' + offset);
-	
 	return frame;	
 }
 
@@ -811,15 +807,16 @@ function replyClicked(p){
 	//alert(dateMiliseconds);
 	
 	
-	var existingNode = document.getElementById("messageElement" + count);	
-	var reply = document.createElement("div");
-	var replyText = document.createElement("textarea");
-	var form = document.createElement("form");
-	var span1 = document.createElement("span");
-	var span2 = document.createElement("span");
-	var p = document.createElement("p");	
-	var btnUpload = document.createElement("button");
-	var btnCancel = document.createElement("button");
+	var existingNode= document.getElementById("messageElement" + count);	
+	var reply 		= document.createElement("div");
+	var replyText 	= document.createElement("textarea");
+	var form 		= document.createElement("form");
+	var span1 		= document.createElement("span");
+	var span2 		= document.createElement("span");
+	var p 			= document.createElement("p");	
+	var btnUpload 	= document.createElement("button");
+	var btnCancel 	= document.createElement("button");
+	var end 		= null;
 	
 	replyText.setAttribute("id", "reply-msg-txt" + count);
 	replyText.setAttribute("name", "msg-txt");
@@ -857,7 +854,10 @@ function replyClicked(p){
 	span2.appendChild(btnCancel);
 	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
 	
-	//alert(user);
+	end = replyText.selectionEnd;
+	replyText.focus();
+	replyText.selectionEnd + 1;
+	alert(user);
 	notifyMessageClicked(user, dateMiliseconds);
 }
 
