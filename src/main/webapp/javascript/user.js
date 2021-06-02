@@ -114,6 +114,7 @@ function onMessage(event) {
 			if(parsedMsgs[i].visited == 0){
 				var msg = createMessage(parsedMsgs[i]);
 				form.appendChild(msg);
+				//alert(window.getComputedStyle(msg, null).getPropertyValue("margin-left"));
 			}
 			insertRepliedMessages(parsedMsgs, i);    
 				
@@ -465,10 +466,43 @@ function loadUserMessages(sync){
         async: sync,
         success: function(response){ 
                			
-        		    var form = document.getElementById("msg-display");
-        			var parsedMsgs = [];
-        			var messages = JSON.parse(response);   
+        		    var form 		= document.getElementById("msg-display");
+        			var parsedMsgs 	= [];
+        			var messages 	= JSON.parse(response);  
+        			var length		= messages.length;
+        			var max			= 0;
+        			var step		= 20;
+        			var currentOff	= 0;
         			
+        			// 1.	find maximum offset and append all messages
+        			//		with offset 0
+        			for(var i = 0; i < length; i++){
+        				var message	= JSON.parse(messages[i]);
+        				if( message.offset > max ){
+        					
+        					max = message.offset;
+        				}
+        				if( message.offset == 0 ){
+        					var msg = createMessage(message);
+		            		form.appendChild(msg);
+        				}
+        			}
+        			//2.	insert all other messages with offset > 0
+        			
+        			while( max > 0 ){
+        				currentOff = currentOff + step;
+        				for(var i = 0; i < length; i++){
+        					var message	= JSON.parse(messages[i]);
+	        				if( message.offset == currentOff ){
+	        					var msg = createMessage(message);
+			            		insertMessage(message);
+			            		//form.appendChild(msg);
+	        				}
+	        			}
+	        			max = max - step;
+        			}
+        			 
+        			/*
         			for(var i = 0; i < messages.length; i++){
         				var parsedMsg = JSON.parse(messages[i]);
         				parsedMsg.visited = 0;
@@ -479,10 +513,14 @@ function loadUserMessages(sync){
 	            		var msg = createMessage(parsedMsgs[i]);
 		            	if(parsedMsgs[i].visited == 0){
 		            		var msg = createMessage(parsedMsgs[i]);
-		            		form.appendChild(msg);
+		            		//form.appendChild(msg);
 		            	}
-		            	insertRepliedMessages(parsedMsgs, i);       	
+		            	else{
+		            		//insertRepliedMessages(parsedMsgs, i);
+		            	}       	
+		            	insertRepliedMessages(parsedMsgs, i);
 		            }
+		            */
         		}
      });
 }
@@ -490,7 +528,7 @@ function loadUserMessages(sync){
 
 /*********************************************************************************
 *	this function inserts a new message element into messages displayed area
-*	@param: messages,		an array of already parsed messages
+*	@param: messages,		an array of already parsed messages in JSON format
 *	@param: index,			the index of the message in the array 
 *********************************************************************************/
 function insertMessage(message){
@@ -503,7 +541,7 @@ function insertMessage(message){
 	if(message.offset === 0 ){
 		
 		msgDisplay.appendChild(msgElement);
-		alert('insert new message with offset 0');
+		
 	}
 	else{
 		for(var i = 0; i < messages.length; i++){
@@ -584,8 +622,9 @@ function createSender(message){
 
 
 /*********************************************************************************
-*	this function takes a message in JSON format and create a message element, 
-*	with the message details including offset, content, etc. as follows:
+*	this function takes a message in JSON format and create a message element to be
+*	displayed on the 'form' element 'msg-display'. The message details include 
+*	offset, content, etc. as follows:
 *	user 	  : user;
 *	sender	  : sender;
 *	date 	  : date;
@@ -651,8 +690,6 @@ function createMessage(message){
 	replyUser.innerHTML = " reply";
 	
 	
-	//rawDate.setAttribute('name', user + date);
-	//rawDate.setAttribute('class', 'user-date');
 	rawDate.setAttribute('id', 'raw-date' + date);
 	rawDate.setAttribute('style', 'display: none;');
 	rawDate.class = 'user-date';
@@ -688,7 +725,13 @@ function createMessage(message){
 		}
 	}
 
-	frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: #00ff00; margin-left: ' + offset + ' px; margin-right: ' + offset + ' px;');
+	//alert('message offset: ' + message.offset);
+	if(clicked == 'true'){
+		frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0);   margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+	}
+	else{
+		frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+	}
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
@@ -696,9 +739,10 @@ function createMessage(message){
 	frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
 	frame.appendChild(rawDate);
-	if(clicked == 'true'){
-		frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: rgba(0.0, 0.0, 0.0, 0.0); margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
-	}
+
+	
+	//alert('message test: ' + msg_text + '\nmessage offset: ' + offset);
+	
 	return frame;	
 }
 
@@ -745,7 +789,7 @@ function messageClicked(p){
        					var msg = document.getElementById('messageElement' + p);
        					var compStyles = window.getComputedStyle(msg);
        					var offset = compStyles.getPropertyValue('margin-left');
-						msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
+						msg.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background-color: #ffffff; margin-left:' + offset);
 						click.innerHTML = 'true';
 						//alert('success');
 	    			}
@@ -855,13 +899,14 @@ function sendReplyMessage(jmessage){
 *********************************************************************************/
 function replyMessage(p){
 	
+	var	step		= 20;
 	var	msgElement	= document.getElementById('messageElement' + p);
 	var offsetVal	= window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
 	var sender		= sessionStorage.getItem("username");			// who is sending
 	var user	 	= document.getElementById('user' + p);			// to whom
 	var date		= new Date().getTime();							// date in miliseconds
 	var msg		 	= document.getElementById('reply-msg-txt' + p);	// message 
-	var offs		= parseInt(offsetVal) + 20;						// offset
+	var offs		= parseInt(offsetVal) + step;					// offset
 	var rawDate		= document.getElementById('raw-date' + p);		// raw date
 	var imgs		= [];
 	
@@ -875,7 +920,7 @@ function replyMessage(p){
 		messageArray[i] = message.charCodeAt(i);
 	}
 	cancel(p);
-	alert('reply message length: ' + messageArray.length);
+	//alert('reply message length: ' + messageArray.length);
 	wsocket.send(messageArray);
 }
 
