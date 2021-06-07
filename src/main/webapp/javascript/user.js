@@ -42,7 +42,7 @@ $(document).ready(function(){
 
 	// load users to 'send-message' modal
 	$("#send-Message-Modal").on('show.bs.modal', function(){
-		loadUsers();
+		loadUsers(false);
 	});
 	
 	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages2");
@@ -678,13 +678,13 @@ function createMessage(message){
 	spanDate.innerHTML =  new Date(date).toUTCString().split(' ').slice(0, 5);
 	spanDate.setAttribute("id", 'date' + date );
 	
-	userTag.setAttribute('id', 'user' + date);
+	userTag.setAttribute('id', 'user-tag' + date);
 	userTag.setAttribute('class', 'user-tag');
 	userTag.setAttribute('href', '#user' + date);
 	userTag.innerHTML = sender;
 	
 	replyUser.setAttribute('id', 'user-reply' + date);
-	replyUser.setAttribute('href', '#reply-msg-txt' + date);
+	replyUser.setAttribute('href', '#messageElement' + date);
 	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
 	replyUser.setAttribute('style', 'color:green;');
 	replyUser.innerHTML = " reply";
@@ -701,12 +701,17 @@ function createMessage(message){
 	p.appendChild(spanDate);
 	//p.appendChild(rawDate);
 	
-	if(user == "admin" ){
+	reply.appendChild(replyUser);
+	p.appendChild(reply);
+	p.appendChild(del);
+		
+	/*
+	if(sender == "admin" ){
 		reply.appendChild(replyUser);
 		p.appendChild(reply);
 		p.appendChild(del);
 	}
-	
+	*/
 	if( images != '{}' )
 	{	
 		imagesSrc	= images.slice(2, images.length - 4);	
@@ -795,28 +800,38 @@ function messageClicked(p){
 
 
 /*********************************************************************************
-*	this function is fired up when reply to specific message is clicked. reply
-*	area is being added to page under the chosen message and 'message clicked' 
-*	is sent
+*	this function is fired up when the reply hyper link to specific message is 
+*	clicked. reply area is being added to page under the chosen message and 
+*	'message clicked' is sent.
+*	@param:		p,	unique identifier (date of creation)
+*	return:		null
 *********************************************************************************/
 function replyClicked(p){
-	var count = p;
-	var date = document.getElementById('date' + count).innerHTML;
-	var user = sessionStorage.getItem('username');
-	var dateMiliseconds	=	Date.parse(date);
-	//alert(dateMiliseconds);
+	var count 		= p;
+	var date 		= document.getElementById('date' + count).innerHTML;
+	var user 		= sessionStorage.getItem('username');
+	var time		= Date.parse(date);	
+	var users		= loadUsers(false);
+	var userTag		= document.getElementById('user-tag' + p).innerHTML;
+	var msgReply	= createMsgTextArea(p, users, userTag);
+	var imgReply	= createImageUploadArea(p);
+	var currnetNode	= document.getElementById('messageElement' + count);	
 	
+	//alert('date: ' + p + '\nusers: ' + users + '\ncurrent node element: ' + currnetNode);
 	
+	currnetNode.parentNode.insertBefore(msgReply, currnetNode.nextSibling);
+	currnetNode.parentNode.insertBefore(imgReply, currnetNode.nextSibling);
+	/*
 	var existingNode= document.getElementById("messageElement" + count);	
 	var reply 		= document.createElement("div");
 	var replyText 	= document.createElement("textarea");
 	var form 		= document.createElement("form");
 	var span1 		= document.createElement("span");
 	var span2 		= document.createElement("span");
-	var p 			= document.createElement("p");	
+	var par 		= document.createElement("p");	
 	var btnUpload 	= document.createElement("button");
 	var btnCancel 	= document.createElement("button");
-	var end 		= null;
+	var input		= createImageUploadArea(p);
 	
 	replyText.setAttribute("id", "reply-msg-txt" + count);
 	replyText.setAttribute("name", "msg-txt");
@@ -830,7 +845,7 @@ function replyClicked(p){
 	span1.setAttribute("style", "display:inline-block");
 	span2.setAttribute("style", "float:right; padding-right:0px;");
 	
-	btnUpload.innerHTML = "upload";
+	btnUpload.innerHTML = "send reply";
 	btnUpload.setAttribute('id', 'upload-file-btn' + count);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
@@ -844,21 +859,133 @@ function replyClicked(p){
 	
 	
 	// build the element hierarchy and add to page
+	form.appendChild(input);
+	form.appendChild(par);
 	reply.setAttribute("id", 'reply' + count);
 	reply.appendChild(replyText);	
 	reply.appendChild(form);
-	form.appendChild(p);
-	p.appendChild(span1);
-	p.appendChild(span2);
+	
+	
+	par.appendChild(span1);
+	par.appendChild(span2);
 	span1.appendChild(btnUpload);
 	span2.appendChild(btnCancel);
-	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
 	
+	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
+	*/
 	end = replyText.selectionEnd;
 	replyText.focus();
 	replyText.selectionEnd + 1;
-	alert(user);
-	notifyMessageClicked(user, dateMiliseconds);
+	notifyMessageClicked(user, time);
+}
+
+
+/*********************************************************************************
+*	this function create the file upload area as an html element and return it.
+*	@param:		p, unique identifier
+*	return:		null
+*********************************************************************************/
+function createImageUploadArea(p){
+	alert('date: ' + p);
+	var div			= document.createElement('div');
+	div.setAttribute('id', 'upload-image' + p);
+	div.setAttribute('class', 'upload-image');
+	div.innerHTML 	=  "<label for='file-input' > \
+							<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/> \
+						</label> \
+						<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'/>";
+	return div;
+}
+
+
+
+/*********************************************************************************
+*	this function create the message text area as an html element and return it.
+*	@param:		p, 		unique identifier
+*	@param:		user, 	a specific user name to be replied to. if @user is empty,
+*						the first option of users is displayed
+*	@param:		users, 	an array of users names
+*	return:		div, 	the element created which holds the functionality
+*********************************************************************************/
+function createMsgTextArea(msgNumber, users, user){
+	
+	var div			= document.createElement('div');
+	var p			= document.createElement('p');
+	var pp			= document.createElement('p');
+	var a			= document.createElement('a');
+	var select		= document.createElement('select');
+	var textArea	= document.createElement('textarea');
+	var form		= document.createElement('form');
+	var span1		= document.createElement('span');
+	var span2		= document.createElement('span');
+	var btnUpload	= document.createElement('button');
+	var btnCancel	= document.createElement('button');
+	
+	div.setAttribute('id', 'msg-text-upload' + msgNumber);
+	div.setAttribute('class', 'msg-area');
+	
+	p.setAttribute('style', 'display: inline;');
+	p.innerHTML		= 'send a message to ';
+	
+	a.setAttribute('style', 'display: inline;');
+	a.setAttribute('href', 'msg-text-upload' + msgNumber);
+	a.setAttribute('onclick', '');
+	a.innerHTML = user;
+	
+	select.setAttribute('name', 'users');
+	select.setAttribute('id', 'users' + msgNumber);
+	select.setAttribute('style', 'display: inline;');
+	
+	for(var i = 0; i < users.length; i++){
+		var option = document.createElement("option");
+		option.value = users[i];
+		option.text = users[i];
+		select.appendChild(option);
+	}
+	
+	textArea.setAttribute('id', 'msg-text');
+	textArea.setAttribute('name', 'msg-text');
+	textArea.setAttribute('onkeypress', 'onTextChange()');
+	textArea.setAttribute('placeholder', 'enter text here...');
+	
+	form.setAttribute('id', 'output' + msgNumber);
+	form.setAttribute('action', 'upload');
+	form.setAttribute('method', 'post');
+	form.setAttribute('enctype', 'multipart/form-data');
+	
+	span1.setAttribute('style', 'display:inline-block;');
+	span2.setAttribute('style', 'float:right; padding-right:0px;');
+	
+	btnUpload.setAttribute('id', 'upload-file-btn' + msgNumber);
+	btnUpload.setAttribute('type', 'button');
+	btnUpload.setAttribute('class', 'btn btn-success');
+	btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
+	btnUpload.innerHTML = 'upload';
+	
+	btnCancel.setAttribute('id', 'cancel-file-btn' + msgNumber);
+	btnCancel.setAttribute('type', 'button');
+	btnCancel.setAttribute('class', 'btn btn-danger');
+	btnCancel.setAttribute('onclick', 'cancelMsgText()');
+	btnCancel.innerHTML = 'cancel';
+	
+	span1.appendChild(btnUpload);
+	span2.appendChild(btnCancel);
+	pp.appendChild(span1);
+	pp.appendChild(span2);
+	form.appendChild(pp);
+	
+	div.appendChild(p);
+	if( user === ""){
+		div.appendChild(select);
+	}
+	else{
+		div.appendChild(a);
+	}
+	div.appendChild(textArea);
+	div.appendChild(form); 
+					
+	return div;
+	
 }
 
 
@@ -908,20 +1035,20 @@ function replyMessage(p){
 	var msg		 	= document.getElementById('reply-msg-txt' + p);	// message 
 	var offs		= parseInt(offsetVal) + step;					// offset
 	var rawDate		= document.getElementById('raw-date' + p);		// raw date
-	var imgs		= [];
+	var imgsElement	= document.getElementById('image-upload' + p);	// images element
 	
 										
 	var message 	= createSocketMessage("2", sender, user.innerHTML, msg.value, date, false, imgs, offs, user.innerHTML + rawDate.innerHTML);	
 	var msgByteArr	= [...message];
 	var msgBuffer	= new ArrayBuffer(message.length);
-	var messageArray= new Uint8Array(msgBuffer);
-	
+	var msgArray= new Uint8Array(msgBuffer);
+	//alert('reply message length: ' );
 	for(var i = 0; i < msgByteArr.length; i++){
-		messageArray[i] = message.charCodeAt(i);
+		msgArray[i] = message.charCodeAt(i);
 	}
 	cancel(p);
-	//alert('reply message length: ' + messageArray.length);
-	wsocket.send(messageArray);
+	//alert('reply message length: ' + msgArray.length);
+	wsocket.send(msgArray);
 }
 
 
@@ -1005,14 +1132,22 @@ function edit(){
 }
 
 /*********************************************************************************
-*	this function iterate over all images, checked if chosen and sent to server
+*	this function iterate over all images, checked if chosen and sent to the
+*	sendMessage function
+*	@param:		null
+*	return:		null
 *********************************************************************************/
-function upload(){
+function upload(p){
+	//alert(p);
+	var imgReplyEle		= document.getElementById('upload-image' + p);
+	let arr 		  	= [];
+	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
+	var images 		  	= document.getElementById('upload-image' + p).getElementsByTagName("img");
 	
-	let arr 		  = [];
-	var ckbx 		  = document.getElementById("output").getElementsByTagName("input");
-	var images 		  = document.getElementById("output").getElementsByTagName("img");
-	
+	/*
+	var ckbx 		  	= document.getElementById('output' + p).getElementsByTagName("input");
+	var images 		  	= document.getElementById('output' + p).getElementsByTagName("img");
+	*/
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
   			arr.push(images[i]);
@@ -1021,6 +1156,7 @@ function upload(){
 	}
 	sendMessage(arr);
 }
+
 
 
 /*********************************************************************************
@@ -1043,25 +1179,70 @@ function uploadMessage(number){
 
 
 /*********************************************************************************
+*	this function gathers all selected images for a specific message
+*********************************************************************************/
+function getSelectedImages(number){
+	let arr 		 = [];
+	var ckbx 		 = document.getElementById("output").getElementsByTagName("input");
+	var images 		 = document.getElementById("output").getElementsByTagName("img");
+	for (var i=0; i<ckbx.length; i++) {
+  		if( ckbx[i].checked == Boolean(true) ){
+  			arr.push(images[i]);
+  			//alert("array at:" + i + " = " + images[i].name);
+  		}
+	}
+	return arr;
+}
+
+
+/*********************************************************************************
 *	this function simply shows the hidden elements to allow images upload
 *********************************************************************************/
 function showFileLoad(){
+	alert('obsolete');
+	/*
+	var messages	= document.getElementsByClassName('message');
+	var uploadImg	= document.getElementsByClassName('upload-image');
+	var upldLength	= uploadImg.length;
+	var msgLength	= messages.length;
+	var	newMessage	= document.getElementById("new-msg");
+	var fileUpload	= createImageUploadArea(msgLength + 1);
+	
+	alert(uploadImg.length);
+	for(var i = 0; i < upldLength; i++){
+		uploadImg.remove();
+	}
+	newMessage.appendChild(fileUpload);
+	
 	document.getElementById("file-upload-area").style.display = "block";
 	document.getElementById("upload-file-btn").style.display = "block";
 	document.getElementById("cancel-file-btn").style.display = "block";
 	document.getElementById("msg-text-upload").style.display = "none";
+	*/
 } 
 
 
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload
 *********************************************************************************/
-function showMsgText(){
-	loadUsers();
-	document.getElementById("msg-text-upload").style.display = "block";
-	document.getElementById("upload-file-btn").style.display = "block";
-	document.getElementById("cancel-file-btn").style.display = "block";
-	document.getElementById("file-upload-area").style.display = "block";
+function showOutgoingMsgArea(){
+	var users		= loadUsers(false);
+	var messages	= document.getElementsByClassName('message');
+	var uploadImg	= document.getElementsByClassName('upload-image');
+	var upldLength	= uploadImg.length;
+	var msgLength	= messages.length;
+	var	newMessage	= document.getElementById("new-msg");
+	var msgArea		= document.getElementById("new-area");
+	var fileUpload	= null;
+	//alert('users: ' + users);
+	for(var i = 0; i < upldLength; i++){
+		//alert('i ' + i + ' ' + uploadImg[i]);
+		uploadImg[i].remove();
+	}
+	//alert('caller: ' + upldLength);
+	fileUpload	= createImageUploadArea(msgLength);
+	newMessage.appendChild(fileUpload);
+	newMessage.appendChild(createMsgTextArea(upldLength, users, ''));
 } 
 
 
@@ -1069,6 +1250,7 @@ function showMsgText(){
 *	this function simply shows the hidden elements to allow message text upload
 *********************************************************************************/
 function cancelMsgText(){
+alert();
 	document.getElementById("msg-text-upload").style.display = "none";
 	document.getElementById("upload-file-btn").style.display = "none";
 	document.getElementById("cancel-file-btn").style.display = "none";
@@ -1079,17 +1261,24 @@ function cancelMsgText(){
 /*********************************************************************************
 *	this function does the same as the following but for 'browsing option'
 *********************************************************************************/
-function onChange(input){
-	var url = $(input).val();
-	var file = input.files[0];
-	var name = file.name;
-	var parent = document.getElementById("output");	
+function onChange(p, input){
+	alert(p);
+	var url 	= $(input).val();
+	var file 	= input.files[0];
+	var name 	= file.name;
+	var parent 	= document.getElementById('upload-image' + p);	
+	var src		= null;
+	
 	var reader = new FileReader();
     reader.onload = function (event) {
-				    	parent.appendChild(createCheckedImage(event.target.result, name));
+    					var newImg	=	createCheckedImage(event.target.result, name);
+				    	parent.appendChild(newImg);
+ 						//alert('new image: ' + newImg);
+						//alert('file selected: ' + event.target.result);			    	
 				    };
-
+	
     reader.readAsDataURL(file);
+    alert('file src: ' + src);	
 }
 
 
@@ -1099,14 +1288,15 @@ function onChange(input){
 *
 *********************************************************************************/
 function drop(event){
-	//alert('drop');
+	alert('drop');
     event.stopPropagation();
     event.preventDefault();
     
-    var parent = document.getElementById("output");
-    var files = event.dataTransfer.files;
-    var file = files[0];
-	var reader = new FileReader();
+    //var date	= event.target;
+    var parent 	= document.getElementById("output");
+    var files 	= event.dataTransfer.files;
+    var file 	= files[0];
+	var reader 	= new FileReader();
   	
     reader.onload = function (event) {
 				    	var image = new Image();
@@ -1194,15 +1384,19 @@ function loadUserDetails(){
 
 /*********************************************************************************
 *	this function loads registered user from db and add to the list of users
-*	to choose from while sending a new message 
+*	to choose from while sending a new message, and return the users as string
+*	array.
+*	@param:		null
+*	return:		result, a string array of users names
 *********************************************************************************/
-function loadUsers(){
+function loadUsers(sync){
 
-	const obj	   = {data: ''};
-	var selectList = document.getElementById("users");
-	var blob	   = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
-	var formData   = new FormData();
-	var date	   = new Date();
+	const obj	   	= {data: ''};
+	var selectList 	= document.getElementById("users");
+	var blob	   	= new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
+	var formData   	= new FormData();
+	var date	   	= new Date();
+	var result		= [];
 	
 	formData.append("code", "0");
 	formData.append("user", "test");
@@ -1219,28 +1413,23 @@ function loadUsers(){
         processData: false,
         data: formData,                         
         type: 'post',
+        async: sync,
         success: function(data){
         			
 		            var count;		
 					//var data = xhr.responseText;
 					var array = JSON.parse(data);
 					
-			
 					if ( (count = array.length) > 0) 
 					{
-						// init & fill  the selection 
 						for (var i = 0; i < count; i++) {
-							//alert(array[i]);
-							selectList.options[i] = null;
-							var option = document.createElement("option");
-					    	option.value = array[i];
-					    	option.text = array[i];
-					    	selectList.appendChild(option);
+							result[i] = array[i];
 						}
 					}	
 					else alert("no users found!");
         		}
      });
+     return result;
 }
 
 
@@ -1340,9 +1529,15 @@ function sendMessage(images){
 
 
 function testMessages(){
+	var test		= document.getElementById('test-images');
+	var div			= document.createElement("div");
 	
-	var user = sessionStorage.getItem('username');
-	var message = createSocketMessageByteArray("1", user, "", "", new Date().getTime(), "", "", 0, "");	
-	wsocket.send(message);
-	//alert(message);
+	//div.setAttribute('class', 'image-upload');
+	div.innerHTML 	=  "<label for='file-input' style='cursor: pointer;'> \
+							<img src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/> \
+						</label> \
+						<input id='file-input' type='file' style='display:none';/>";
+	
+	test.appendChild(createImageUploadArea(0));
+
 }
