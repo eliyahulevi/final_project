@@ -807,6 +807,18 @@ function messageClicked(p){
 *	return:		null
 *********************************************************************************/
 function replyClicked(p){
+
+	var imgReplies	= document.getElementsByClassName('upload-image');
+	var txtReplies	= document.getElementsByClassName('msg-area');
+	
+	
+	for(var i = txtReplies.length - 1; i >= 0; --i){
+		txtReplies[i].remove();
+	}
+	for(var i = 0; i < imgReplies.length; i++){
+		imgReplies[i].remove();
+		
+	}
 	var count 		= p;
 	var date 		= document.getElementById('date' + count).innerHTML;
 	var user 		= sessionStorage.getItem('username');
@@ -816,6 +828,8 @@ function replyClicked(p){
 	var msgReply	= createMsgTextArea(p, users, userTag);
 	var imgReply	= createImageUploadArea(p);
 	var currnetNode	= document.getElementById('messageElement' + count);	
+	
+	
 	
 	//alert('date: ' + p + '\nusers: ' + users + '\ncurrent node element: ' + currnetNode);
 	
@@ -890,10 +904,10 @@ function createImageUploadArea(p){
 	var div			= document.createElement('div');
 	div.setAttribute('id', 'upload-image' + p);
 	div.setAttribute('class', 'upload-image');
-	div.innerHTML 	=  "<label for='file-input' > \
-							<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/> \
-						</label> \
-						<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'/>";
+	div.innerHTML 	=  "<label for='file-input' >" +
+							"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+						"</label>" +
+						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'/>";
 	return div;
 }
 
