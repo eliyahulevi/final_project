@@ -811,14 +811,10 @@ function replyClicked(p){
 	var imgReplies	= document.getElementsByClassName('upload-image');
 	var txtReplies	= document.getElementsByClassName('msg-area');
 	
+	// erase all other reply messages text AND images upload from page 
+	for(var i = txtReplies.length - 1; i >= 0; --i){ txtReplies[i].remove(); } 
+	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 	
-	for(var i = txtReplies.length - 1; i >= 0; --i){
-		txtReplies[i].remove();
-	}
-	for(var i = 0; i < imgReplies.length; i++){
-		imgReplies[i].remove();
-		
-	}
 	var count 		= p;
 	var date 		= document.getElementById('date' + count).innerHTML;
 	var user 		= sessionStorage.getItem('username');
@@ -828,65 +824,11 @@ function replyClicked(p){
 	var msgReply	= createMsgTextArea(p, users, userTag);
 	var imgReply	= createImageUploadArea(p);
 	var currnetNode	= document.getElementById('messageElement' + count);	
-	
-	
-	
+
 	//alert('date: ' + p + '\nusers: ' + users + '\ncurrent node element: ' + currnetNode);
 	
 	currnetNode.parentNode.insertBefore(msgReply, currnetNode.nextSibling);
 	currnetNode.parentNode.insertBefore(imgReply, currnetNode.nextSibling);
-	/*
-	var existingNode= document.getElementById("messageElement" + count);	
-	var reply 		= document.createElement("div");
-	var replyText 	= document.createElement("textarea");
-	var form 		= document.createElement("form");
-	var span1 		= document.createElement("span");
-	var span2 		= document.createElement("span");
-	var par 		= document.createElement("p");	
-	var btnUpload 	= document.createElement("button");
-	var btnCancel 	= document.createElement("button");
-	var input		= createImageUploadArea(p);
-	
-	replyText.setAttribute("id", "reply-msg-txt" + count);
-	replyText.setAttribute("name", "msg-txt");
-	replyText.setAttribute("onkeypress", "onTextChange()");
-	
-	form.setAttribute("id", "output1");
-	form.setAttribute("action", "upload");
-	form.setAttribute("method", "post");
-	form.setAttribute("enctype", "multipart/form-data");
-	
-	span1.setAttribute("style", "display:inline-block");
-	span2.setAttribute("style", "float:right; padding-right:0px;");
-	
-	btnUpload.innerHTML = "send reply";
-	btnUpload.setAttribute('id', 'upload-file-btn' + count);
-	btnUpload.setAttribute('type', 'button');
-	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute("onclick", 'replyMessage(' + count + ')');
-	
-	btnCancel.innerHTML = "cancel";
-	btnCancel.setAttribute('id', 'cancel-file-btn' + count);
-	btnCancel.setAttribute('type', 'button');
-	btnCancel.setAttribute('class', 'btn btn-danger');
-	btnCancel.setAttribute("onclick", 'cancel(' + count + ')' );
-	
-	
-	// build the element hierarchy and add to page
-	form.appendChild(input);
-	form.appendChild(par);
-	reply.setAttribute("id", 'reply' + count);
-	reply.appendChild(replyText);	
-	reply.appendChild(form);
-	
-	
-	par.appendChild(span1);
-	par.appendChild(span2);
-	span1.appendChild(btnUpload);
-	span2.appendChild(btnCancel);
-	
-	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
-	*/
 	end = replyText.selectionEnd;
 	replyText.focus();
 	replyText.selectionEnd + 1;
@@ -900,7 +842,7 @@ function replyClicked(p){
 *	return:		null
 *********************************************************************************/
 function createImageUploadArea(p){
-	alert('date: ' + p);
+	//alert('date: ' + p);
 	var div			= document.createElement('div');
 	div.setAttribute('id', 'upload-image' + p);
 	div.setAttribute('class', 'upload-image');
@@ -941,6 +883,7 @@ function createMsgTextArea(msgNumber, users, user){
 	p.setAttribute('style', 'display: inline;');
 	p.innerHTML		= 'send a message to ';
 	
+	a.setAttribute('id', 'user' + msgNumber);
 	a.setAttribute('style', 'display: inline;');
 	a.setAttribute('href', 'msg-text-upload' + msgNumber);
 	a.setAttribute('onclick', '');
@@ -957,7 +900,7 @@ function createMsgTextArea(msgNumber, users, user){
 		select.appendChild(option);
 	}
 	
-	textArea.setAttribute('id', 'msg-text');
+	textArea.setAttribute('id', 'msg-text' + msgNumber);
 	textArea.setAttribute('name', 'msg-text');
 	textArea.setAttribute('onkeypress', 'onTextChange()');
 	textArea.setAttribute('placeholder', 'enter text here...');
@@ -1152,23 +1095,19 @@ function edit(){
 *	return:		null
 *********************************************************************************/
 function upload(p){
-	//alert(p);
+	
 	var imgReplyEle		= document.getElementById('upload-image' + p);
-	let arr 		  	= [];
+	let imgs 		  	= [];
 	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
 	var images 		  	= document.getElementById('upload-image' + p).getElementsByTagName("img");
-	
-	/*
-	var ckbx 		  	= document.getElementById('output' + p).getElementsByTagName("input");
-	var images 		  	= document.getElementById('output' + p).getElementsByTagName("img");
-	*/
+
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
-  			arr.push(images[i]);
+  			imgs.push(images[i]);
   			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
-	sendMessage(arr);
+	sendMessage(imgs, p);
 }
 
 
@@ -1276,7 +1215,7 @@ alert();
 *	this function does the same as the following but for 'browsing option'
 *********************************************************************************/
 function onChange(p, input){
-	alert(p);
+	//alert(p);
 	var url 	= $(input).val();
 	var file 	= input.files[0];
 	var name 	= file.name;
@@ -1292,7 +1231,7 @@ function onChange(p, input){
 				    };
 	
     reader.readAsDataURL(file);
-    alert('file src: ' + src);	
+    //alert('file src: ' + src);	
 }
 
 
@@ -1481,15 +1420,14 @@ function sendImages(images){
 /*********************************************************************************
 *	this function sends a new message to user: usr 
 *********************************************************************************/
-function sendMessage(images){
-
-	var msg 	  	= document.getElementById("msg-txt").value;
-	var usrs 	  	= document.getElementById("users");
-	var usr  	  	= usrs.options[usrs.selectedIndex].text;
+function sendMessage(images, msgNumber){
+	
+	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
+	var usrs 	  	= document.getElementById('users' + msgNumber);
+	var usr  	  	= document.getElementById('user' + msgNumber).innerHTML; 	
 	var sender	  	= sessionStorage.getItem('username');
 	var date	  	= new Date();
 	var clicked   	= 'false';
-	var formData  	= new FormData();
 	var imgs 		= [];
 	var data		= null; 
 	var size 		= 0;
@@ -1497,15 +1435,14 @@ function sendMessage(images){
 	var msgBuffer 	= null;
 	var numOfImages	= images.length;
 	
+	alert('user: ' + usr);
 	
-	formData.append("code", "2");
-	formData.append("sender", sender.slice(0,20)); 
-	formData.append("user", usr.slice(0,20));
-	formData.append("message", msg);
-	formData.append("date", date.getTime());
-	formData.append("clicked", clicked);
-	formData.append("offset", 0);
+	if( usr.innerHTML === "" )
+	{
+		usr = usrs.options[usrs.selectedIndex].text;
+	}
 	
+
 	
 	if( images.length > 0){
 		for(var i = 0; i < numOfImages; i++){
