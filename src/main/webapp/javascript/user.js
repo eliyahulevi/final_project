@@ -1089,9 +1089,9 @@ function edit(){
 }
 
 /*********************************************************************************
-*	this function iterate over all images, checked if chosen and sent to the
-*	sendMessage function
-*	@param:		null
+*	this function is fires up when a reply to a message was pressed, iterate over 
+*	all images, checked if chosen and sent to the sendMessage function
+*	@param:		p, unique identifier
 *	return:		null
 *********************************************************************************/
 function upload(p){
@@ -1424,7 +1424,7 @@ function sendMessage(images, msgNumber){
 	
 	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
 	var usrs 	  	= document.getElementById('users' + msgNumber);
-	var usr  	  	= document.getElementById('user' + msgNumber).innerHTML; 	
+	var usr  	  	= document.getElementById('user-tag' + msgNumber).innerHTML; 	
 	var sender	  	= sessionStorage.getItem('username');
 	var date	  	= new Date();
 	var clicked   	= 'false';
@@ -1434,8 +1434,6 @@ function sendMessage(images, msgNumber){
 	var imageBuffer = null;
 	var msgBuffer 	= null;
 	var numOfImages	= images.length;
-	
-	alert('user: ' + usr);
 	
 	if( usr.innerHTML === "" )
 	{
