@@ -89,13 +89,13 @@ public class UserServlet extends HttpServlet
 		{
 			
 			System.out.printf("%-15s %s%n", "user servlet >> ", "imcoming message:");
-			System.out.printf("%-15s %s%n", "", "\ncode: " + code); 
-			System.out.printf("%-15s %s%n", "", "\nuser: " + user); 
-			System.out.printf("%-15s %s%n", "", "\nsender: " + sender); 
-			System.out.printf("%-15s %s%n", "", "\nmessage: " + msg); 
-			System.out.printf("%-15s %s%n", "", "\ndate: " + dateString); 
-			System.out.printf("%-15s %s%n", "", "\noffset: " + offset); 
-			System.out.printf("%-15s %s%n", "" ,"\nreplied to: " + repliedTo);
+			System.out.printf("%-15s %s%n", "\ncode: ", code); 
+			System.out.printf("%-15s %s%n", "\nuser: ", user); 
+			System.out.printf("%-15s %s%n", "\nsender: ", sender); 
+			System.out.printf("%-15s %s%n", "\nmessage: ", msg); 
+			System.out.printf("%-15s %s%n", "\ndate: ", dateString); 
+			System.out.printf("%-15s %s%n", "\noffset: ", offset); 
+			System.out.printf("%-15s %s%n", "\nreplied to: ", repliedTo);
 			switch(code)
 			 {
 			 	case "0":		// get all users

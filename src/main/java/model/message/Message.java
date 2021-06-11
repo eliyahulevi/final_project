@@ -66,8 +66,18 @@ public class Message
 	
 	public void print()
 	{
+		System.out.printf("%-15s%n", "message details:");
+		System.out.printf("%-15s %s%n", "\ncode: ", this.code);
+		System.out.printf("%-15s %s%n", "\nuser: ", this.user);
+		System.out.printf("%-15s %s%n", "\nsender: ", this.sender);
+		System.out.printf("%-15s %s%n", "\nmessage:", this.message); 
+		System.out.printf("%-15s %s%n", "\ndate: ", this.date); 
+		System.out.printf("%-15s %s%n", "\nimage: ", this.image); 
+		System.out.printf("%-15s %s%n", "\nclicked: ", this.clicked); 
+		System.out.printf("%-15s %s%n", "\noffset: ", this.offset); 
+		System.out.printf("%-15s %s%n", "\nrepliy to: ", this.repliedTo);
+		/*
 		Field[] fields		= this.getClass().getDeclaredFields();
-		
 		System.out.println("Message >> print message:");
 		try 
 		{
@@ -83,6 +93,7 @@ public class Message
 			e.printStackTrace();
 		}
 		System.out.println("Message >> print message:");
+		*/
 	}
 	public String toJson()
 	{

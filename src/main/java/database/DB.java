@@ -852,7 +852,7 @@ public class DB
 				System.out.println(this.ABORT_CONNECTION);
 				System.exit(-1);
 			}
-			
+			message.print();
 			ps = this.connection.prepareStatement(this.INSERT_USER_MESSAGE);
 			ps.setString(1, message.getUser() + message.getDate());
 			ps.setString(2, message.getSender());

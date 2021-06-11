@@ -88,7 +88,6 @@ function onMessage(event) {
 		
 		var messageSrc 	= message.src;	
 		var parsedMsgs 	= [];	
-		
 		insertMessage(JSON.parse(messageSrc))
     }
     if (message.action === "messages") {
@@ -475,7 +474,7 @@ function loadUserMessages(sync){
         			var currentOff	= 0;
         			
         			// 1.	find maximum offset and append all messages
-        			//		with offset 0
+        			//		with offset 0, also, find maximum offset value
         			for(var i = 0; i < length; i++){
         				var message	= JSON.parse(messages[i]);
         				if( message.offset > max ){
@@ -488,7 +487,7 @@ function loadUserMessages(sync){
         				}
         			}
         			//2.	insert all other messages with offset > 0
-        			
+        			//		according to message 'repliedTo' field
         			while( max > 0 ){
         				currentOff = currentOff + step;
         				for(var i = 0; i < length; i++){
@@ -538,12 +537,28 @@ function insertMessage(message){
 	var messages	= document.getElementsByClassName('message');
 	var userReply	= null;
 	
-	if(message.offset === 0 ){
-		
-		msgDisplay.appendChild(msgElement);
-		
+
+	
+	if(message.offset === '0' ){
+		msgDisplay.appendChild(msgElement);	
+		alert(	'insert message with offset 0:' +
+		'\nmessage: ' 	+ message.message + 
+		'\nreply to: ' 	+ message.repliedTo + 
+		'\nuser: ' 		+ message.user +
+		'\nsender: ' 	+ message.sender +
+		'\noffset: ' 	+ message.offset +
+		'\nimages: ' 	+ message.image);
 	}
 	else{
+	
+		alert(	'insert message with offset bigger than 0:' +
+		'\nmessage: ' 	+ message.message + 
+		'\nreply to: ' 	+ message.repliedTo + 
+		'\nuser: ' 		+ message.user +
+		'\nsender: ' 	+ message.sender +
+		'\noffset: ' 	+ message.offset +
+		'\nimages: ' 	+ message.image);
+			
 		for(var i = 0; i < messages.length; i++){
 			var msgi 		= messages[i];
 			var childNodes	= msgi.childNodes;	
@@ -629,7 +644,7 @@ function createSender(message){
 *	sender	  : sender;
 *	date 	  : date;
 *	clicked   : clicked;
-*	msg_text  : message;
+*	msg text  : message;
 *	offset    : offset;
 *	images    : image;
 *	images source extraction in 3 steps:
@@ -940,7 +955,8 @@ function createMsgTextArea(msgNumber, users, user){
 	}
 	div.appendChild(textArea);
 	div.appendChild(form); 
-					
+		
+	alert('create message area with number: ' + msgNumber);			
 	return div;
 	
 }
@@ -1095,7 +1111,7 @@ function edit(){
 *	return:		null
 *********************************************************************************/
 function upload(p){
-	
+
 	var imgReplyEle		= document.getElementById('upload-image' + p);
 	let imgs 		  	= [];
 	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
@@ -1103,10 +1119,11 @@ function upload(p){
 
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
-  			imgs.push(images[i]);
+  			imgs.push(images[i].src);
   			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
+	//alert('images: ' + imgs);
 	sendMessage(imgs, p);
 }
 
@@ -1177,6 +1194,8 @@ function showFileLoad(){
 
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload
+*	@param:		null
+*	return:		null
 *********************************************************************************/
 function showOutgoingMsgArea(){
 	var users		= loadUsers(false);
@@ -1192,10 +1211,9 @@ function showOutgoingMsgArea(){
 		//alert('i ' + i + ' ' + uploadImg[i]);
 		uploadImg[i].remove();
 	}
-	//alert('caller: ' + upldLength);
-	fileUpload	= createImageUploadArea(msgLength);
-	newMessage.appendChild(fileUpload);
-	newMessage.appendChild(createMsgTextArea(upldLength, users, ''));
+	
+	newMessage.appendChild(createImageUploadArea(msgLength));
+	newMessage.appendChild(createMsgTextArea(msgLength, users, ''));
 } 
 
 
@@ -1203,11 +1221,12 @@ function showOutgoingMsgArea(){
 *	this function simply shows the hidden elements to allow message text upload
 *********************************************************************************/
 function cancelMsgText(){
-alert();
-	document.getElementById("msg-text-upload").style.display = "none";
-	document.getElementById("upload-file-btn").style.display = "none";
-	document.getElementById("cancel-file-btn").style.display = "none";
-	document.getElementById("file-upload-area").style.display = "none";
+	var imgReplies	= document.getElementsByClassName('upload-image');
+	var txtReplies	= document.getElementsByClassName('msg-area');
+	
+	// erase all other reply messages text AND images upload from page 
+	for(var i = txtReplies.length - 1; i >= 0; --i){ txtReplies[i].remove(); } 
+	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 } 
 
 
@@ -1421,10 +1440,12 @@ function sendImages(images){
 *	this function sends a new message to user: usr 
 *********************************************************************************/
 function sendMessage(images, msgNumber){
-	
+	//alert('images received: ' + images);
+	var	msgElement	= document.getElementById('messageElement' + msgNumber);
 	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
 	var usrs 	  	= document.getElementById('users' + msgNumber);
-	var usr  	  	= document.getElementById('user-tag' + msgNumber).innerHTML; 	
+	var usrElement 	= document.getElementById('user-tag' + msgNumber); 	
+	var usr			= "";
 	var sender	  	= sessionStorage.getItem('username');
 	var date	  	= new Date();
 	var clicked   	= 'false';
@@ -1434,14 +1455,35 @@ function sendMessage(images, msgNumber){
 	var imageBuffer = null;
 	var msgBuffer 	= null;
 	var numOfImages	= images.length;
+	var offset		= 0;
+	var offsetCalc	= null; 
+	var offsetStep	= 20;
+	var replyTo		= "";	
 	
-	if( usr.innerHTML === "" )
-	{
+	/*
+	if(offsetCalc !== null ){
+		offset = parseInt(offsetCalc) + offsetStep;
+	}
+	*/
+	
+	
+	if( usrElement === null ){
 		usr = usrs.options[usrs.selectedIndex].text;
 	}
+	else{
+		usr = usrElement.innerHTML;
+		replyTo = usr + msgNumber; 	
+	}
 	
-
+	if(msgElement !== null ){
+		offsetCalc = window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
+		offset = parseInt(offsetCalc) + offsetStep;
+		
+	}
 	
+	
+	
+	/*
 	if( images.length > 0){
 		for(var i = 0; i < numOfImages; i++){
 			size += images[i].src.length;
@@ -1462,8 +1504,14 @@ function sendMessage(images, msgNumber){
 		alert('no images chosen..');
 	}
 	
-	
-	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "");	
+	alert(	'message element: ' + msgElement + 
+			'\nmsg: ' + msg + 
+			'\nusers: ' + users + 
+			'\nuser: ' + usr +
+			'\nsender: ' + sender+
+			'\nreply to: ' + replyTo);
+	*/
+	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo);	
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);
 	var messageArray	= new Uint8Array(msgBuffer);
@@ -1471,7 +1519,7 @@ function sendMessage(images, msgNumber){
 	for(var i = 0; i < msgByteArr.length; i++){
 		messageArray[i] = message.charCodeAt(i);
 	}
-	//alert('message size is: ' + messageArray.length);
+	
 	cancelMsgText();
 	wsocket.send(messageArray);
 }
