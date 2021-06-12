@@ -62,7 +62,7 @@ $(document).ready(function(){
 *********************************************************************************/
 function onOpen(event) {
 	var date = new Date().getTime();
-	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, false, "", 0, "");	
+	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, false, "", 0, "", false);	
 	wsocket.send((message));
 }
 
@@ -536,11 +536,16 @@ function insertMessage(message){
 	var msgElement 	= createMessage(message);
 	var messages	= document.getElementsByClassName('message');
 	var userReply	= null;
+	var display		= message.display;
 	
+	if( display == false){
+		return;
+	}
 
 	
 	if(message.offset === '0' ){
 		msgDisplay.appendChild(msgElement);	
+		/*
 		alert(	'insert message with offset 0:' +
 		'\nmessage: ' 	+ message.message + 
 		'\nreply to: ' 	+ message.repliedTo + 
@@ -548,6 +553,7 @@ function insertMessage(message){
 		'\nsender: ' 	+ message.sender +
 		'\noffset: ' 	+ message.offset +
 		'\nimages: ' 	+ message.image);
+		*/
 	}
 	else{
 	
@@ -768,8 +774,12 @@ function createMessage(message){
 *********************************************************************************/
 function deleteMessage(id){
 	alert('delete message:' + id);
-	var msg = document.getElementById('messageElement' + id);
-	msg.remove();
+	var user		= sessionStorage.getItem('username');
+	var msgElement 	= document.getElementById('messageElement' + id);
+	//var date		= document.getElementById('raw-date' + id);
+	var message		= createSocketMessageByteArray("3", user, user, "", id, false, "", 0, "", false);
+	msgElement.remove();
+	wsocket.send(message);
 }
 
 
@@ -980,7 +990,7 @@ function sendReplyMessage(jmessage){
 	var offset		= message.offset;
 	var repliedTo	= message.repliedTo;
 	
-	var message 	= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "");	
+	var message 	= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "", "");	
 	var msgByteArr	= [...message];
 	var msgBuffer	= new ArrayBuffer(message.length);
 	var messageArray= new Uint8Array(msgBuffer);
@@ -1011,7 +1021,7 @@ function replyMessage(p){
 	var imgsElement	= document.getElementById('image-upload' + p);	// images element
 	
 										
-	var message 	= createSocketMessage("2", sender, user.innerHTML, msg.value, date, false, imgs, offs, user.innerHTML + rawDate.innerHTML);	
+	var message 	= createSocketMessage("2", sender, user.innerHTML, msg.value, date, false, imgs, offs, user.innerHTML + rawDate.innerHTML, "");	
 	var msgByteArr	= [...message];
 	var msgBuffer	= new ArrayBuffer(message.length);
 	var msgArray= new Uint8Array(msgBuffer);
@@ -1481,29 +1491,7 @@ function sendMessage(images, msgNumber){
 		
 	}
 	
-	
-	
 	/*
-	if( images.length > 0){
-		for(var i = 0; i < numOfImages; i++){
-			size += images[i].src.length;
-		}
-		
-		imageBuffer = new ArrayBuffer(size + 2 + (numOfImages - 1));
-		data	   	= new Uint8Array(imageBuffer);
-		var step 	= 0;
-		
-		for(var i = 0; i < numOfImages; i++){
-			imgs[i] = images[i].src;
-			for( j = 0; j < imgs[i].length; j++, step++ ){
-				data[step] = (imgs[i].charCodeAt(j));
-			}
-		}		
-	}
-	else{
-		alert('no images chosen..');
-	}
-	
 	alert(	'message element: ' + msgElement + 
 			'\nmsg: ' + msg + 
 			'\nusers: ' + users + 
@@ -1511,7 +1499,7 @@ function sendMessage(images, msgNumber){
 			'\nsender: ' + sender+
 			'\nreply to: ' + replyTo);
 	*/
-	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo);	
+	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, false);	
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);
 	var messageArray	= new Uint8Array(msgBuffer);

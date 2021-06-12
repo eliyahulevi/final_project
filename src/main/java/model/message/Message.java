@@ -18,51 +18,82 @@ import org.json.simple.JSONValue;
 
 public class Message 
 {
-	int code;
-	String user;
-	String sender;
-	String message;
-	long date;
-	Blob image;
-	boolean clicked;
-	int offset;
-	String repliedTo;
+	int 		code;
+	String 		user;
+	String 		sender;
+	String 		message;
+	long 		date;
+	Blob 		image;
+	boolean 	clicked;
+	int 		offset;
+	String 		repliedTo;
+	boolean 	display;
 	public static String WELCOME = "Welcome to the LumberYard !! please feel free to ask any question @SUPPORT";
 	
 	public Message() {}
 	public Message(String sender, String user, String msg, long date, Blob img, int offset, String repliedto)
 	{
-		this.sender = sender;
-		this.user = user;
-		this.message = msg;
-		this.date = date;
-		this.image = img;
-		this.clicked = false;
-		this.offset = offset;
-		this.repliedTo = repliedto;
+		this.sender 		= sender;
+		this.user 			= user;
+		this.message 		= msg;
+		this.date 			= date;
+		this.image 			= img;
+		this.clicked 		= false;
+		this.offset 		= offset;
+		this.repliedTo 		= repliedto;
 	}
-	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto)
+	public Message(String sender, String user, String msg, long date, Blob img, int offset, String repliedto, boolean display)
 	{
-		this.sender = sender;
-		this.user = user;
-		this.message = msg;
-		this.date = date;
-		this.clicked = false;
-		this.offset = offset;
-		this.repliedTo = repliedto;
-		Blob blob = null;
+		this.sender 		= sender;
+		this.user 			= user;
+		this.message 		= msg;
+		this.date 			= date;
+		this.image 			= img;
+		this.clicked 		= false;
+		this.offset 		= offset;
+		this.repliedTo 		= repliedto;
+		this.display		= display;
+	}
+	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto, boolean display)
+	{
+		this.sender 		= sender;
+		this.user 			= user;
+		this.message 		= msg;
+		this.date 			= date;
+		this.clicked 		= false;
+		this.offset 		= offset;
+		this.repliedTo 		= repliedto;
+		Blob blob 			= null;
+		this.display 		= display;
 		try {
 			blob = new javax.sql.rowset.serial.SerialBlob(img.getBytes());
 		} catch (SerialException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.image = blob;
 	}
-	
+	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto)
+	{
+		this.sender 		= sender;
+		this.user 			= user;
+		this.message 		= msg;
+		this.date 			= date;
+		this.clicked 		= false;
+		this.offset 		= offset;
+		this.repliedTo 		= repliedto;
+		
+		Blob blob 			= null;
+		try {
+			blob = new javax.sql.rowset.serial.SerialBlob(img.getBytes());
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		this.image = blob;
+	}
 	
 	public void print()
 	{
@@ -76,6 +107,7 @@ public class Message
 		System.out.printf("%-15s %s%n", "\nclicked: ", this.clicked); 
 		System.out.printf("%-15s %s%n", "\noffset: ", this.offset); 
 		System.out.printf("%-15s %s%n", "\nrepliy to: ", this.repliedTo);
+		System.out.printf("%-15s %s%n", "\ndisplayed: ", this.display);
 		/*
 		Field[] fields		= this.getClass().getDeclaredFields();
 		System.out.println("Message >> print message:");
@@ -163,6 +195,7 @@ public class Message
 	public void setClicked(boolean b) { this.clicked = b; }
 	public void setOffset(int i) { this.offset = i; }
 	public void setRepliedTo(String s) { this.repliedTo = s; }
+	public void setDisplay(boolean b) { this.display = b; }
 
 	public int getCode() { return this.code; }
 	public String getUser() { return this.user;}
@@ -173,5 +206,6 @@ public class Message
 	public boolean getClicked() { return this.clicked; }
 	public int getOffset() { return this.offset; } 
 	public String getRepliedTo() { return this.repliedTo; }
+	public boolean getDisplay() { return this.display; }
 
 }

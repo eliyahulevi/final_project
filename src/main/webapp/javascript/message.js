@@ -64,18 +64,19 @@ function uploadMessage(message){
  /*********************************************************************************
 *	this function creates a JSON format message
 *********************************************************************************/
-function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo) {
+function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo, display) {
 	alert('create message: imgs ' + imgs.type);
  	var result =  {	
- 					"code": 	code,
- 					"sender": 	sender, 
- 					"user": 	user,
-			 		"message": 	msg,
-			 		"date": 	date,
-			 		"clicked": 	clckd,
-			 		"image":	imgs,
-			 		"offset": 	offset,
-			 		"repliedTo": repliedTo
+ 					"code": 		code,
+ 					"sender": 		sender, 
+ 					"user": 		user,
+			 		"message": 		msg,
+			 		"date": 		date,
+			 		"clicked": 		clckd,
+			 		"image":		imgs,
+			 		"offset": 		offset,
+			 		"repliedTo": 	repliedTo,
+			 		"display": 		display
 			 		};
 	//alert('message.js >> images: ' + (imgs));
 	/*	 		
@@ -87,6 +88,7 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset,
 						'\nclicked: ' 	+ clckd +
 						'\noffset: ' 	+ offset + 
 						'\nreplied to: '+ repliedTo + 
+						'\ndisplay: '	+ displayed +
 						'\nimage: ' 	+ imgs);
 	*/
 	return JSON.stringify(result);
@@ -96,17 +98,18 @@ function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset,
  /*********************************************************************************
 *	this function creates a JSON format message, and places it into a byte array
 *********************************************************************************/
-function createSocketMessageByteArray(code, sender, user, msg, date, clckd, imgs, offset, repliedTo) {
+function createSocketMessageByteArray(code, sender, user, msg, date, clckd, imgs, offset, repliedTo, display) {
  	var message	=  JSON.stringify({	
- 					"code": 	code,
- 					"sender": 	sender, 
- 					"user": 	user,
-			 		"message": 	msg,
-			 		"date": 	date,
-			 		"clicked": 	clckd,
-			 		"image":	imgs,
-			 		"offset": 	offset,
-			 		"repliedTo": repliedTo
+ 					"code": 		code,
+ 					"sender": 		sender, 
+ 					"user": 		user,
+			 		"message": 		msg,
+			 		"date": 		date,
+			 		"clicked": 		clckd,
+			 		"image":		imgs,
+			 		"offset": 		offset,
+			 		"repliedTo": 	repliedTo,
+			 		"display":		display
 			 		});
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);

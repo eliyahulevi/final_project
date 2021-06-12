@@ -103,7 +103,8 @@ public class DB
 			+ "CLICKED boolean,"
 			+ "OFFSET int,"
 			+ "REPLIEDTO varchar(100), "
-			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE)"
+			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE),"
+			+ "DISPLAY boolean"
 			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
@@ -170,8 +171,9 @@ public class DB
 	 *	 					message
 	 ***********************************************************************/
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
+	private String DELETE_MESSAGE = 		"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY = ? " + "WHERE USERDATE = ?";  
 	
 	/************************************************************************
 	 *	 					image
@@ -252,7 +254,7 @@ public class DB
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, createQueryString[count]); 
-			System.out.printf("%-15s %s%n", "DB >> ", "tabel: " + s + " has query "+ createQueryString[count]);
+			//System.out.printf("%-15s %s%n", "DB >> ", "tabel: " + s + " has query "+ createQueryString[count]);
 			count++;
 		}
 		try 
@@ -741,6 +743,7 @@ public class DB
 			map.put("clicked", String.valueOf(message.getClicked()));
 			map.put("offset", String.valueOf(message.getOffset()));
 			map.put("repliedTo", String.valueOf(message.getRepliedTo()));
+			map.put("display", String.valueOf(message.getDisplay()));
 			if(blob == null)
 				map.put("image", "");
 			else 
@@ -798,6 +801,7 @@ public class DB
 				message.setClicked(rs.getBoolean(7));			// clicked
 				message.setOffset(rs.getInt(8));	 			// offset
 				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getBoolean(10));			// display
 				String s = this.message2JSON(message);
 				// TODO: erase later
 				System.out.printf("%-15s %s%n", "DB>>", "msgs: " + s);
@@ -862,7 +866,8 @@ public class DB
 			ps.setBlob(6, message.getImage());
 			ps.setBoolean(7, message.getClicked());
 			ps.setInt(8, message.getOffset()); 
-			ps.setString(9,  message.getRepliedTo()); 
+			ps.setString(9,  message.getRepliedTo());
+			ps.setBoolean(10, message.getDisplay());
 			ps.execute();
 			result = 0;
 		}
@@ -931,6 +936,42 @@ public class DB
 		return result;
 	}
 
+	
+	/*
+	 * 	delete message from displaying mode in the clients UI. this function
+	 *  actually updates the message 'display' field to 'false'.
+	 *  @param	String	user, user name
+	 *  @param	long	date, the time stamp, unique identifier
+	 *  return	int		non negative upon success, negative else
+	 */
+	public int messageDelete(String user, long date)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			ps = this.connection.prepareStatement(DELETE_MESSAGE);
+			ps.setBoolean(1, true);
+			ps.setString(2, user + date);
+			ps.execute();
+		}
+		catch(Exception e)
+		{
+			
+		}
+		finally
+		{
+			
+		}
+		
+		return result;
+	}
 	
 	
 	/************************************************************************

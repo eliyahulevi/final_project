@@ -122,6 +122,7 @@ public class WebSocket
         String message			= jsonMessage.getString("message");
         String repliedTo		= jsonMessage.getString("repliedTo");
         boolean clicked			= jsonMessage.getBoolean("clicked");
+        boolean display			= jsonMessage.getBoolean("display");
         long date				= jsonMessage.getLong("date");
 		int offset				= jsonMessage.getInt("offset");
 		byte[] data				= null;
@@ -131,14 +132,16 @@ public class WebSocket
 		try 
 		{
 			if("".equals(repliedTo)) repliedTo = null;
-			System.out.printf("%-15s %s%n", "websocket>>", "incomming message:"); 
-			System.out.printf("%-15s %s%n",	"", "code: " 		+ code); 
-			System.out.printf("%-15s %s%n",	"", "user: " 		+ user); 
-			System.out.printf("%-15s %s%n",	"", "sender: "		+ sender); 
-			System.out.printf("%-15s %s%n",	"", "message: " 	+ message); 
-			System.out.printf("%-15s %s%n",	"", "date: " 		+ date); 
-			System.out.printf("%-15s %s%n",	"", "offset: " 		+ offset);
-			System.out.printf("%-15s %s%n",	"", "replied to: " 	+ repliedTo);
+			System.out.printf("%-15s %s", "websocket>>", "incomming message:"); 
+			System.out.printf("%-15s %s",	"", "code: " 		+ code); 
+			System.out.printf("%-15s %s",	"", "user: " 		+ user); 
+			System.out.printf("%-15s %s",	"", "sender: "		+ sender); 
+			System.out.printf("%-15s %s",	"", "message: " 	+ message); 
+			System.out.printf("%-15s %n",	"", "date: " 		+ date);
+			System.out.printf("%-15s %n",	"", "clicked: " 	+ clicked); 
+			System.out.printf("%-15s %s",	"", "offset: " 		+ offset);
+			System.out.printf("%-15s %s",	"", "replied to: " 	+ repliedTo);
+			System.out.printf("%-15s %s",	"", "display: " 	+ display);
 			
 			switch(code)
             {
@@ -187,11 +190,11 @@ public class WebSocket
 						System.out.printf("%-15s %s%n", "websocket>>", "image source " + image);		// TODO: erase if works
 						data = image.getBytes();
 						blob = new SerialBlob(data);
-						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo));	
+						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, display));	
 					}
 					Session userSession = sh.getUserSession(user);
 					System.out.printf("%-15s %s%n", "websocket>>", "user session " + userSession);		// TODO: erase if works
-					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo);
+					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, display);
 					messages.add(userMessage.toJson());
 					jsonArray = Json.createArrayBuilder(messages).build(); 
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
@@ -204,6 +207,7 @@ public class WebSocket
 	            
 	            case "3":
 	            {
+	            	db.messageDelete(user, date);
 	            	break;
 	            }
 	            
