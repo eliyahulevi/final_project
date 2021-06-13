@@ -628,7 +628,7 @@ function createMessage(message){
 	var src			= null;	
 	var splitImg	= null;
 	
-	
+	var newMessage 	= document.createElement("div");
 	var frame 	  	= document.createElement("div");
 	var imgsFrame 	= document.createElement("div");
 	var userTag   	= document.createElement("a");
@@ -641,6 +641,7 @@ function createMessage(message){
 	var clkd      	= document.createElement("a");
 	var rawDate	  	= document.createElement("pre");
 	var del	  		= document.createElement("a");
+	var br	  		= document.createElement("br");
 	
 	
 	del.setAttribute('id', 'delete' + date);
@@ -725,16 +726,18 @@ function createMessage(message){
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
-	
-	if( message.offset > 0 ){
-		frame.appendChild(replyTo);
-	}
 	frame.appendChild(p);
 	frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
 	frame.appendChild(rawDate);
-
-	return frame;	
+	
+	if( message.offset > 0 ){
+		newMessage.appendChild(replyTo);
+	}
+	newMessage.appendChild(frame);
+	newMessage.appendChild(br);
+	
+	return newMessage;	
 }
 
 
