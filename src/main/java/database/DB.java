@@ -170,10 +170,10 @@ public class DB
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=true";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
-	private String DELETE_MESSAGE = 		"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY = ? " + "WHERE USERDATE = ?";  
+	private String DELETE_MESSAGE = 		"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=false " + "WHERE USERDATE=?";  
 	
 	/************************************************************************
 	 *	 					image
@@ -840,7 +840,8 @@ public class DB
 	}
 	
 	/*
-	 *  insert a new message
+	 *  insert a new message into MESSAGES table. primary key
+	 *  of each message is the 'sender' name concatenated with 'date'
 	 *  @param	Message	message, a message instance to be inserted
 	 *  return	int	non negative integer in case of success, -1 on failure
 	 */
@@ -858,7 +859,7 @@ public class DB
 			}
 			message.print();
 			ps = this.connection.prepareStatement(this.INSERT_USER_MESSAGE);
-			ps.setString(1, message.getUser() + message.getDate());
+			ps.setString(1, message.getSender() + message.getDate());
 			ps.setString(2, message.getSender());
 			ps.setString(3, message.getUser());
 			ps.setString(4, message.getMessage());
@@ -913,7 +914,7 @@ public class DB
 			ps = this.connection.prepareStatement(UPDATE_TABLE_CLICKED);
 			ps.setBoolean(1, true);
 			ps.setString(2, user + date);
-			ps.execute();
+			ps.executeUpdate();
 		}
 		catch(Exception e)
 		{
@@ -956,18 +957,28 @@ public class DB
 				System.out.println(ABORT_CONNECTION);
 				System.exit(-1);
 			}
+			System.out.printf("%n%-15s %s", "DB >>", "delete message: " + user + date);		// TODO: erase if works
 			ps = this.connection.prepareStatement(DELETE_MESSAGE);
-			ps.setBoolean(1, true);
-			ps.setString(2, user + date);
-			ps.execute();
+			ps.setString(1, user + date);
+			result = ps.executeUpdate();
+			if(result == 0) throw new Exception();
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		finally
 		{
-			
+			try 
+			{
+				if(ps != null)
+					ps.close();
+				disconnect();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		return result;

@@ -478,10 +478,10 @@ function loadUserMessages(sync){
         			for(var i = 0; i < length; i++){
         				var message	= JSON.parse(messages[i]);
         				if( message.offset > max ){
-        					
         					max = message.offset;
         				}
-        				if( message.offset == 0 ){
+        				alert(message.display);
+        				if( message.display !== 'false' && message.offset == 0 ){
         					var msg = createMessage(message);
 		            		form.appendChild(msg);
         				}
@@ -492,7 +492,8 @@ function loadUserMessages(sync){
         				currentOff = currentOff + step;
         				for(var i = 0; i < length; i++){
         					var message	= JSON.parse(messages[i]);
-	        				if( message.offset == currentOff ){
+        					
+	        				if( message.display !== 'false' && message.offset == currentOff ){
 	        					var msg = createMessage(message);
 			            		insertMessage(message);
 			            		//form.appendChild(msg);
@@ -500,26 +501,6 @@ function loadUserMessages(sync){
 	        			}
 	        			max = max - step;
         			}
-        			 
-        			/*
-        			for(var i = 0; i < messages.length; i++){
-        				var parsedMsg = JSON.parse(messages[i]);
-        				parsedMsg.visited = 0;
-        				parsedMsgs[i] = parsedMsg;
-        			}   		
-        			
-		            for(var i = 0; i < parsedMsgs.length; i++){
-	            		var msg = createMessage(parsedMsgs[i]);
-		            	if(parsedMsgs[i].visited == 0){
-		            		var msg = createMessage(parsedMsgs[i]);
-		            		//form.appendChild(msg);
-		            	}
-		            	else{
-		            		//insertRepliedMessages(parsedMsgs, i);
-		            	}       	
-		            	insertRepliedMessages(parsedMsgs, i);
-		            }
-		            */
         		}
      });
 }
@@ -689,7 +670,7 @@ function createMessage(message){
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
 	del.setAttribute('onclick', 'deleteMessage(' + date + ')');
-	del.innerHTML = ' delete';
+	del.innerHTML = ' hide';
 	
 	clkd.setAttribute('id', 'clicked' + date);
 	clkd.setAttribute('style', 'visibility:hidden;');
@@ -773,12 +754,13 @@ function createMessage(message){
 *	this function deletes a given message
 *********************************************************************************/
 function deleteMessage(id){
-	alert('delete message:' + id);
-	var user		= sessionStorage.getItem('username');
+	
+	var user		= document.getElementById('user-tag' + id).innerHTML;
 	var msgElement 	= document.getElementById('messageElement' + id);
 	//var date		= document.getElementById('raw-date' + id);
 	var message		= createSocketMessageByteArray("3", user, user, "", id, false, "", 0, "", false);
 	msgElement.remove();
+	alert('delete message:' + user + id);
 	wsocket.send(message);
 }
 

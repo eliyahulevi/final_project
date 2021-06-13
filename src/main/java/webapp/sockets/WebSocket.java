@@ -132,16 +132,18 @@ public class WebSocket
 		try 
 		{
 			if("".equals(repliedTo)) repliedTo = null;
-			System.out.printf("%-15s %s", "websocket>>", "incomming message:"); 
-			System.out.printf("%-15s %s",	"", "code: " 		+ code); 
-			System.out.printf("%-15s %s",	"", "user: " 		+ user); 
-			System.out.printf("%-15s %s",	"", "sender: "		+ sender); 
-			System.out.printf("%-15s %s",	"", "message: " 	+ message); 
-			System.out.printf("%-15s %n",	"", "date: " 		+ date);
-			System.out.printf("%-15s %n",	"", "clicked: " 	+ clicked); 
-			System.out.printf("%-15s %s",	"", "offset: " 		+ offset);
-			System.out.printf("%-15s %s",	"", "replied to: " 	+ repliedTo);
-			System.out.printf("%-15s %s",	"", "display: " 	+ display);
+			
+			
+			System.out.printf("%n%-15s %s", "websocket>>", "incomming message:"); 
+			System.out.printf("%n%-15s %s",	"", "code: " 		+ code); 
+			System.out.printf("%n%-15s %s",	"", "user: " 		+ user); 
+			System.out.printf("%n%-15s %s",	"", "sender: "		+ sender); 
+			System.out.printf("%n%-15s %s",	"", "message: " 	+ message); 
+			System.out.printf("%n%-15s %n",	"", "date: " 		+ date);
+			System.out.printf("%n%-15s %n",	"", "clicked: " 	+ clicked); 
+			System.out.printf("%n%-15s %s",	"", "offset: " 		+ offset);
+			System.out.printf("%n%-15s %s",	"", "replied to: " 	+ repliedTo);
+			System.out.printf("%n%-15s %s",	"", "display: " 	+ display);
 			
 			switch(code)
             {
@@ -149,7 +151,7 @@ public class WebSocket
 	            case "0":
 	            {
 	            	sh.linkUser2Session(jsonMessage.getString("sender"), session); 
-	            	System.out.printf("%-15s %s%n", "websocket>>", "link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
+	            	System.out.printf("%n%-15s %s", "websocket>>", "link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
 	            	break;
 	            }
 	            //	get all of the messages for a specific user 
@@ -177,23 +179,23 @@ public class WebSocket
 	                
 					if(image == null)
 					{
-						System.out.printf("%-15s %s%n", "websocket>>", "no image source " + image);		// TODO: erase if works
+						System.out.printf("%n%-15s %s", "websocket>>", "no image source " + image);		// TODO: erase if works
 						db.insertMessage(new Message(sender, user, message, date, blob, offset, repliedTo)); 
 					}
 					else if(image.equals(""))
 					{
-						System.out.printf("%-15s %s%n", "websocket>>", "image empty " + image);		// TODO: erase if works
+						System.out.printf("%n%-15s %s", "websocket>>", "image empty " + image);		// TODO: erase if works
 						db.insertMessage(new Message(sender, user, message, date, blob, offset, repliedTo)); 
 					}
 					else if(!image.equals(""))
 					{
-						System.out.printf("%-15s %s%n", "websocket>>", "image source " + image);		// TODO: erase if works
+						System.out.printf("%n%-15s %s", "websocket>>", "image source " + image);		// TODO: erase if works
 						data = image.getBytes();
 						blob = new SerialBlob(data);
 						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, display));	
 					}
 					Session userSession = sh.getUserSession(user);
-					System.out.printf("%-15s %s%n", "websocket>>", "user session " + userSession);		// TODO: erase if works
+					System.out.printf("%n%-15s %s", "websocket>>", "user session " + userSession);		// TODO: erase if works
 					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, display);
 					messages.add(userMessage.toJson());
 					jsonArray = Json.createArrayBuilder(messages).build(); 
@@ -201,13 +203,13 @@ public class WebSocket
 																				.add("src", jsonArray)
 																				.build(); 
 					sh.sendToSession(userSession, msg); 
-					
 	            	break;
 	            }
 	            
 	            case "3":
 	            {
-	            	db.messageDelete(user, date);
+	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	db.messageDelete(sender, date);
 	            	break;
 	            }
 	            
