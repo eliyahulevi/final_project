@@ -65,7 +65,7 @@ function uploadMessage(message){
 *	this function creates a JSON format message
 *********************************************************************************/
 function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo, display) {
-	alert('create message: imgs ' + imgs.type);
+	//alert('create message: imgs ' + imgs.type);
  	var result =  {	
  					"code": 		code,
  					"sender": 		sender, 

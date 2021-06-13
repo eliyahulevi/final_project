@@ -192,11 +192,11 @@ public class WebSocket
 						System.out.printf("%n%-15s %s", "websocket>>", "image source " + image);		// TODO: erase if works
 						data = image.getBytes();
 						blob = new SerialBlob(data);
-						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, display));	
+						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, true));	
 					}
 					Session userSession = sh.getUserSession(user);
 					System.out.printf("%n%-15s %s", "websocket>>", "user session " + userSession);		// TODO: erase if works
-					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, display);
+					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, true);
 					messages.add(userMessage.toJson());
 					jsonArray = Json.createArrayBuilder(messages).build(); 
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "message")

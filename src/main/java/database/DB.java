@@ -170,7 +170,7 @@ public class DB
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=true";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=?";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
 	private String DELETE_MESSAGE = 		"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=false " + "WHERE USERDATE=?";  
@@ -788,6 +788,7 @@ public class DB
 			this.connection.setAutoCommit(false); 
 			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE); 
 			ps.setString(1, user);
+			ps.setBoolean(2, true);
 			rs = ps.executeQuery();
 			
 			 
