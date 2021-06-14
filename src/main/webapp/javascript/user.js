@@ -857,7 +857,8 @@ function createImageUploadArea(p){
 *	this function create the message text area as an html element and return it.
 *	@param:		p, 		unique identifier
 *	@param:		user, 	a specific user name to be replied to. if @user is empty,
-*						the first option of users is displayed
+*						the first option of users is displayed, i.e. NO REPLY: 
+*						fresh new message
 *	@param:		users, 	an array of users names
 *	return:		div, 	the element created which holds the functionality
 *********************************************************************************/
