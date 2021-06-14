@@ -634,9 +634,10 @@ function createMessage(message){
 	var userTag   	= document.createElement("a");
 	var replyUser 	= document.createElement("a");
 	var replyTo 	= document.createElement("a");
+	var pDate  		= document.createElement("p");
 	var p 		  	= document.createElement("p");
-	var spanStart 	= document.createElement("span");
-	var spanDate  	= document.createElement("span");
+	var spanMsg 	= document.createElement("span");
+	var dateSpan	= document.createElement("span");
 	var reply 	  	= document.createElement("span");
 	var clkd      	= document.createElement("a");
 	var rawDate	  	= document.createElement("pre");
@@ -654,9 +655,14 @@ function createMessage(message){
 	clkd.setAttribute('style', 'visibility:hidden;');
 	clkd.innerHTML = clicked;
 
-	spanStart.innerHTML = ": " + msg_text + " on ";
-	spanDate.innerHTML =  new Date(date).toUTCString().split(' ').slice(0, 5);
-	spanDate.setAttribute("id", 'date' + date );
+	spanMsg.innerHTML = ": " + msg_text;
+	pDate.innerHTML =  " on " + new Date(date).toUTCString().split(' ').slice(0, 5);
+	pDate.setAttribute("id", 'date' + date );
+	pDate.setAttribute("style", 'text-align:right;' );
+	
+	//dateSpan.appendChild(pDate);
+	
+	//dateSpan.innerHTML = /*pDate.innerHTML + replyUser.innerHTML +*/ del; 
 	
 	userTag.setAttribute('id', 'user-tag' + date);
 	userTag.setAttribute('class', 'user-tag');
@@ -683,13 +689,15 @@ function createMessage(message){
 	rawDate.innerHTML = date;
 	
 	p.appendChild(userTag);
-	p.appendChild(spanStart);
-	p.appendChild(spanDate);
+	p.appendChild(spanMsg);
+	p.appendChild(pDate);
 	//p.appendChild(rawDate);
 	
 	reply.appendChild(replyUser);
-	p.appendChild(reply);
-	p.appendChild(del);
+	/*p.appendChild(reply);
+	p.appendChild(del);*/
+	pDate.appendChild(reply);
+	pDate.appendChild(del);
 		
 	/*
 	if(sender == "admin" ){
@@ -709,7 +717,7 @@ function createMessage(message){
 				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
 				src	= splitImg[i].replace('","', '');
 			}
-			var img 	= document.createElement("img");
+			var img 	= document.createElement("img"); 
 			img.src 	= 'data:image/png;base64,' + src;
 			img.setAttribute('class', 'image');
 			imgsFrame.appendChild(img);
@@ -727,6 +735,7 @@ function createMessage(message){
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
+	frame.appendChild(pDate);
 	frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
 	frame.appendChild(rawDate);
