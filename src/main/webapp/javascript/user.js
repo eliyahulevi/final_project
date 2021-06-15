@@ -644,7 +644,7 @@ function createMessage(message){
 	var del	  		= document.createElement("a");
 	var br	  		= document.createElement("br");
 	
-	
+	alert(message.clicked);
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
@@ -661,7 +661,6 @@ function createMessage(message){
 	pDate.setAttribute("style", 'text-align:right;' );
 	
 	//dateSpan.appendChild(pDate);
-	
 	//dateSpan.innerHTML = /*pDate.innerHTML + replyUser.innerHTML +*/ del; 
 	
 	userTag.setAttribute('id', 'user-tag' + date);
@@ -772,10 +771,10 @@ function deleteMessage(id){
 function messageClicked(p){
 
 	var click 		= document.getElementById('clicked' + p);
-	var user 		= sessionStorage.getItem('username');
-	
-
+	var user 		= document.getElementById('user-tag' + p).innerHTML;
 	var formData 	= new FormData();
+	
+	alert(user);
 	
 	if(click.innerHTML == 'false'){
 		formData.append("code", "3");
@@ -785,22 +784,21 @@ function messageClicked(p){
 		formData.append("date", p); 
 		
 	    $.ajax({
-		    url: 'UserServlet', 	// point to server-side 
-		    dataType: 'text',  		// what to expect back from the server, if anything
-		    cache: false,
-		    contentType: false,
-		    processData: false,
-		    data: formData,                         
-		    type: 'post',
-		    success: function(response){
-		    			
-       					var msg = document.getElementById('messageElement' + p);
-       					var compStyles = window.getComputedStyle(msg);
-       					var offset = compStyles.getPropertyValue('margin-left');
-						msg.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background-color: #ffffff; margin-left:' + offset);
-						click.innerHTML = 'true';
-						//alert('success');
-	    			}
+		    url: 			'UserServlet', 	 
+		    dataType: 		'text',  		
+		    cache: 			false,
+		    contentType: 	false,
+		    processData: 	false,
+		    data: 			formData,                         
+		    type: 			'post',
+		    success: 		function(response){
+		       					var msg = document.getElementById('messageElement' + p);
+		       					var compStyles = window.getComputedStyle(msg);
+		       					var offset = compStyles.getPropertyValue('margin-left');
+								msg.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background-color: #ffffff; margin-left:' + offset);
+								click.innerHTML = 'true';
+								
+			    			}
 	 	});
  	}
 }
