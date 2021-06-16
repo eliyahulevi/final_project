@@ -514,7 +514,8 @@ function insertMessage(message){
 	else if( message.offset > 0 ){
 		msgDisplay.appendChild(msgElement);
 	}
-	else{		
+	else{
+	/*		
 		alert(	'insert message with offset bigger than 0:' +
 		'\nmessage: ' 	+ message.message + 
 		'\nreply to: ' 	+ message.repliedTo + 
@@ -522,7 +523,7 @@ function insertMessage(message){
 		'\nsender: ' 	+ message.sender +
 		'\noffset: ' 	+ message.offset +
 		'\nimages: ' 	+ message.image);	 
-		
+	*/
 		for(var i = 0; i < messages.length; i++){
 			var msgi 		= messages[i];
 			var childNodes	= msgi.childNodes;	
@@ -644,7 +645,6 @@ function createMessage(message){
 	var del	  		= document.createElement("a");
 	var br	  		= document.createElement("br");
 	
-	alert(message.clicked);
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
@@ -724,12 +724,14 @@ function createMessage(message){
 	}
 
 	if(clicked == 'true'){
-		frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0);   margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+		frame.setAttribute('style', 'width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0);   margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
 	}
 	else{
-		frame.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+		frame.setAttribute('style', 'width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
 	}
-
+	if(message.sender !== sessionStorage.getItem('username')){
+		frame.setAttribute('style', 'float:right; width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); ');//  margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+	}
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
@@ -738,10 +740,7 @@ function createMessage(message){
 	frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
 	frame.appendChild(rawDate);
-	
-	if( message.offset > 0 ){
-		newMessage.appendChild(replyTo);
-	}
+
 	newMessage.appendChild(frame);
 	newMessage.appendChild(br);
 	
@@ -773,8 +772,6 @@ function messageClicked(p){
 	var click 		= document.getElementById('clicked' + p);
 	var user 		= document.getElementById('user-tag' + p).innerHTML;
 	var formData 	= new FormData();
-	
-	alert(user);
 	
 	if(click.innerHTML == 'false'){
 		formData.append("code", "3");

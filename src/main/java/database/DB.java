@@ -170,6 +170,8 @@ public class DB
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
+	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE DISPLAY=true AND SENDER=? OR "
+																+ "	DISPLAY=true AND USERNAME=? ORDER BY DATE ASC";
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=?";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
@@ -806,6 +808,76 @@ public class DB
 				String s = this.message2JSON(message);
 				// TODO: erase later
 				System.out.printf("%-15s %s%n", "DB>>", "msgs: " + s);
+				result.add(s);
+			}
+			this.connection.commit();
+		}
+		catch(SQLException e)
+		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+				if(rs != null && !rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	public List<String> getUserMessages1(String user)
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "getting messages for: " + user);
+			message = new Message();
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			this.connection.setAutoCommit(false); 
+			ps = this.connection.prepareStatement(SELECT_USER_MESSAGE); 
+			ps.setString(1, user);
+			ps.setString(2, user);
+			rs = ps.executeQuery();
+			
+			 
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));				// sender
+				message.setUser(rs.getString(3));				// user
+				message.setMessage(rs.getString(4));			// message content
+				message.setDate(rs.getLong(5));					// date
+				message.setImage(rs.getBlob(6));				// image source
+				message.setClicked(rs.getBoolean(7));			// clicked
+				message.setOffset(rs.getInt(8));	 			// offset
+				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getBoolean(10));			// display
+				String s = this.message2JSON(message);
 				result.add(s);
 			}
 			this.connection.commit();

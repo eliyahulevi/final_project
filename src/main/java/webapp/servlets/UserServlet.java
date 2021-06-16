@@ -144,7 +144,7 @@ public class UserServlet extends HttpServlet
 				 {
 					 String json = "";
 					 System.out.printf("%-15s %s%n", "user servlet>> ", "code:" + code + " message: " + msg);
-					 List<String> list = db.getUserMessages(user);
+					 List<String> list = db.getUserMessages1(user);
 					 if( list.size() > 0)
 					 {
 						 json = new Gson().toJson(list);
