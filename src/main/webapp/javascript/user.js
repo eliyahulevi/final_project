@@ -441,24 +441,37 @@ function loadUserMessages(sync){
 		formdata.append("offset", 0);
 		formdata.append("repliedTo", "");
 	    $.ajax({
-        url: 'UserServlet', 	// point to server-side
-        dataType: 'text',  		// what to expect back from the server if anything
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formdata,                         
-        type: 'post',
-        async: sync,
+        url: 			'UserServlet', 	
+        dataType: 		'text',  		
+        cache: 			false,
+        contentType: 	false,
+        processData: 	false,
+        data: 			formdata,                         
+        type: 			'post',
+        async: 			sync,
         success: function(response){ 
                			
         		    var form 		= document.getElementById("msg-display");
-        			var parsedMsgs 	= [];
         			var messages 	= JSON.parse(response);  
         			var length		= messages.length;
         			var max			= 0;
         			var step		= 20;
         			var currentOff	= 0;
+        			var prevMsg		= null;	
+        			var msgs		= [];
         			
+        			for(var i = 0 ; i < length; i++){
+        				var message	= JSON.parse(messages[i]);
+        				var msg = createMessage1(message);
+		            	msgs[i] = msg;
+        			}
+        			
+        			for(var i = 0 ; i < length; i++){
+        				form.appendChild(msgs[i]);
+        			}
+        			
+        			
+        			/*************		previous version		***********
         			// 1.	find maximum offset and append all messages
         			//		with offset 0, also, find maximum offset value
         			for(var i = 0; i < length; i++){
@@ -487,6 +500,7 @@ function loadUserMessages(sync){
 	        			}
 	        			max = max - step;
         			}
+        			*/
         		}
      });
 }
@@ -599,6 +613,146 @@ function createSender(message){
 }
 
 
+/********************************************************************************
+*				T	E	S	T			O	N	L	Y	!!!	
+*********************************************************************************/
+function createMessage1(message){
+
+	var user 	  	= message.user;
+	var sender	  	= message.sender;
+	var date 	  	= Number(message.date);
+	var clicked   	= message.clicked;
+	var msg_text  	= message.message;
+	var offset    	= message.offset;
+	var images    	= message.image;
+	var imagesSrc	= "";
+	var src			= null;	
+	var splitImg	= null;
+	var width		= '53%';
+	var space		= '10%';
+	
+	var newMessage 	= document.createElement("div");
+	var frame 	  	= document.createElement("div");
+	var imgsFrame 	= document.createElement("div");
+	var userTag   	= document.createElement("a");
+	var replyUser 	= document.createElement("a");
+	var replyTo 	= document.createElement("a");
+	var pDate  		= document.createElement("p");
+	var p 		  	= document.createElement("p");
+	var spanMsg 	= document.createElement("span");
+	var dateSpan	= document.createElement("span");
+	var reply 	  	= document.createElement("span");
+	var clkd      	= document.createElement("a");
+	var rawDate	  	= document.createElement("pre");
+	var del	  		= document.createElement("a");
+	var br	  		= document.createElement("div");
+	
+	
+	del.setAttribute('id', 'delete' + date);
+	del.setAttribute('href', '#delete' + date);
+	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
+	del.setAttribute('onclick', 'deleteMessage(' + date + ')');
+	del.innerHTML = ' hide';
+	
+	clkd.setAttribute('id', 'clicked' + date);
+	clkd.setAttribute('style', 'visibility:hidden;');
+	clkd.innerHTML = clicked;
+
+	spanMsg.innerHTML = ": " + msg_text;
+	pDate.innerHTML =  " on " + new Date(date).toUTCString().split(' ').slice(0, 5);
+	pDate.setAttribute("id", 'date' + date );
+	pDate.setAttribute("style", 'text-align:right;' );
+	
+	userTag.setAttribute('id', 'user-tag' + date);
+	userTag.setAttribute('class', 'user-tag');
+	userTag.setAttribute('href', '#user' + date);
+	userTag.innerHTML = sender;
+	
+	replyUser.setAttribute('id', 'user-reply' + date);
+	replyUser.setAttribute('href', '#messageElement' + date);
+	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
+	replyUser.setAttribute('style', 'color:green;');
+	replyUser.innerHTML = " reply";
+	
+	replyTo.setAttribute('class', 'reply-to');
+	replyTo.setAttribute('id', 'reply-to' + date);
+	replyTo.setAttribute('style', 'color:green;');
+	replyTo.innerHTML = 'reply to message you sent on: ' + new Date(date).toUTCString().split(' ').slice(0, 5);
+	
+	rawDate.setAttribute('id', 'raw-date' + date);
+	rawDate.setAttribute('style', 'display: none;');
+	rawDate.class = 'user-date';
+	rawDate.name = user + date;
+	rawDate.innerHTML = date;
+	
+	br.class = 'container';
+	
+	p.appendChild(userTag);
+	p.appendChild(spanMsg);
+	p.appendChild(pDate);
+	
+	reply.appendChild(replyUser);
+	p.appendChild(del);
+	pDate.appendChild(reply);
+	pDate.appendChild(del);
+		
+
+	if( images != '{}' )
+	{	
+		imagesSrc	= images.slice(2, images.length - 4);	
+		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
+
+		for(var i = 1; i < splitImg.length; i++){	
+			if( splitImg[i] === "") { continue; }		
+			if( i < splitImg.length ){
+				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
+				src	= splitImg[i].replace('","', '');
+			}
+			var img 	= document.createElement("img"); 
+			img.src 	= 'data:image/png;base64,' + src;
+			img.setAttribute('class', 'image');
+			imgsFrame.appendChild(img);
+		}
+	}
+	
+	
+	frame.setAttribute('class', 'message');
+	frame.setAttribute('id', 'messageElement' + date);
+	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
+	frame.appendChild(p);
+	frame.appendChild(imgsFrame);
+	
+	newMessage.setAttribute.innerHTML = message.message;
+	newMessage.setAttribute('style',   'width:' + width + 'px			\
+										border: 1px solid black;		\
+										border-radius: 5px;				\
+										background-color: lightblue;	\
+										padding-top: 5px;				\
+									  	padding-right: 10px;			\
+									  	padding-bottom: 5px;			\
+									  	padding-left: 10px;				\
+									  	margin-top: 30px;				\
+									  	margin-right: 80px;				\
+									  	margin-left: 0px;'); 
+									  	
+	if(message.sender !== sessionStorage.getItem('username')){
+		newMessage.setAttribute('style',   	'width:' + width + 'px'+			
+											'border: 1px solid black;		\
+											border-radius: 5px;				\
+											background-color: lightblue;	\
+											padding-top: 5px;				\
+										  	padding-right: 10px;			\
+										  	padding-bottom: 5px;			\
+										  	padding-left: 10px;				\
+										  	margin-top: 30px;				\
+										  	margin-right: 0px;				\
+										  	margin-left: 80px;'); 
+	}
+	
+	newMessage.appendChild(frame);
+	return newMessage ;
+}
+
 
 /*********************************************************************************
 *	this function takes a message in JSON format and create a message element to be
@@ -628,6 +782,8 @@ function createMessage(message){
 	var imagesSrc	= "";
 	var src			= null;	
 	var splitImg	= null;
+	var width		= '53%';
+	var space		= '10%';
 	
 	var newMessage 	= document.createElement("div");
 	var frame 	  	= document.createElement("div");
@@ -643,7 +799,7 @@ function createMessage(message){
 	var clkd      	= document.createElement("a");
 	var rawDate	  	= document.createElement("pre");
 	var del	  		= document.createElement("a");
-	var br	  		= document.createElement("br");
+	var br	  		= document.createElement("div");
 	
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
@@ -660,9 +816,6 @@ function createMessage(message){
 	pDate.setAttribute("id", 'date' + date );
 	pDate.setAttribute("style", 'text-align:right;' );
 	
-	//dateSpan.appendChild(pDate);
-	//dateSpan.innerHTML = /*pDate.innerHTML + replyUser.innerHTML +*/ del; 
-	
 	userTag.setAttribute('id', 'user-tag' + date);
 	userTag.setAttribute('class', 'user-tag');
 	userTag.setAttribute('href', '#user' + date);
@@ -676,8 +829,6 @@ function createMessage(message){
 	
 	replyTo.setAttribute('class', 'reply-to');
 	replyTo.setAttribute('id', 'reply-to' + date);
-	//replyTo.setAttribute('href', '#messageElement' + date);
-	//replyTo.setAttribute('onclick', 'replyClicked(' + date + ')' );
 	replyTo.setAttribute('style', 'color:green;');
 	replyTo.innerHTML = 'reply to message you sent on: ' + new Date(date).toUTCString().split(' ').slice(0, 5);
 	
@@ -687,24 +838,18 @@ function createMessage(message){
 	rawDate.name = user + date;
 	rawDate.innerHTML = date;
 	
+	br.class = 'container';
+	
 	p.appendChild(userTag);
 	p.appendChild(spanMsg);
 	p.appendChild(pDate);
-	//p.appendChild(rawDate);
 	
 	reply.appendChild(replyUser);
-	/*p.appendChild(reply);
-	p.appendChild(del);*/
+	p.appendChild(del);
 	pDate.appendChild(reply);
 	pDate.appendChild(del);
 		
-	/*
-	if(sender == "admin" ){
-		reply.appendChild(replyUser);
-		p.appendChild(reply);
-		p.appendChild(del);
-	}
-	*/
+
 	if( images != '{}' )
 	{	
 		imagesSrc	= images.slice(2, images.length - 4);	
@@ -724,26 +869,26 @@ function createMessage(message){
 	}
 
 	if(clicked == 'true'){
-		frame.setAttribute('style', 'width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0);   margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+		frame.setAttribute('style', 'width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); margin-top:' + space + 'px; margin-bottom: ' + space + ' px;');
 	}
 	else{
-		frame.setAttribute('style', 'width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+		frame.setAttribute('style', 'width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-top:' + space + 'px; margin-bottom: ' + space + ' px;');
 	}
 	if(message.sender !== sessionStorage.getItem('username')){
-		frame.setAttribute('style', 'float:right; width: 70%; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); ');//  margin-left:' + offset + 'px; margin-right: ' + offset + ' px;');
+		frame.setAttribute('style', 'float:right; width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); margin-top:' + space + 'px');//; margin-bottom: ' + space + ' px;');
 	}
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
-	frame.appendChild(pDate);
-	frame.appendChild(clkd);
+	//frame.appendChild(pDate);
+	//frame.appendChild(clkd);
 	frame.appendChild(imgsFrame);
-	frame.appendChild(rawDate);
+	//frame.appendChild(rawDate);
 
+	
 	newMessage.appendChild(frame);
 	newMessage.appendChild(br);
-	
 	return newMessage;	
 }
 

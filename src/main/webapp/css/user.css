@@ -110,6 +110,16 @@ input#file {
 }
 */
 
+
+.space {
+	background-color: blue;
+	width: 100%;
+	padding-top: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+
+}
+
 .container {
 	--parentWidth: 100%;
 	width: var(--parentWidth);
