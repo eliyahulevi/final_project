@@ -213,6 +213,18 @@ public class WebSocket
 	            	break;
 	            }
 	            
+	            case "4":
+	            {
+	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	break;
+	            }
+	            
+	            case "5":
+	            {
+	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	break;
+	            }
+	            
 	            default:
 	            	break;
             }

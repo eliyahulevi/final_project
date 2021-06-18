@@ -452,6 +452,7 @@ function loadUserMessages(sync){
         success: function(response){ 
                			
         		    var form 		= document.getElementById("msg-display");
+        		    var numOfMsgs	= document.getElementById("numberOfMessages");
         			var messages 	= JSON.parse(response);  
         			var length		= messages.length;
         			var max			= 0;
@@ -470,6 +471,7 @@ function loadUserMessages(sync){
         				form.appendChild(msgs[i]);
         			}
         			
+        			numOfMsgs.innerHTML = length;
         			
         			/*************		previous version		***********
         			// 1.	find maximum offset and append all messages
@@ -723,7 +725,7 @@ function createMessage1(message){
 	frame.appendChild(imgsFrame);
 	
 	newMessage.setAttribute.innerHTML = message.message;
-	newMessage.setAttribute('style',   'width:' + width + 'px			\
+	newMessage.setAttribute('style',   'width:' + width + '				\
 										border: 1px solid black;		\
 										border-radius: 5px;				\
 										background-color: lightblue;	\
@@ -736,7 +738,7 @@ function createMessage1(message){
 									  	margin-left: 0px;'); 
 									  	
 	if(message.sender !== sessionStorage.getItem('username')){
-		newMessage.setAttribute('style',   	'width:' + width + 'px'+			
+		newMessage.setAttribute('style',   	'width:' + width +			
 											'border: 1px solid black;		\
 											border-radius: 5px;				\
 											background-color: lightblue;	\
@@ -904,7 +906,7 @@ function deleteMessage(id){
 	var message		= createSocketMessageByteArray("3", user, user, "", id, false, "", 0, "", false);
 	msgElement.remove();
 	alert('delete message:' + user + id);
-	wsocket.send(message);
+	 
 }
 
 
@@ -1540,39 +1542,19 @@ function loadUsers(sync){
 /*********************************************************************************
 *	this function sends a image(s) to the server 
 *********************************************************************************/
-function sendImages(images){
-	
-	for (var i = 0; i < images.length; i++){
-		var data = images[i];
-		var form_data = new FormData();
-		form_data.append("image", data);
-		form_data.append("user", "admin");
-		form_data.append("name", data.name);
-		form_data.append('offset', '0');  
-		//alert(data);
-	    $.ajax({
-	        url: 'ImageServlet', 	// point to server-side PHP script 
-	        dataType: 'text',  		// what to expect back from the PHP script, if anything
-	        cache: false,
-	        contentType: false,
-	        processData: false,
-	        data: form_data,                         
-	        type: 'post',
-	        success: function(response){
-	            alert("file uploaded successfully!" + response); 
-	        }
-	     });
-	
-	}    
+function showAllMessages(){
+	loadUserMessages(false);
 }
 
 
 
 /*********************************************************************************
-*	this function sends a new message to user: usr 
+*	this function sends a new message to a specific user
+*	@param:	images,		an array that contains all the images uploaded by the user
+*	@param:	msgNumber	int, a unique identifier (time stamp)
+*	return:				null  
 *********************************************************************************/
 function sendMessage(images, msgNumber){
-	//alert('images received: ' + images);
 	var	msgElement	= document.getElementById('messageElement' + msgNumber);
 	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
 	var usrs 	  	= document.getElementById('users' + msgNumber);

@@ -212,7 +212,13 @@
 			<a href="#file" onclick="showFileLoad()">load images</a>
 		</span  -->
   		<div class="container">
-	    	<div class="row"><span>messages (<label id="numberOfMessages"></label>)</span></div>
+	    	<div class="row">
+	    		<span>
+	    			showing (<label id="numberOfMessages"></label>) messages
+	    			out of <label id="totalNumberOfMessages"></label>
+	    			<a href="#numberOfMessages" onclick="showAllMessages()">show all messages</a>
+	    			</span>
+	    	</div>
 		    	<div class="row">
 	   				<form id="msg-display" class="msg-form">
 					</form>
