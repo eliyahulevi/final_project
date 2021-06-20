@@ -63,29 +63,27 @@ public class ProductServlet extends HttpServlet
 		byte[] data 			= null;
 		
 		String code 			= request.getParameter("code");
-		int id = 0;
-		int type = 0;
+//		int id = 0;
+		String type = "";
 		float price = 0;
-		float length = 0;
-		String color = null;
+//		float length = 0;
+//		String color = null;
 //		InputStream image = null;
 		byte[] image = null;
+		
 		if (code=="1") {
 			System.out.println("this is code string: " + code);
-			id	 				= Integer.parseInt(request.getParameter("catalog"));
-			System.out.println("this is id int: " + id);
-			type 				= Integer.parseInt(request.getParameter("type"));
+//			id	 				= Integer.parseInt(request.getParameter("catalog"));
+//			System.out.println("this is id int: " + id);
+			type 				= request.getParameter("type");
 			price 			= Float.parseFloat(request.getParameter("price"));
-			length 			= Float.parseFloat(request.getParameter("length"));
-			color 			= request.getParameter("color");
+//			length 			= Float.parseFloat(request.getParameter("length"));
+//			color 			= request.getParameter("color");
 //			image 			= request.getInputStream();
 			System.out.println("what!???");
 			System.out.println("product servlet >> "
-								+ "	catalog:" + id 
 								+ " type:" + type 
-								+ " price: " + price 
-								+ " length: " + length
-								+ " color " + color);
+								+ " price: " + price );
 		}
 		
 		try 
@@ -100,12 +98,14 @@ public class ProductServlet extends HttpServlet
 					 if( list.size() > 0)
 					 {
 						 for (int i = 0; i < list.size(); i++ ) {
-							 System.out.println(list.get(i).getImage().toString());
+							 System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
 						 }
 						 json = new Gson().toJson(list);
 						 System.out.println("product servlet >> " + list);
 					 } 
 					
+					 
+					 System.out.println("heresssss json!!: " + json);
 					 response.getWriter().write(json);
 					 break;
 			 	}
@@ -113,7 +113,7 @@ public class ProductServlet extends HttpServlet
 					 
 				 case "1":		// add new product
 				 {
-				 	Product product = new Product(id, type, price, length, color, image);
+				 	Product product = new Product(type, price, image);
 					 db.insertProduct(product);
 					 System.out.println("product servlet >> add product");
 					 break;

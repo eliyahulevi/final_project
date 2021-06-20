@@ -89,7 +89,7 @@ function addToCartClicked(event) {
 	
 	var imageSrc = shopItem.getElementsByClassName("shop-item-image")[0].src;
 	
-	console.log(title, length, quantity, imageSrc);
+	//console.log(title, length, quantity, imageSrc);
 	addItemToCart(title, length, quantity, imageSrc);
 }
 
@@ -136,7 +136,7 @@ function createShopItem(type, imageSrc, price) {
   var shopItem = document.createElement("div");
   shopItem.classList.add("shop-item");
   var shopItemContent = `<span class="shop-item-title">${type} type pine wood </span>
-                        <img class="shop-item-image" src=${imageSrc} alt="">
+                        <img class="shop-item-image" src=${imageSrc} alt="product photo">
                         <div class="shop-item-details">
                         <input class="input-length" type="number" min="0" pattern="[0-9]*" inputmode="numeric"
                          placeholder="length in centimeters" style="margin-bottom: 3px;">
@@ -158,7 +158,6 @@ function createShopItem(type, imageSrc, price) {
   shopItem.innerHTML = shopItemContent;
   var shopItems = document.getElementsByClassName("shop-items")[0];
   shopItems.append(shopItem);
-  //console.log(shopItem);
   shopItem
     .getElementsByClassName("input-length")[0]
     .addEventListener("change", lengthChange);
@@ -175,7 +174,6 @@ function createShopItem(type, imageSrc, price) {
 *	this function loads the 'products' from the DB
 *********************************************************************************/
 function loadProducts(){
-		//console.log("fuck!!!");
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "0");
@@ -184,7 +182,6 @@ function loadProducts(){
 		formdata.append("message", "");
 		formdata.append("image", "");
 		formdata.append("date", date);
-		//alert(formdata.get("date"));
 	    $.ajax({    
         url: 'ProductServlet', 	// point to server-side
         dataType: 'text',  		// what to expect back from the server if anything
@@ -195,22 +192,42 @@ function loadProducts(){
         type: 'post',
         success: function(response){ 
         			var products = JSON.parse(response);    
-        			//alert(products);  			
-		            var form = document.getElementById("items");
 		            var length = products.length;
 		            for(var i = 0; i < length; i++){
-		            	//console.log(products[i]);
-		            	//console.log(products[i].image);
-		            	var imgSrc = btoa(products[i].image);
-		            	//var imgSrc = atob(products[i].image);
-		            	//var imgData ="data:image/png;base64," + products[i].image ;
-		            	var price = products[i].price;
+		            	//var imgSrc = btoa(products[i].image);
+		            	var imgData ="data:image/png;base64," + imgSrc;
+		            	//imgData = btoa(imgData);
+						
+						var price = products[i].price;
 		            	var type = products[i].type;
-		            	//console.log(imgData);
+						//console.log(products[i]);
+		            	
+		            	var message = products[i].image.join(' ');
+		            	var msgByteArr	= [...message];
+		            	var msgBuffer	= new ArrayBuffer(message.length);
+
+						var msgArray= new Uint8Array(msgBuffer);
+
+						for(var i = 0; i < msgByteArr.length; i++){
+							msgArray[i] = message.charCodeAt(i);
+						}
+						
+		            	//console.log(msgArray);
+		            	
+		            	var imgSrc = URL.createObjectURL(new Blob([msgArray.buffer], { type: 'image/png' } /* (1) */));
+		            	
+		            	//var imgSrc ="data:image/png;base64," + btoa(msgArray);
+		            	
+		            	console.log(imgSrc);
+		            	console.log(typeof(imgSrc));
+		            	console.log(`data:image/png;base64, ${imgSrc}`);
+		            	
+		            	
 		            	createShopItem(type, imgSrc, price);
+		            	
+		            	//console.log(typeof imgData);
+		            	//console.log(imgData);
 		            	//createShopItem(type, imgData, price);
-		            	//createShopItem(products[i].type, products[i].imgSrc, products[i].price);
-		            	//console.log(products[i].price);
 		            				
 		            }
     			}

@@ -6,7 +6,6 @@
 package database;
 
 import java.sql.Statement;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -30,9 +28,6 @@ import model.product.Product;
 import model.users.*;
 import model.message.*;
 import model.order.Order;
-import appConstants.*;
-import jdk.internal.jshell.tool.StopDetectingInputStream.State;
-
 import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +66,7 @@ public class DB
 	
 	
 	static User user;
-	static Product p = new Product(5, 2, 12, 360, "blue", null);
+	static Product p = new Product("5X15",(float) 13.8,null);
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDERED_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
@@ -117,11 +112,12 @@ public class DB
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
 	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.PRODUCTS.value] + "("
-			+ "PRODUCT_ID int PRIMARY KEY,"
-			+ "TYPE int,"
+//			+ "PRODUCT_ID int PRIMARY KEY,"
+			+ "TYPE varchar(30),"
 			+ "PRICE float(10),"
-			+ "LENGTH float(10),"
-			+ "COLOR varchar(10)"
+//			+ "LENGTH float(10),"
+//			+ "COLOR varchar(10)"
+			+ "IMAGE BLOB"
 			+ ")"; 
 	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.value] + "("
 			+ "ORDER_ID int PRIMARY KEY,"
@@ -190,7 +186,7 @@ public class DB
 	 ***********************************************************************/
 	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
 	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
 	
@@ -293,12 +289,12 @@ public class DB
 		this.user.setDescription("Joey doesn't share food!!");
 	}
 	
-	private void createP() throws FileNotFoundException {
-		this.p.setCatalog(112);
-		this.p.setColor("red");
-		this.p.setLength(360);
+	private void createP() throws IOException {
+//		this.p.setCatalog(112);
+//		this.p.setColor("red");
+//		this.p.setLength(360);
 		this.p.setPrice(5);
-		this.p.setType(3);
+		this.p.setType("5x5");
 		String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
 //		File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
 		InputStream is = new FileInputStream(new File(path));
@@ -1204,11 +1200,11 @@ public class DB
 				index = rs1.getInt(1);
 	 		
 	 		// 2. create the ordered products string "product1qty1, product2qty2,..."
-			list.add(order.getProducts().get(0).getCatalog() + Float.toString(order.getProducts().get(0).getLength()));
+			list.add(order.getProducts().get(0).getType() + Float.toString(order.getProducts().get(0).getPrice()));
 			for(int i = 1; i < length; i++)
 			{
 				Product p = order.getProducts().get(i);
-				String productQty = "," + p.getCatalog() + Float.toString(p.getLength());
+				String productQty = "," + p.getType() + Float.toString(p.getPrice());
 				System.out.println(productQty);
 			}
 			
@@ -1268,22 +1264,22 @@ public class DB
 			}
 			ps = this.connection.prepareStatement(INSERT_PRODUCT);
 			
-			ps.setInt(1, product.getCatalog());
-			ps.setInt(2, product.getType());
-			ps.setFloat(3, product.getPrice());
-			ps.setFloat(4, product.getLength());
-			ps.setString(5, product.getColor());
+			ps.setString(1, product.getType());
+//			ps.setInt(2, product.getType());
+			ps.setFloat(2, product.getPrice());
+//			ps.setFloat(4, product.getLength());
+//			ps.setString(5, product.getColor());
 			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
 //			File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
 			InputStream is = new FileInputStream(new File(path));
 //			InputStream in = new FileInputStream("E:\\images\\cat.jpg");
 //			this.p.setImage(img);
 //			ps.setBinaryStream(6, is, (int) img.length());
-			ps.setBlob(6, is);
+			ps.setBlob(3, is);
 			result = ps.executeUpdate();
 			
 			if (result > 0)
-				System.out.println("DB >> product " + product.getCatalog() + " added");	
+				System.out.println("DB >> product " + product.getType() + " added");	
 			
 			
 	 	}
@@ -1326,10 +1322,13 @@ public class DB
 			}
 			ps = this.connection.prepareStatement(INSERT_ORDERED_PRODUCT);
 			
-			ps.setString(1, Integer.toString(product.getCatalog()) + Float.toString(product.getLength()));
-			ps.setInt(2, product.getCatalog());
-			ps.setInt(3, (int)product.getLength());
-			ps.setString(4, product.getColor());
+//			ps.setString(1, Integer.toString(product.getCatalog()) + Float.toString(product.getLength()));
+			ps.setString(1, product.getType());
+			ps.setFloat(2, product.getPrice());
+			ps.setBytes(3,product.getImage());
+//			ps.setInt(2, product.getCatalog());
+//			ps.setInt(3, (int)product.getLength());
+//			ps.setString(4, product.getColor());
 			ps.execute();
 	 	}
 	 	catch(Exception e)
@@ -1390,11 +1389,11 @@ public class DB
 	 			rs1 = ps1.executeQuery();
 	 			while(rs1.next())
 	 			{
-	 				product.setCatalog(rs1.getInt(1));
-	 				product.setType(rs1.getInt(2));
-	 				product.setPrice(rs1.getFloat(3));
-	 				product.setLength(rs1.getFloat(4));
-	 				product.setColor(rs1.getString(5));
+//	 				product.setCatalog(rs1.getInt(1));
+	 				product.setType(rs1.getString(1));
+	 				product.setPrice(rs1.getFloat(2));
+//	 				product.setLength(rs1.getFloat(4));
+//	 				product.setColor(rs1.getString(5));
 	 			}
 	 			result.add(product);
 	 		}
@@ -1447,15 +1446,14 @@ public class DB
 	 		while(rs.next())
 	 		{
  				Product product = new Product();
- 				product.setCatalog(rs.getInt(1));
- 				product.setType(rs.getInt(2));
- 				product.setPrice(rs.getFloat(3));
- 				product.setLength(rs.getFloat(4));
- 				product.setColor(rs.getString(5));
+// 				product.setCatalog(rs.getInt(1));
+ 				product.setType(rs.getString(1));
+ 				product.setPrice(rs.getFloat(2));
+// 				product.setLength(rs.getFloat(4));
+// 				product.setColor(rs.getString(5));
  				System.out.println("reading the blob...");
-// 				product.setImage(rs.getBinaryStream(6));
- 				product.setImage(rs.getBytes(6));
- 				result.add(product);
+ 				product.setImage(rs.getBytes(3));
+ 				result.add(product); 
 	 		}
 		}
  		catch(Exception e)

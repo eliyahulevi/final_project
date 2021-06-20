@@ -3,13 +3,15 @@
  */
 package model.product;
 
-import java.io.InputStream;
-import java.sql.Blob;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 
 // types of lumber cross sections
-enum types { t_2x4, t_2x6, t_2x8,
-			 t_4x6, t4x8, t4x10,
-			 t_6x8, t_6x10, t_6x12 };
+//enum types { t_2x4, t_2x6, t_2x8,
+//			 t_4x6, t4x8, t4x10,
+//			 t_6x8, t_6x10, t_6x12 };
 
 /**
  * @author shahar
@@ -17,11 +19,11 @@ enum types { t_2x4, t_2x6, t_2x8,
  */
 public class Product 
 {
-	int 	catalog;
-	int 	type;
+//	int 	catalog;
+	String 	type;
 	float 	price;
-	float 	length;
-	String 	color;
+//	float 	length;
+//	String 	color;
 //	InputStream    image;
 	byte[] image;
 	
@@ -33,29 +35,46 @@ public class Product
 		
 	}
 
-	public Product(int id, int type, float price, float length, String color,byte[] image)// InputStream image) 
+	public Product(String type, float price, byte[] image)// InputStream image) 
 	{
-		this.catalog = id;
+//		this.catalog = id;
 		this.type = type;
 		this.price = price;
-		this.length = length;
-		this.color = color;
+//		this.length = length;
+//		this.color = color;
 		this.image = image;
 	}
 
-	public void setCatalog(int c) 	{ this.catalog = c; }
- 	public void setType(int t) 		{ this.type = t; }
+//	public void setCatalog(int c) 	{ this.catalog = c; }
+ 	public void setType(String t) 		{ this.type = t; }
 	public void setPrice(float p) 	{ this.price = p; }
-	public void setLength(float l) 	{ this.length = l; }
-	public void setColor(String c) 	{ this.color = c; }
+//	public void setLength(float l) 	{ this.length = l; }
+//	public void setColor(String c) 	{ this.color = c; }
 //	public void setImage(InputStream image) { this.image = image;}
-	public void setImage(byte[] image) { this.image = image;}
+	public void setImage(byte[] image) throws IOException {
+//		this.image = image;
 
-	public int getCatalog() 		{ return this.catalog; }
-	public int getType() 			{ return this.type; }
+	
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] arrEncode = encoder.encode(image);
+		System.out.println("Encoded image byte array: "+arrEncode);
+		this.image = image;
+		FileOutputStream fos = new FileOutputStream("try.jpg");
+		try {
+		fos.write(this.image);
+//		System.out.println(arrEncode);
+		}
+		finally {
+			fos.close();	
+		}
+		
+	}
+
+//	public int getCatalog() 		{ return this.catalog; }
+	public String getType() 			{ return this.type; }
 	public float getPrice() 		{ return this.price; }
-	public float getLength()		{ return this.length; }
-	public String getColor()		{ return this.color; }
+//	public float getLength()		{ return this.length; }
+//	public String getColor()		{ return this.color; }
 //	public InputStream getImage()          { return this.image;}
 	public byte[] getImage()          { return this.image;}
 }
