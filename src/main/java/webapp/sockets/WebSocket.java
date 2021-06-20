@@ -122,7 +122,7 @@ public class WebSocket
         String message			= jsonMessage.getString("message");
         String repliedTo		= jsonMessage.getString("repliedTo");
         boolean clicked			= jsonMessage.getBoolean("clicked");
-        boolean display			= jsonMessage.getBoolean("display");
+        String display			= jsonMessage.getString("display");
         long date				= jsonMessage.getLong("date");
 		int offset				= jsonMessage.getInt("offset");
 		byte[] data				= null;
@@ -192,11 +192,11 @@ public class WebSocket
 						System.out.printf("%n%-15s %s", "websocket>>", "image source " + image);		// TODO: erase if works
 						data = image.getBytes();
 						blob = new SerialBlob(data);
-						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, true));	
+						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, ""));	
 					}
 					Session userSession = sh.getUserSession(user);
 					System.out.printf("%n%-15s %s", "websocket>>", "user session " + userSession);		// TODO: erase if works
-					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, true);
+					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, "");
 					messages.add(userMessage.toJson());
 					jsonArray = Json.createArrayBuilder(messages).build(); 
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
@@ -206,10 +206,10 @@ public class WebSocket
 	            	break;
 	            }
 	            
-	            case "3":
+	            case "3":		// hide message
 	            {
 	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
-	            	db.messageDelete(sender, date);
+	            	db.messageHide(user, sender, date);
 	            	break;
 	            }
 	            

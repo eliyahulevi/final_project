@@ -104,7 +104,7 @@ public class DB
 			+ "OFFSET int,"
 			+ "REPLIEDTO varchar(100), "
 			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE),"
-			+ "DISPLAY boolean"
+			+ "DISPLAY varchar(20)"
 			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
@@ -170,12 +170,12 @@ public class DB
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE DISPLAY=true AND SENDER=? OR "
-																+ "	DISPLAY=true AND USERNAME=? ORDER BY DATE ASC";
+	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
+																+ "	NOT DISPLAY=? AND USERNAME=? ORDER BY DATE ASC";
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=?";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
-	private String DELETE_MESSAGE = 		"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=false " + "WHERE USERDATE=?";  
+	private String HIDE_MESSAGE = 			"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? " + "WHERE USERDATE=?";  
 	
 	/************************************************************************
 	 *	 					image
@@ -804,7 +804,7 @@ public class DB
 				message.setClicked(rs.getBoolean(7));			// clicked
 				message.setOffset(rs.getInt(8));	 			// offset
 				message.setRepliedTo(rs.getString(9));			// replied to
-				message.setDisplay(rs.getBoolean(10));			// display
+				message.setDisplay(rs.getString(10));			// display
 				String s = this.message2JSON(message);
 				// TODO: erase later
 				System.out.printf("%-15s %s%n", "DB>>", "msgs: " + s);
@@ -861,8 +861,10 @@ public class DB
 			
 			this.connection.setAutoCommit(false); 
 			ps = this.connection.prepareStatement(SELECT_USER_MESSAGE); 
-			ps.setString(1, user);
-			ps.setString(2, user);
+			ps.setString(1, user);		// not to display for sender
+			ps.setString(2, user);		// sender
+			ps.setString(3, user);		// not to display for this user
+			ps.setString(4, user);		// user
 			rs = ps.executeQuery();
 			
 			 
@@ -876,7 +878,7 @@ public class DB
 				message.setClicked(rs.getBoolean(7));			// clicked
 				message.setOffset(rs.getInt(8));	 			// offset
 				message.setRepliedTo(rs.getString(9));			// replied to
-				message.setDisplay(rs.getBoolean(10));			// display
+				message.setDisplay(rs.getString(10));			// display
 				String s = this.message2JSON(message);
 				result.add(s);
 			}
@@ -941,7 +943,7 @@ public class DB
 			ps.setBoolean(7, message.getClicked());
 			ps.setInt(8, message.getOffset()); 
 			ps.setString(9,  message.getRepliedTo());
-			ps.setBoolean(10, message.getDisplay());
+			ps.setString(10, message.getDisplay());
 			ps.execute();
 			result = 0;
 		}
@@ -1012,13 +1014,15 @@ public class DB
 
 	
 	/*
-	 * 	delete message from displaying mode in the clients UI. this function
+	 * 	hides specific message, identified by the user-date string,
+	 *  from displaying mode in the user page. this function
 	 *  actually updates the message 'display' field to 'false'.
-	 *  @param	String	user, user name
+	 *  @param	String	the user name, to hide the message from
+	 *  @param	String	sender, the user that sent the message
 	 *  @param	long	date, the time stamp, unique identifier
 	 *  return	int		non negative upon success, negative else
 	 */
-	public int messageDelete(String user, long date)
+	public int messageHide(String user, String sender, long date)
 	{
 		int result = -1;
 		PreparedStatement ps = null;
@@ -1031,8 +1035,9 @@ public class DB
 				System.exit(-1);
 			}
 			System.out.printf("%n%-15s %s", "DB >>", "delete message: " + user + date);		// TODO: erase if works
-			ps = this.connection.prepareStatement(DELETE_MESSAGE);
-			ps.setString(1, user + date);
+			ps = this.connection.prepareStatement(HIDE_MESSAGE);
+			ps.setString(1, user);
+			ps.setString(2, sender + date);
 			result = ps.executeUpdate();
 			if(result == 0) throw new Exception();
 		}

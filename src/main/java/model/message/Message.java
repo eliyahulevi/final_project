@@ -27,7 +27,7 @@ public class Message
 	boolean 	clicked;
 	int 		offset;
 	String 		repliedTo;
-	boolean 	display;
+	String 		display;
 	public static String WELCOME = "Welcome to the LumberYard !! please feel free to ask any question @SUPPORT";
 	
 	public Message() {}
@@ -42,7 +42,7 @@ public class Message
 		this.offset 		= offset;
 		this.repliedTo 		= repliedto;
 	}
-	public Message(String sender, String user, String msg, long date, Blob img, int offset, String repliedto, boolean display)
+	public Message(String sender, String user, String msg, long date, Blob img, int offset, String repliedto, String display)
 	{
 		this.sender 		= sender;
 		this.user 			= user;
@@ -54,7 +54,7 @@ public class Message
 		this.repliedTo 		= repliedto;
 		this.display		= display;
 	}
-	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto, boolean display)
+	public Message(String sender, String user, String msg, long date, String img, int offset, String repliedto, String display)
 	{
 		this.sender 		= sender;
 		this.user 			= user;
@@ -195,7 +195,7 @@ public class Message
 	public void setClicked(boolean b) { this.clicked = b; }
 	public void setOffset(int i) { this.offset = i; }
 	public void setRepliedTo(String s) { this.repliedTo = s; }
-	public void setDisplay(boolean b) { this.display = b; }
+	public void setDisplay(String b) { this.display = b; }
 
 	public int getCode() { return this.code; }
 	public String getUser() { return this.user;}
@@ -206,6 +206,6 @@ public class Message
 	public boolean getClicked() { return this.clicked; }
 	public int getOffset() { return this.offset; } 
 	public String getRepliedTo() { return this.repliedTo; }
-	public boolean getDisplay() { return this.display; }
+	public String getDisplay() { return this.display; }
 
 }

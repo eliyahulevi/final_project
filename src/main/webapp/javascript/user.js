@@ -74,7 +74,7 @@ $(document).ready(function(){
 *********************************************************************************/
 function onOpen(event) {
 	var date = new Date().getTime();
-	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, false, "", 0, "", false);	
+	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, false, "", 0, "", "");	
 	wsocket.send((message));
 }
 
@@ -440,6 +440,7 @@ function loadUserMessages(sync){
 		formdata.append("date", date);
 		formdata.append("offset", 0);
 		formdata.append("repliedTo", "");
+		formdata.append("display", "");
 	    $.ajax({
         url: 			'UserServlet', 	
         dataType: 		'text',  		
@@ -616,7 +617,20 @@ function createSender(message){
 
 
 /********************************************************************************
-*				T	E	S	T			O	N	L	Y	!!!	
+*	this function takes a message in JSON format and create a message element to be
+*	displayed on the 'form' element 'msg-display'. The message details include 
+*	offset, content, etc. as follows:
+*	user 	  : user;
+*	sender	  : sender;
+*	date 	  : date;
+*	clicked   : clicked;
+*	msg text  : message;
+*	offset    : offset;
+*	images    : image;
+*	images source extraction in 3 steps:
+*		1. remove '"[' from the beginning and '"]"' from the end
+*		2. split on 'data:image/png;base64,'
+*		3. for each source string remove the '","' tail end 
 *********************************************************************************/
 function createMessage1(message){
 
@@ -653,7 +667,7 @@ function createMessage1(message){
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
-	del.setAttribute('onclick', 'deleteMessage(' + date + ')');
+	del.setAttribute('onclick', 'hideMessage(' + date + ')');
 	del.innerHTML = ' hide';
 	
 	clkd.setAttribute('id', 'clicked' + date);
@@ -771,6 +785,8 @@ function createMessage1(message){
 *		1. remove '"[' from the beginning and '"]"' from the end
 *		2. split on 'data:image/png;base64,'
 *		3. for each source string remove the '","' tail end 
+*
+*				D E L E T E   W H E N   D O N E ! ! 
 *********************************************************************************/
 function createMessage(message){
 
@@ -806,7 +822,7 @@ function createMessage(message){
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
-	del.setAttribute('onclick', 'deleteMessage(' + date + ')');
+	del.setAttribute('onclick', 'hideMessage(' + date + ')');
 	del.innerHTML = ' hide';
 	
 	clkd.setAttribute('id', 'clicked' + date);
@@ -898,15 +914,13 @@ function createMessage(message){
 /*********************************************************************************
 *	this function deletes a given message
 *********************************************************************************/
-function deleteMessage(id){
-	
-	var user		= document.getElementById('user-tag' + id).innerHTML;
+function hideMessage(id){
+	var user		= sessionStorage.getItem('username');
+	var sender		= document.getElementById('user-tag' + id).innerHTML;
 	var msgElement 	= document.getElementById('messageElement' + id);
-	//var date		= document.getElementById('raw-date' + id);
-	var message		= createSocketMessageByteArray("3", user, user, "", id, false, "", 0, "", false);
+	var message		= createSocketMessageByteArray("3", sender, user, "", id, false, "", 0, "", "");
 	msgElement.remove();
-	alert('delete message:' + user + id);
-	 
+	wsocket.send(message); 
 }
 
 
