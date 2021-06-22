@@ -32,6 +32,8 @@ import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
 
+import database.DerbyExtensions;
+
 /**
  * @author shahar *
  *
@@ -172,10 +174,19 @@ public class DB
 	 ***********************************************************************/
 	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
 																+ "	NOT DISPLAY=? AND USERNAME=? ORDER BY DATE ASC";
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND DISPLAY=?";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
+	private String SELECT_SENDER_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
-	private String HIDE_MESSAGE = 			"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? " + "WHERE USERDATE=?";  
+	private String HIDE_MESSAGE = 			"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? WHERE USERDATE=?";
+	private String RESET_MESSAGE_4USER =	"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY="+
+																							" CASE"
+																								+ "WHEN DISPLAY LIKE %?% THEN "
+																								+ "ELSE"
+																							+ "END";
+	private String RESET_MESSAGE_4USER1 =	"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=" +
+													" REPLACE(DISPLAY, ?, '') " +
+										 	"WHERE DISPLAY LIKE '%?%'";// AND USER=?";																						+ "WHERE DISPLAY LIKE %?%";// AND USER=?";
 	
 	/************************************************************************
 	 *	 					image
@@ -198,7 +209,12 @@ public class DB
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
 	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
 	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
-
+	private String REGISTER_REPLACE_FUNC=	"CREATE FUNCTION REPLACE(SRC VARCHAR(8000), SEARCH VARCHAR(8000), REP VARCHAR(8000) ) " + 
+											"RETURNS VARCHAR(8000) " + 
+											"LANGUAGE JAVA " +
+											"PARAMETER STYLE JAVA " + 
+											"NO SQL " + 
+											"EXTERNAL NAME 'database.DerbyExtensions.replace'";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -262,6 +278,7 @@ public class DB
 		try 
 		{
 			//Class.forName(driverURL);
+			this.createFunctions();
 			this.createAdmin(); 		
 			this.createTables();
 			if (this.isEmpty("USERS"))
@@ -278,7 +295,64 @@ public class DB
 		}
 		
 	}	
-	private void createAdmin()
+	private void createFunctions()
+	{
+		PreparedStatement ps = null;
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "create db functions");
+			
+			this.connection.setAutoCommit(false); 
+			//this.connection.createStatement().execute("DROP FUNCTION REPLACE");
+			ps = this.connection.prepareStatement(REGISTER_REPLACE_FUNC); 
+			ps.execute();
+			this.connection.commit();
+		}
+		catch (SQLException e1) 
+		{
+			System.out.printf("\n%-15s %s%n", "DB>>", "sql error: " + e1.getSQLState());
+			if("X0Y68".equals(e1.getSQLState()) )
+			{
+				
+				String DROP_REPLACE_FUNCTION = "DROP FUNCTION REPLACE";
+				if(this.connect() < 0)
+				{
+					System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+					System.exit(-1);
+				}
+				try 
+				{
+					this.connection.createStatement().execute(DROP_REPLACE_FUNCTION);
+					//this.connection.createStatement().execute(REGISTER_REPLACE_FUNC);
+				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+				this.disconnect();
+			}
+			e1.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+			} 
+			catch(Exception e2)
+			{
+				
+			}
+		}
+	}
+ 	private void createAdmin()
 	{
 		DB.user.setName("admin");
 		DB.user.setNickName("administrator");
@@ -1012,7 +1086,6 @@ public class DB
 		return result;
 	}
 
-	
 	/*
 	 * 	hides specific message, identified by the user-date string,
 	 *  from displaying mode in the user page. this function
@@ -1036,8 +1109,8 @@ public class DB
 			}
 			System.out.printf("%n%-15s %s", "DB >>", "delete message: " + user + date);		// TODO: erase if works
 			ps = this.connection.prepareStatement(HIDE_MESSAGE);
-			ps.setString(1, user);
-			ps.setString(2, sender + date);
+			ps.setString(1, user);				// user to hide from
+			ps.setString(2, sender + date);		// message to hide
 			result = ps.executeUpdate();
 			if(result == 0) throw new Exception();
 		}
@@ -1062,6 +1135,56 @@ public class DB
 		return result;
 	}
 	
+	/*
+	 *  resets the display field for specific user, in ALL messages
+	 *  @param:	user,	String that represent the user to which the
+	 *  				query applies
+	 *  return: int,	non-negative upon success 
+	 */
+	public int messageReset(String user)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			System.out.printf("%n%-15s %s", "DB >>", "reset message display for " + user);	//TODO: erase if works
+			//RESET_MESSAGE_4USER1.replace("?", user);
+			//ps = this.connection.prepareStatement(RESET_MESSAGE_4USER1);
+			//ps.setString(1, user);
+			//ps.setString(2, user);
+			//result = ps.executeUpdate();
+			this.connection.createStatement().execute(	"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=" +
+															" REPLACE(DISPLAY, '" + user + "', '') " +
+														"WHERE DISPLAY LIKE '%" + user + "%'");
+			if(result == 0) throw new Exception();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				if(ps != null)
+					ps.close();
+				disconnect();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+
 	
 	/************************************************************************
 	*	IMAGE related code here:  (insert, update, get all, etc. ), this 

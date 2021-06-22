@@ -1557,6 +1557,10 @@ function loadUsers(sync){
 *	this function sends a image(s) to the server 
 *********************************************************************************/
 function showAllMessages(){
+	var user		= sessionStorage.getItem('username');
+	var message		= createSocketMessageByteArray("4", "", user, "", 0, false, "", 0, "", "");
+	alert();
+	wsocket.send(message); 
 	loadUserMessages(false);
 }
 
@@ -1606,7 +1610,7 @@ function sendMessage(images, msgNumber){
 			'\nsender: ' + sender+
 			'\nreply to: ' + replyTo);
 	*/
-	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, false);	
+	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, "");	
 	var msgByteArr		= [...message];
 	var msgBuffer		= new ArrayBuffer(message.length);
 	var messageArray	= new Uint8Array(msgBuffer);

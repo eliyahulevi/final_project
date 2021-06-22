@@ -88,7 +88,7 @@ public class UserServlet extends HttpServlet
 		try 
 		{
 			
-			System.out.printf("%-15s %s%n ", "user servlet >> ", "imcoming message:");
+			System.out.printf("\n%-15s %s%n ", "user servlet >> ", "imcoming message:");
 			System.out.printf("%-15s %s%n", "code: ", code); 
 			System.out.printf("%-15s %s%n", "user: ", user); 
 			System.out.printf("%-15s %s%n", "sender: ", sender); 
@@ -143,7 +143,7 @@ public class UserServlet extends HttpServlet
 				 case "2":		// get user messages
 				 {
 					 String json = "";
-					 System.out.printf("%-15s %s%n", "user servlet>> ", "code:" + code + " message: " + msg);
+					 System.out.printf("\n%-15s %s%n", "user servlet>> ", "code:" + code + " message: " + msg);
 					 List<String> list = db.getUserMessages1(user);
 					 if( list.size() > 0)
 					 {

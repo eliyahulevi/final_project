@@ -213,9 +213,10 @@ public class WebSocket
 	            	break;
 	            }
 	            
-	            case "4":
+	            case "4":		// reset display field in all messages
 	            {
 	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	db.messageReset(user);
 	            	break;
 	            }
 	            
