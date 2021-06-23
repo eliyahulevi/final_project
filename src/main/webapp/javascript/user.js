@@ -517,7 +517,7 @@ function loadUserMessages(sync){
 function insertMessage(message){
 	
 	var msgDisplay	= document.getElementById('msg-display');
-	var msgElement 	= createMessage(message);
+	var msgElement 	= createMessage1(message);
 	var messages	= document.getElementsByClassName('message');
 	var msgsLength	= messages.length;
 	var userReply	= null;
@@ -525,29 +525,32 @@ function insertMessage(message){
 	var msg			= null;
 	var offset		= Number(message.offset);
 	
+	/*		
+	alert(	'insert message with offset bigger than 0:' +
+	'\nmessage: ' 	+ message.message + 
+	'\nreply to: ' 	+ message.repliedTo + 
+	'\nuser: ' 		+ message.user +
+	'\nsender: ' 	+ message.sender +
+	'\noffset: ' 	+ message.offset +
+	'\nimages: ' 	+ message.image);	 
+	*/
+	
 	if(message.offset === '0' ){
-		msgDisplay.appendChild(msgElement);	
+		alert('insert message with offset = 0');
+		msgDisplay.appendChild(msgElement);		
 	}
 	else if( message.offset > 0 ){
+		alert('insert message with offset > 0');
 		msgDisplay.appendChild(msgElement);
 	}
 	else{
-	/*		
-		alert(	'insert message with offset bigger than 0:' +
-		'\nmessage: ' 	+ message.message + 
-		'\nreply to: ' 	+ message.repliedTo + 
-		'\nuser: ' 		+ message.user +
-		'\nsender: ' 	+ message.sender +
-		'\noffset: ' 	+ message.offset +
-		'\nimages: ' 	+ message.image);	 
-	*/
 		for(var i = 0; i < messages.length; i++){
 			var msgi 		= messages[i];
 			var childNodes	= msgi.childNodes;	
 			
 			for (var j = 0; j < childNodes.length; j++) {	
 			    if (childNodes[j].class === 'user-date' ){ 
-			    	//alert('node name: ' + childNodes[j].name);
+			    	alert('node name: ' + childNodes[j].name);
 			    	userReply = childNodes[j].name;
 			    	break;
 			    }        
@@ -1559,7 +1562,6 @@ function loadUsers(sync){
 function showAllMessages(){
 	var user		= sessionStorage.getItem('username');
 	var message		= createSocketMessageByteArray("4", "", user, "", 0, false, "", 0, "", "");
-	alert();
 	wsocket.send(message); 
 	loadUserMessages(false);
 }

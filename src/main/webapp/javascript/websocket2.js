@@ -11,7 +11,7 @@ var webSocket = new WebSocket("ws://localhost:8080/final-project/websocket2");
     webSocket.onerror = function(message)	{ wsError(message);};
 
     function wsOpen(message){
-		alert('web socket2: ' + message);
+		//alert('web socket2: ' + message);
         echoText.value += "Connected ... \n";
     }
     function wsSendMessage(){

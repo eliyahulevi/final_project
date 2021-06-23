@@ -20,7 +20,7 @@ socket.onmessage 	= onMessage;
 function onOpen(event) {
 	var message = JSON.stringify({ id: 'id' })
 	websocket.send(message);
-	alert('open socket' + event.data);
+	//alert('open socket' + event.data);
 }
 
 
