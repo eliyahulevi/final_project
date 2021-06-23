@@ -195,6 +195,7 @@ public class WebSocket
 						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, ""));	
 					}
 					Session userSession = sh.getUserSession(user);
+					Session senderSession = sh.getUserSession(sender);
 					System.out.printf("%n%-15s %s", "websocket>>", "user session " + userSession);		// TODO: erase if works
 					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, "");
 					messages.add(userMessage.toJson());
@@ -202,7 +203,8 @@ public class WebSocket
 	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
 																				.add("src", jsonArray)
 																				.build(); 
-					sh.sendToSession(userSession, msg); 
+					sh.sendToSession(userSession, msg);
+					sh.sendToSession(senderSession, msg); 
 	            	break;
 	            }
 	            
