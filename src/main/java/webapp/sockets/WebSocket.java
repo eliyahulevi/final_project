@@ -127,7 +127,11 @@ public class WebSocket
 		int offset				= jsonMessage.getInt("offset");
 		byte[] data				= null;
 		Blob blob				= null;
-		
+		Session userSession;
+		List<String> messages;
+		JsonProvider provider;
+		javax.json.JsonArray jsonArray;
+		JsonObject msg;
 		
 		try 
 		{
@@ -157,25 +161,25 @@ public class WebSocket
 	            //	get all of the messages for a specific user 
 	            case "1":
 	            {
-	            	List<String> messages 			= db.getUserMessages(sender);
-	            	JsonProvider provider 			= JsonProvider.provider();
-	            	javax.json.JsonArray jsonArray	= Json.createArrayBuilder(messages).build(); 
-	                JsonObject msg 					= (JsonObject) provider.createObjectBuilder().add("action", "messages")
-																								 .add("src", jsonArray)
-																								 .build(); 
+	            	messages 	= db.getUserMessages(sender);
+	            	provider 	= JsonProvider.provider();
+	            	jsonArray	= Json.createArrayBuilder(messages).build(); 
+	            	msg 		= (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				.add("src", jsonArray)
+																				.build(); 
 	            	sh.sendToSession(session, msg);
 	            	break;
 	            }
 	            //	insert a new message into DB and send to user via session
 	            case "2":
 	            {
-	            	javax.json.JsonArray jsonArray;
-	                JsonProvider provider 	= JsonProvider.provider();
-	                List<String> messages	= new ArrayList<String>();
-	                int imageIdxOffset		= "image:[".length();
-	                int imageIdx			= msgString.indexOf("image");
-	                int offsetIdx			= msgString.indexOf("offset");
-	                String image			= msgString.substring(imageIdx + imageIdxOffset, offsetIdx);
+	            	
+	                provider 			= JsonProvider.provider();
+	                messages			= new ArrayList<String>();
+	                int imageIdxOffset	= "image:[".length();
+	                int imageIdx		= msgString.indexOf("image");
+	                int offsetIdx		= msgString.indexOf("offset");
+	                String image		= msgString.substring(imageIdx + imageIdxOffset, offsetIdx);
 	                
 					if(image == null)
 					{
@@ -194,13 +198,13 @@ public class WebSocket
 						blob = new SerialBlob(data);
 						db.insertMessage(new Message(sender, user, message, date, blob,  offset, repliedTo, ""));	
 					}
-					Session userSession = sh.getUserSession(user);
+					userSession = sh.getUserSession(user);
 					Session senderSession = sh.getUserSession(sender);
 					System.out.printf("%n%-15s %s", "websocket>>", "user session " + userSession);		// TODO: erase if works
 					Message userMessage = new Message(sender, user, message, date, blob,  offset, repliedTo, "");
 					messages.add(userMessage.toJson());
 					jsonArray = Json.createArrayBuilder(messages).build(); 
-	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
+	                msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
 																				.add("src", jsonArray)
 																				.build(); 
 					sh.sendToSession(userSession, msg);
@@ -217,8 +221,20 @@ public class WebSocket
 	            
 	            case "4":		// reset display field in all messages
 	            {
+	            	int result = -1;
 	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
-	            	db.messageReset(user);
+	            	result		= db.messageReset(user);
+	            	userSession	= sh.getUserSession(user);
+	            	messages 	= db.getUserMessages1(sender);
+	                provider 	= JsonProvider.provider();
+	            	jsonArray	= Json.createArrayBuilder(messages).build(); 
+	            	
+			        msg 		= (JsonObject) provider.createObjectBuilder().add("action", "message")
+									.add("src", jsonArray)
+									.build(); 
+			        if( result < 0 ) 
+			        	System.out.printf("%n%-15s %s", "websocket>>", "no messages");		// TODO: erase if works
+	            	sh.sendToSession(userSession, msg);
 	            	break;
 	            }
 	            
@@ -233,11 +249,7 @@ public class WebSocket
             }
 			
 		} 
-		catch (SerialException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (SQLException e) 
+		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}

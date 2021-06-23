@@ -461,15 +461,22 @@ function loadUserMessages(sync){
         			var currentOff	= 0;
         			var prevMsg		= null;	
         			var msgs		= [];
-        			
+        			/*
         			for(var i = 0 ; i < length; i++){
         				var message	= JSON.parse(messages[i]);
         				var msg = createMessage1(message);
 		            	msgs[i] = msg;
         			}
-        			
+        			*/
+        			// remove all messages
+        			while (form.firstChild) {
+						form.removeChild(form.lastChild);
+					}
+  					
+  					// append all relevant messages
         			for(var i = 0 ; i < length; i++){
-        				form.appendChild(msgs[i]);
+        				//form.appendChild(msgs[i]);
+        				form.appendChild(createMessage1(JSON.parse(messages[i])));
         			}
         			
         			numOfMsgs.innerHTML = length;
@@ -1563,6 +1570,7 @@ function showAllMessages(){
 	var user		= sessionStorage.getItem('username');
 	var message		= createSocketMessageByteArray("4", "", user, "", 0, false, "", 0, "", "");
 	wsocket.send(message); 
+	alert('load user messages');
 	loadUserMessages(false);
 }
 
