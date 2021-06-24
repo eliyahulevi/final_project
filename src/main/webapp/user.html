@@ -6,6 +6,7 @@
 
   	<link rel="stylesheet" type="text/css" href="css/user.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   	<link rel="icon" type="image/png" href="resources/lumber-icon-64.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -202,12 +203,20 @@
 	<!-- /orders -->
 
 	<!-- messages -->
+	<br>
+	<br>
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
-			<a href="#messages" onclick="showOutgoingMsgArea()"> send a new message</a>
-			or
-			<a data-target="#myModal" data-toggle="modal" href="#myModal">comment on a project</a>
+		<!--  a id="more-actions" href="#messages" onclick="test()" style="display:inline"><i class="fa fa-ellipsis-h"></i></a  -->
+			<select id="select-more-actions" style="display:inline;" onchange="messagesAction(this);">
+				<option selected>more..</option>
+				<option>reset (last view)</option>
+				<option>show all messages</option>
+				<option>show outgoing messages</option>
+				<option>show incoming messages</option>
+			</select>
 		</span>
+		
 		<!-- span style="float:right; padding:10px; padding-right:100px; ">
 			<a href="#file" onclick="showFileLoad()">load images</a>
 		</span  -->
@@ -216,8 +225,8 @@
 	    		<span>
 	    			showing (<label id="numberOfMessages"></label>) messages
 	    			out of <label id="totalNumberOfMessages"></label>
-	    			<a href="#numberOfMessages" onclick="showAllMessages()">show all messages</a>
-	    			</span>
+	    			<!--  a href="#numberOfMessages" onclick="showAllMessages()">show all messages</a -->
+	    		</span>
 	    	</div>
 		    	<div class="row">
 	   				<form id="msg-display" class="msg-form">

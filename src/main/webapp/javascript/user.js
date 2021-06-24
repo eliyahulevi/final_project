@@ -119,7 +119,7 @@ function onMessage(event) {
 *	return:				null
 *********************************************************************************/
 function onClose(event) {
-	alert('closing socket: ' + event.code);
+	//alert('closing socket: ' + event.code);
 }
 
 
@@ -692,6 +692,7 @@ function createMessage1(message){
 	userTag.setAttribute('id', 'user-tag' + date);
 	userTag.setAttribute('class', 'user-tag');
 	userTag.setAttribute('href', '#user' + date);
+	userTag.setAttribute('onclick', 'userClick(' + date + ')' );
 	userTag.innerHTML = sender;
 	
 	replyUser.setAttribute('id', 'user-reply' + date);
@@ -777,6 +778,22 @@ function createMessage1(message){
 	
 	newMessage.appendChild(frame);
 	return newMessage ;
+}
+
+
+
+/*********************************************************************************
+*	this function takes a message in JSON format and create a message element to be
+*	displayed on the 'form' element 'msg-display'. The message details include 
+*	offset, content, etc. as follows:
+*	@param:		long, date a unique identifier for the user clicked
+*	return:		null
+*********************************************************************************/
+function userClick(date){
+	var user			= sessionStorage.getItem('username');
+	var clickedUser		= document.getElementById('user-tag' + date);
+	if(user !== clickedUser.innerHTML )
+		alert(clickedUser);
 }
 
 
@@ -1632,3 +1649,32 @@ function sendMessage(images, msgNumber){
 	cancelMsgText();
 	wsocket.send(messageArray);
 }
+
+
+/*********************************************************************************
+*	this function handles message actions requests from the user: reset messages 
+*	to show the last view, show all, incoming or outgoing messages
+*	@param:	select,		the select element that holds the users required action
+*	return:				null  
+*********************************************************************************/
+function messagesAction(select){
+
+	switch (select.selectedIndex) {
+	  case 1:
+	 	resetMessages();
+	    break;
+	  case 2:
+	  	showAllMessages()
+	  	break;
+	  case 3:
+		showOutgoingMessages();
+	    break;
+	  case 4:
+		showIncomingMessages();
+	    break;
+	  default:
+    	alert('selection not supported, contact @support');
+    }
+}
+
+

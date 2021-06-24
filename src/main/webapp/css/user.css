@@ -1,21 +1,6 @@
 @charset "UTF-8";
 
-.reply-to{
-  display: flex;
-  flex-direction: row;
-}
-.reply-to:before, .reply-to:after{
-  content: "";
-  flex: 1 1;
-  border-bottom: 1px solid;
-  margin: auto;
-}
-.reply-to:before {
-  margin-right: 10px
-}
-.reply-to:after {
-  margin-left: 10px
-}
+
 
 .upload-image /*label*/
 {
