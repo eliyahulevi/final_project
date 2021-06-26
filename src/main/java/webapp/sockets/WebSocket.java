@@ -151,8 +151,8 @@ public class WebSocket
 			
 			switch(code)
             {
-            	//	link user to specific session
-	            case "0":
+            	
+	            case "0":		//	link user to specific session
 	            {
 	            	sh.linkUser2Session(jsonMessage.getString("sender"), session); 
 	            	System.out.printf("%n%-15s %s", "websocket>>", "link user: " + jsonMessage.getString("sender") + " to session: " + session.toString());
@@ -170,8 +170,8 @@ public class WebSocket
 	            	sh.sendToSession(session, msg);
 	            	break;
 	            }
-	            //	insert a new message into DB and send to user via session
-	            case "2":
+	            
+	            case "2":		//	insert a new message into DB and send to user via session
 	            {
 	            	
 	                provider 			= JsonProvider.provider();
@@ -238,11 +238,25 @@ public class WebSocket
 	            	break;
 	            }
 	            
-	            case "5":
+	            case "5":		// user outgoing messages
 	            {
 	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
 	            	System.out.println("websocket >> outgoing messages for: " + user);		// TODO: erase if works
 	            	messages 	= db.outgoingMessages(user);
+	            	provider 	= JsonProvider.provider();
+	            	jsonArray	= Json.createArrayBuilder(messages).build(); 
+	                msg 		= (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				.add("src", jsonArray)
+																				.build(); 
+	            	sh.sendToSession(session, msg);
+	            	break;
+	            }
+	            
+	            case "6":		//	user incoming messages sorted by users
+	            {
+	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	System.out.println("websocket >> outgoing messages for: " + user);		// TODO: erase if works
+	            	messages 	= db.incomingMessages(user, sender);
 	            	provider 	= JsonProvider.provider();
 	            	jsonArray	= Json.createArrayBuilder(messages).build(); 
 	                msg 		= (JsonObject) provider.createObjectBuilder().add("action", "messages")

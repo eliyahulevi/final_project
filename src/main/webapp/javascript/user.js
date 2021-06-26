@@ -797,10 +797,12 @@ function userClick(date){
 
 	var user			= sessionStorage.getItem('username');
 	var clickedUser		= document.getElementById('user-tag' + date);
-	var message			= createSocketMessageByteArray("5", user, user, "", date, false, "", 0, "", "");
+	var message			= null;
 	
-	if(user !== clickedUser.innerHTML )
-		alert(clickedUser);
+	if(user === clickedUser.innerHTML )
+		message = createSocketMessageByteArray("5", user, user, "", date, false, "", 0, "", "");
+	else
+		message = createSocketMessageByteArray("6", clickedUser.innerHTML, user, "", date, false, "", 0, "", "");
 		
 	wsocket.send(message); 
 }
