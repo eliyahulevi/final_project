@@ -1,4 +1,4 @@
-package webapp.sockets;
+ package webapp.sockets;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -241,6 +241,14 @@ public class WebSocket
 	            case "5":
 	            {
 	            	//System.out.printf("%n%-15s %s", "websocket>>", "delete message for user" + user + " and date: " + date);		// TODO: erase if works
+	            	System.out.println("websocket >> outgoing messages for: " + user);		// TODO: erase if works
+	            	messages 	= db.outgoingMessages(user);
+	            	provider 	= JsonProvider.provider();
+	            	jsonArray	= Json.createArrayBuilder(messages).build(); 
+	                msg 		= (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				.add("src", jsonArray)
+																				.build(); 
+	            	sh.sendToSession(session, msg);
 	            	break;
 	            }
 	            

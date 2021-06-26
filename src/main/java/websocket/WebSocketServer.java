@@ -85,7 +85,6 @@ public class WebSocketServer
             String repliedTo		= jsonMessage.getString("repliedTo", "");
             String clicked			= jsonMessage.getString("clicked");
             JsonObject	img			= jsonMessage.getJsonObject("image").asJsonObject();
-            
 			JsonNumber dateString	= jsonMessage.getJsonNumber("date");
 			JsonNumber offset		= jsonMessage.getJsonNumber("offset");
             
@@ -156,6 +155,25 @@ public class WebSocketServer
 	            
 	            case "3":
 	            {
+	            	break;
+	            }
+	            
+	            case "4":
+	            {
+	            	break;
+	            }
+	            
+	            case "5":
+	            {
+	            	System.out.println("websocket >> outgoing messages for: " + user);		// TODO: erase if works
+	            	List<String> messages 			= db.outgoingMessages(user);
+	            	JsonProvider provider 			= JsonProvider.provider();
+	            	javax.json.JsonArray jArr		= Json.createArrayBuilder(messages).build(); 
+	                JsonObject msg = (JsonObject) provider.createObjectBuilder().add("action", "messages")
+																				.add("src", jArr)
+																				.build(); 
+	            	sh.sendToSession(session, msg);
+	            	
 	            	break;
 	            }
 	            

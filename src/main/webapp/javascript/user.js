@@ -99,11 +99,23 @@ function onMessage(event) {
     if (message.action === "message") {
 		
 		var messageSrc 	= message.src;	
-		var parsedMsgs 	= [];	
 		insertMessage(JSON.parse(messageSrc))
     }
     if (message.action === "messages") {
-  		alert('obsolete');
+    	var messages 	= (message.src);  
+    	var form 		= document.getElementById("msg-display");
+    	
+		// remove all messages
+		while (form.firstChild) {
+			form.removeChild(form.lastChild);
+		}
+		
+		// append all relevant messages
+		for(var i = 0 ; i < messages.length; i++){
+			form.appendChild(createMessage1(JSON.parse(messages[i])));
+		}
+		
+		numOfMsgs.innerHTML = messages.length;
     }
 	if(message.action === "image")
 	{	
@@ -119,7 +131,7 @@ function onMessage(event) {
 *	return:				null
 *********************************************************************************/
 function onClose(event) {
-	//alert('closing socket: ' + event.code);
+	alert('closing socket: ' + event.code);
 }
 
 
@@ -461,13 +473,7 @@ function loadUserMessages(sync){
         			var currentOff	= 0;
         			var prevMsg		= null;	
         			var msgs		= [];
-        			/*
-        			for(var i = 0 ; i < length; i++){
-        				var message	= JSON.parse(messages[i]);
-        				var msg = createMessage1(message);
-		            	msgs[i] = msg;
-        			}
-        			*/
+
         			// remove all messages
         			while (form.firstChild) {
 						form.removeChild(form.lastChild);
@@ -532,7 +538,7 @@ function insertMessage(message){
 	var msg			= null;
 	var offset		= Number(message.offset);
 	
-	/*		
+		
 	alert(	'insert message with offset bigger than 0:' +
 	'\nmessage: ' 	+ message.message + 
 	'\nreply to: ' 	+ message.repliedTo + 
@@ -540,7 +546,7 @@ function insertMessage(message){
 	'\nsender: ' 	+ message.sender +
 	'\noffset: ' 	+ message.offset +
 	'\nimages: ' 	+ message.image);	 
-	*/
+	
 	
 	if(message.offset === '0' ){
 		alert('insert message with offset = 0');
@@ -783,159 +789,22 @@ function createMessage1(message){
 
 
 /*********************************************************************************
-*	this function takes a message in JSON format and create a message element to be
-*	displayed on the 'form' element 'msg-display'. The message details include 
-*	offset, content, etc. as follows:
+*	this function shows outgoing messages only
 *	@param:		long, date a unique identifier for the user clicked
 *	return:		null
 *********************************************************************************/
 function userClick(date){
+
 	var user			= sessionStorage.getItem('username');
 	var clickedUser		= document.getElementById('user-tag' + date);
+	var message			= createSocketMessageByteArray("5", user, user, "", date, false, "", 0, "", "");
+	
 	if(user !== clickedUser.innerHTML )
 		alert(clickedUser);
-}
-
-
-/*********************************************************************************
-*	this function takes a message in JSON format and create a message element to be
-*	displayed on the 'form' element 'msg-display'. The message details include 
-*	offset, content, etc. as follows:
-*	user 	  : user;
-*	sender	  : sender;
-*	date 	  : date;
-*	clicked   : clicked;
-*	msg text  : message;
-*	offset    : offset;
-*	images    : image;
-*	images source extraction in 3 steps:
-*		1. remove '"[' from the beginning and '"]"' from the end
-*		2. split on 'data:image/png;base64,'
-*		3. for each source string remove the '","' tail end 
-*
-*				D E L E T E   W H E N   D O N E ! ! 
-*********************************************************************************/
-function createMessage(message){
-
-	var user 	  	= message.user;
-	var sender	  	= message.sender;
-	var date 	  	= Number(message.date);
-	var clicked   	= message.clicked;
-	var msg_text  	= message.message;
-	var offset    	= message.offset;
-	var images    	= message.image;
-	var imagesSrc	= "";
-	var src			= null;	
-	var splitImg	= null;
-	var width		= '53%';
-	var space		= '10%';
-	
-	var newMessage 	= document.createElement("div");
-	var frame 	  	= document.createElement("div");
-	var imgsFrame 	= document.createElement("div");
-	var userTag   	= document.createElement("a");
-	var replyUser 	= document.createElement("a");
-	var replyTo 	= document.createElement("a");
-	var pDate  		= document.createElement("p");
-	var p 		  	= document.createElement("p");
-	var spanMsg 	= document.createElement("span");
-	var dateSpan	= document.createElement("span");
-	var reply 	  	= document.createElement("span");
-	var clkd      	= document.createElement("a");
-	var rawDate	  	= document.createElement("pre");
-	var del	  		= document.createElement("a");
-	var br	  		= document.createElement("div");
-	
-	del.setAttribute('id', 'delete' + date);
-	del.setAttribute('href', '#delete' + date);
-	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
-	del.setAttribute('onclick', 'hideMessage(' + date + ')');
-	del.innerHTML = ' hide';
-	
-	clkd.setAttribute('id', 'clicked' + date);
-	clkd.setAttribute('style', 'visibility:hidden;');
-	clkd.innerHTML = clicked;
-
-	spanMsg.innerHTML = ": " + msg_text;
-	pDate.innerHTML =  " on " + new Date(date).toUTCString().split(' ').slice(0, 5);
-	pDate.setAttribute("id", 'date' + date );
-	pDate.setAttribute("style", 'text-align:right;' );
-	
-	userTag.setAttribute('id', 'user-tag' + date);
-	userTag.setAttribute('class', 'user-tag');
-	userTag.setAttribute('href', '#user' + date);
-	userTag.innerHTML = sender;
-	
-	replyUser.setAttribute('id', 'user-reply' + date);
-	replyUser.setAttribute('href', '#messageElement' + date);
-	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
-	replyUser.setAttribute('style', 'color:green;');
-	replyUser.innerHTML = " reply";
-	
-	replyTo.setAttribute('class', 'reply-to');
-	replyTo.setAttribute('id', 'reply-to' + date);
-	replyTo.setAttribute('style', 'color:green;');
-	replyTo.innerHTML = 'reply to message you sent on: ' + new Date(date).toUTCString().split(' ').slice(0, 5);
-	
-	rawDate.setAttribute('id', 'raw-date' + date);
-	rawDate.setAttribute('style', 'display: none;');
-	rawDate.class = 'user-date';
-	rawDate.name = user + date;
-	rawDate.innerHTML = date;
-	
-	br.class = 'container';
-	
-	p.appendChild(userTag);
-	p.appendChild(spanMsg);
-	p.appendChild(pDate);
-	
-	reply.appendChild(replyUser);
-	p.appendChild(del);
-	pDate.appendChild(reply);
-	pDate.appendChild(del);
 		
-
-	if( images != '{}' )
-	{	
-		imagesSrc	= images.slice(2, images.length - 4);	
-		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
-
-		for(var i = 1; i < splitImg.length; i++){	
-			if( splitImg[i] === "") { continue; }		
-			if( i < splitImg.length ){
-				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
-				src	= splitImg[i].replace('","', '');
-			}
-			var img 	= document.createElement("img"); 
-			img.src 	= 'data:image/png;base64,' + src;
-			img.setAttribute('class', 'image');
-			imgsFrame.appendChild(img);
-		}
-	}
-
-	if(clicked == 'true'){
-		frame.setAttribute('style', 'width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); margin-top:' + space + 'px; margin-bottom: ' + space + ' px;');
-	}
-	else{
-		frame.setAttribute('style', 'width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 255, 0, 0.9); margin-top:' + space + 'px; margin-bottom: ' + space + ' px;');
-	}
-	if(message.sender !== sessionStorage.getItem('username')){
-		frame.setAttribute('style', 'float:right; width: ' + width + '; border-radius: 5px; border: 1px solid #000000; background: rgba(0, 0, 0, 0.0); margin-top:' + space + 'px');//; margin-bottom: ' + space + ' px;');
-	}
-	frame.setAttribute('class', 'message');
-	frame.setAttribute('id', 'messageElement' + date);
-	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
-	frame.appendChild(p);
-	//frame.appendChild(pDate);
-	//frame.appendChild(clkd);
-	frame.appendChild(imgsFrame);
-	//frame.appendChild(rawDate);
-
-	
-	newMessage.appendChild(frame);
-	newMessage.appendChild(br);
-	return newMessage;	
+	wsocket.send(message); 
 }
+
 
 
 /*********************************************************************************
@@ -1065,7 +934,7 @@ function createMsgTextArea(msgNumber, users, user){
 	var form		= document.createElement('form');
 	var span1		= document.createElement('span');
 	var span2		= document.createElement('span');
-	var btnUpload	= document.createElement('button');
+	var btnUpload	= document.createElement('button'); 
 	var btnCancel	= document.createElement('button');
 	
 	div.setAttribute('id', 'msg-text-upload' + msgNumber);
@@ -1600,6 +1469,7 @@ function showAllMessages(){
 *	return:				null  
 *********************************************************************************/
 function sendMessage(images, msgNumber){
+
 	var	msgElement	= document.getElementById('messageElement' + msgNumber);
 	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
 	var usrs 	  	= document.getElementById('users' + msgNumber);
@@ -1664,12 +1534,15 @@ function messagesAction(select){
 	 	resetMessages();
 	    break;
 	  case 2:
+	 	resetMessages();
+	    break;
+	  case 3:
 	  	showAllMessages()
 	  	break;
-	  case 3:
+	  case 4:
 		showOutgoingMessages();
 	    break;
-	  case 4:
+	  case 5:
 		showIncomingMessages();
 	    break;
 	  default:
