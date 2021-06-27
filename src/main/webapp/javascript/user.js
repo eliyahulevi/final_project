@@ -1533,7 +1533,7 @@ function messagesAction(select){
 
 	switch (select.selectedIndex) {
 	  case 1:
-	 	resetMessages();
+	 	showOutgoingMsgArea();
 	    break;
 	  case 2:
 	 	resetMessages();
