@@ -6,11 +6,15 @@
 
   	<link rel="stylesheet" type="text/css" href="css/user.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  	<link rel="icon" type="image/png" href="resources/planks.png">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  	<link rel="icon" type="image/png" href="resources/lumber-icon-64.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<script src="javascript/message.js"></script> <!-- order of .js files must be kept !! -->
-	<script src="javascript/user.js"></script>
+	<script src="javascript/message.js"></script> 	<!-- DO NOT change order of script files !! -->
+	<!-- script src="javascript/websocket.js"></script> <!-- DO NOT change order of script files !! -->
+	<script src="javascript/utils.js"></script> 	<!-- DO NOT change order of script files !! -->
+	<script src="javascript/user.js"></script>		<!-- DO NOT change order of script files !! -->
+	<!-- script src="javascript/websocket2.js"></script>		<!-- DO NOT change order of script files !! -->
 
 
 
@@ -61,8 +65,8 @@
 					<h1>Navbar example</h1>
 					<p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
 					<p>To see the difference between static and fixed top navbars, just scroll.</p>
-					<p>
-					  <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
+					<p id="test-images">
+					  <a class="btn btn-lg btn-primary" href="#" role="button" onclick="testMessages()">Test Messages WS</a>
 					</p>
 				</div>
 			</div>
@@ -199,39 +203,59 @@
 	<!-- /orders -->
 
 	<!-- messages -->
+	<br>
+	<br>
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
-			<a href="#messages" onclick="showMsgText()"> user</a>
-			<a data-target="#myModal" data-toggle="modal" href="#myModal"> project</a>
+		<!--  a id="more-actions" href="#messages" onclick="test()" style="display:inline"><i class="fa fa-ellipsis-h"></i></a  -->
+			<select id="select-more-actions" style="display:inline;" onchange="messagesAction(this);">
+				<option selected>more..</option>
+				<option>new</option>
+				<option>reset (last view)</option>
+				<option>show all messages</option>
+				<option>show outgoing messages</option>
+				<option>show incoming messages</option>
+			</select>
 		</span>
-		<span style="float:right; padding:10px; padding-right:100px; ">
+		
+		<!-- span style="float:right; padding:10px; padding-right:100px; ">
 			<a href="#file" onclick="showFileLoad()">load images</a>
-		</span>
+		</span  -->
   		<div class="container">
-  			<div class="row">
-			    <div class="col-sm-3" >
+	    	<div class="row">
+	    		<span>
+	    			showing (<label id="numberOfMessages"></label>) messages
+	    			out of <label id="totalNumberOfMessages"></label>
+	    			<!--  a href="#numberOfMessages" onclick="showAllMessages()">show all messages</a -->
+	    		</span>
+	    	</div>
+		    	<div class="row">
+	   				<form id="msg-display" class="msg-form">
+					</form>
+		    	</div> 
+  			<div class="row" id="msg-area">
+			    <!-- div class="col-sm-3" >
 			    	<div class="row"><label>users</label></div>
 			    	<div class="row"><select id="users-list" onchange="onSenderChosen()" style="width:90%;" multiple></select></div>
-			    </div>
-			    <div class="col-sm-9" id="">
-				    <div class="row"><label>messages</label></div>
-				    <div class="row">
-		    			<form id="msg-display" class="msg-form">
-						</form>
-				    </div>
-			    </div>
+			    </div  -->
+			    <!-- div class="col-sm-9" id="" -->
+
+			    <!-- /div>  -->
 	  		</div>  		
   		</div>
-	<div class="container">
+
 
 
 	</div>
-
+	
+	<div class="container" id="new-msg">
+	</div>
 		
 	<!-- upload files -->
 	<div class="container" id="file-upload-area" style="display:none;">
+		<p>upload a picture</p>
 		<form>
-			<input id="file" type="file" accept=".jpeg, .jpg, .png" ondrop="drop(event)" onchange="onChange(this)" multiple/>
+			<input id="file" type="file" name='filename' accept=".jpeg, .jpg, .png" ondrop="drop()" onchange="onChange(this)" multiple/>
 		</form>	
 	</div>
 	
@@ -248,17 +272,17 @@
 					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
 				</span>
 				<span style="float:right; padding-right:0px; ">
-					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancel()">cancel</button>
+					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancelMsgText()">cancel</button>
 				</span>		
 			</p>
 		</form>	
 	</div>
-
+	
 	<!-- /messages -->
 	
 	<!-- personal detail -->
 	<p>
-	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a>
+	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a></p>
 		<div class="container" id="personal">
 
 		<form>

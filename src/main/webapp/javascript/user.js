@@ -1,6 +1,27 @@
+// 			TODO:	
+//			1. 	handle inserting replied message into RECIVING users messages area
+//				this is done in the insertMessage function
+
+
+
+
+
+
+
+
+
 /********************** 	handles user page messages ***************************
- *	the message format is as follows (JSON):
- *	[{"code", "user", "message", "image"}]
+ *	the message format is a JSON object as follows:
+ *	{ 	
+ *		"code", 	message code,
+ *		"sender", 	sender, 
+ *		"user", 	user,
+ *		"message", 	message,
+ *		"date", 	date,
+ *		"clicked", 	clicked,
+ *		"image",	image(s),
+ *		"offset", 	0
+ *	}
  *
  *	the messages codes are as follows:
  *	0x0000 - load registered users into "send message" modal
@@ -10,6 +31,7 @@
  ********************************************************************************/
 
 
+var wsocket = null;
 
 /*********************************************************************************
 *	this function is the first to file up when the page is loaded, it
@@ -20,29 +42,129 @@ $(document).ready(function(){
 	
 	// hide the 'update' button in 'personal-details' section
 	document.getElementById("pt-update").style.display = "none";
-	document.getElementById("msg-text-upload").style.display = "none";
+	document.getElementById("msg-text-upload").style.display = "none"; 
 	
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
 	}
-	loadProducts();
-	loadUserOrders();
+	loadProducts(false);
+	loadUserOrders(false);
 	loadUserDetails();
-	loadUserMessages();
+	loadUserMessages(false);
 
 	// load users to 'send-message' modal
 	$("#send-Message-Modal").on('show.bs.modal', function(){
-		loadUsers();
+		loadUsers(false);
 	});
+	
+	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages2");
+	wsocket.onopen 		= onOpen; 	
+	wsocket.onclose		= onClose;
+	wsocket.onerror		= onError;	
+	wsocket.onmessage 	= onMessage;
   
 });
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is being started at the client
+*	side. 
+*	@parameter event: 	holds the socket data(?)
+*	return:				null
+*********************************************************************************/
+function onOpen(event) {
+	var date = new Date().getTime();
+	var message = createSocketMessageByteArray("0", sessionStorage.getItem('username'), "", "", date, false, "", 0, "", "");	
+	wsocket.send((message));
+}
+
+
+/*********************************************************************************
+*	this function handles the event when a message comes in from the server 
+*	endpoint. 
+*	@parameter event: 	holds the message data
+*	return:				null
+*********************************************************************************/
+function onMessage(event) {	
+	
+    var message = JSON.parse(event.data);
+    //alert('on message..' + message.action);
+    
+    if (message.action === "add") {
+
+    }
+    if (message.action === "remove") {
+
+    }
+    if (message.action === "message") {
+		
+		var messageSrc 	= message.src;	
+		insertMessage(JSON.parse(messageSrc))
+    }
+    if (message.action === "messages") {
+    	var messages 	= (message.src);  
+    	var form 		= document.getElementById("msg-display");
+    	
+		// remove all messages
+		while (form.firstChild) {
+			form.removeChild(form.lastChild);
+		}
+		
+		// append all relevant messages
+		for(var i = 0 ; i < messages.length; i++){
+			form.appendChild(createMessage1(JSON.parse(messages[i])));
+		}
+		
+		numOfMsgs.innerHTML = messages.length;
+    }
+	if(message.action === "image")
+	{	
+		//addImage(message.src);
+	}	
+}
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is closing at the client
+*	side. 
+*	@parameter event: 	holds the socket closing data(?)
+*	return:				null
+*********************************************************************************/
+function onClose(event) {
+	alert('closing socket: ' + event.code);
+}
+
+
+
+/*********************************************************************************
+*	this function handles the event of a socket error at the client side. 
+*	@parameter event: 	holds the socket error data(?)
+*	return:				null
+*********************************************************************************/
+function onError(event) {
+	alert('error in socket' + event);
+}
+
+
+/*********************************************************************************
+*	this function insert imcomming images from sever into 'content' div in page.
+*	for now, only png format is handled. 
+*	@parameter image: 	the image SOURCE encoded in Base64
+*	return:				null
+*********************************************************************************/
+function addImage(image){
+	var content = document.getElementById("content");	
+	var img = document.createElement("img");
+	img.src = "data:image/png;base64," + image;
+	content.appendChild(img);	
+}
 
 
 
 /*********************************************************************************
 *	this function loads all available product from DB
 *********************************************************************************/
-function loadProducts(){
+function loadProducts(sync){
 		var formdata = new FormData();
 		formdata.append("code", "0");
 		formdata.append("catalog", "0");
@@ -60,6 +182,7 @@ function loadProducts(){
         processData: false,
         data: formdata,                         
         type: 'post',
+        async: sync,
         success: function(response){ 
         			var products = JSON.parse(response);
         			var table = document.getElementById("products-table");
@@ -282,7 +405,7 @@ function onTextChange(){
 /*********************************************************************************
 *	this function load all the users orders (past and present) from the server DB
 *********************************************************************************/
-function loadUserOrders(){
+function loadUserOrders(sync){
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "4");
@@ -301,6 +424,7 @@ function loadUserOrders(){
         processData: false,
         data: formdata,                         
         type: 'post',
+        async: sync,
         success: function(response){ 
         			var products = JSON.parse(response);    			 			
 		            //var form = document.getElementById("items");
@@ -317,7 +441,7 @@ function loadUserOrders(){
 /*********************************************************************************
 *	this function load all users messages from the server for the registered user 
 *********************************************************************************/
-function loadUserMessages(){
+function loadUserMessages(sync){
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "2");
@@ -328,49 +452,129 @@ function loadUserMessages(){
 		formdata.append("date", date);
 		formdata.append("offset", 0);
 		formdata.append("repliedTo", "");
+		formdata.append("display", "");
 	    $.ajax({
-        url: 'UserServlet', 	// point to server-side
-        dataType: 'text',  		// what to expect back from the server if anything
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formdata,                         
-        type: 'post',
+        url: 			'UserServlet', 	
+        dataType: 		'text',  		
+        cache: 			false,
+        contentType: 	false,
+        processData: 	false,
+        data: 			formdata,                         
+        type: 			'post',
+        async: 			sync,
         success: function(response){ 
-        			/* up 'till here displays messages NOT in thread order
-        			var messages = JSON.parse(response);      			
-		            var form = document.getElementById("msg-display");
-		            var users_list = document.getElementById("users-list");
-		            for(var i = 0; i < messages.length; i++){
-		            	var msg = createMessage(messages[i]);
-		            	var sender = createSender(messages[i]);
-		            	if(!userExist(sender.value) ){
-		            		users_list.add(sender);
-	            		}
-		            	form.appendChild(msg);
-		            }
-		            */
+               			
+        		    var form 		= document.getElementById("msg-display");
+        		    var numOfMsgs	= document.getElementById("numberOfMessages");
+        			var messages 	= JSON.parse(response);  
+        			var length		= messages.length;
+        			var max			= 0;
+        			var step		= 20;
+        			var currentOff	= 0;
+        			var prevMsg		= null;	
+        			var msgs		= [];
+
+        			// remove all messages
+        			while (form.firstChild) {
+						form.removeChild(form.lastChild);
+					}
+  					
+  					// append all relevant messages
+        			for(var i = 0 ; i < length; i++){
+        				//form.appendChild(msgs[i]);
+        				form.appendChild(createMessage1(JSON.parse(messages[i])));
+        			}
         			
-        		    var form = document.getElementById("msg-display");
-        			var parsedMsgs = [];
-        			var messages = JSON.parse(response);   
+        			numOfMsgs.innerHTML = length;
         			
-        			for(var ii = 0; ii < messages.length; ii++){
-        				var parsedMsg = JSON.parse(messages[ii]);
-        				parsedMsg.visited = 0;
-        				parsedMsgs[ii] = parsedMsg;
-        			}   		
-        			
-		            for(var i = 0; i < parsedMsgs.length; i++){
-	            		var msg = createMessage(parsedMsgs[i]);
-		            	if(parsedMsgs[i].visited == 0){
-		            		var msg = createMessage(parsedMsgs[i]);
+        			/*************		previous version		***********
+        			// 1.	find maximum offset and append all messages
+        			//		with offset 0, also, find maximum offset value
+        			for(var i = 0; i < length; i++){
+        				var message	= JSON.parse(messages[i]);
+        				if( message.offset > max ){
+        					max = message.offset;
+        				}
+
+        				if( message.display === 'true' && message.offset == 0 ){
+        					var msg = createMessage(message);
 		            		form.appendChild(msg);
-		            	}
-		            	insertRepliedMessages(parsedMsgs, i);       	
-		            }
+        				}
+        			}
+        			//2.	insert all other messages with offset > 0
+        			//		according to message 'repliedTo' field
+        			while( max > 0 ){
+        				currentOff = currentOff + step;
+        				for(var i = 0; i < length; i++){
+        					var message	= JSON.parse(messages[i]);
+        					
+	        				if( message.display === 'true' && message.offset == currentOff ){
+	        					var msg = createMessage(message);
+			            		insertMessage(message);
+			            		//form.appendChild(msg);
+	        				}
+	        			}
+	        			max = max - step;
+        			}
+        			*/
         		}
      });
+}
+
+
+/*********************************************************************************
+*	this function inserts a new message element into messages displayed area
+*	@param: messages,		an array of already parsed messages in JSON format
+*	@param: index,			the index of the message in the array 
+*********************************************************************************/
+function insertMessage(message){
+	
+	var msgDisplay	= document.getElementById('msg-display');
+	var msgElement 	= createMessage1(message);
+	var messages	= document.getElementsByClassName('message');
+	var msgsLength	= messages.length;
+	var userReply	= null;
+	var display		= message.display;
+	var msg			= null;
+	var offset		= Number(message.offset);
+	
+		
+	alert(	'insert message with offset bigger than 0:' +
+	'\nmessage: ' 	+ message.message + 
+	'\nreply to: ' 	+ message.repliedTo + 
+	'\nuser: ' 		+ message.user +
+	'\nsender: ' 	+ message.sender +
+	'\noffset: ' 	+ message.offset +
+	'\nimages: ' 	+ message.image);	 
+	
+	
+	if(message.offset === '0' ){
+		alert('insert message with offset = 0');
+		msgDisplay.appendChild(msgElement);		
+	}
+	else if( message.offset > 0 ){
+		alert('insert message with offset > 0');
+		msgDisplay.appendChild(msgElement);
+	}
+	else{
+		for(var i = 0; i < messages.length; i++){
+			var msgi 		= messages[i];
+			var childNodes	= msgi.childNodes;	
+			
+			for (var j = 0; j < childNodes.length; j++) {	
+			    if (childNodes[j].class === 'user-date' ){ 
+			    	alert('node name: ' + childNodes[j].name);
+			    	userReply = childNodes[j].name;
+			    	break;
+			    }        
+			}			
+			if(userReply === message.repliedTo){
+				messages[i].parentNode.insertBefore(msgElement, msgi.nextSibling);
+				message.visited = 1;
+				return;
+			}
+		}
+	}
 }
 
 
@@ -382,7 +586,7 @@ function insertRepliedMessages(messages, index){
 	var msgin		= (messages[index]);
 	for(var i = 0; i < messages.length; i++){
 		if( i == index) { continue; }
-		var msgi 	= (messages[i]);
+		var msgi 	= messages[i];
 		var msg 	= createMessage(msgi);
 		
 		if(msgin.user + msgin.date == msgi.repliedTo){
@@ -428,75 +632,193 @@ function createSender(message){
 }
 
 
-
-/*********************************************************************************
-*	this function takes a message in JSON format and create a message element, 
-*	with the message details including offset, content, etc.
+/********************************************************************************
+*	this function takes a message in JSON format and create a message element to be
+*	displayed on the 'form' element 'msg-display'. The message details include 
+*	offset, content, etc. as follows:
+*	user 	  : user;
+*	sender	  : sender;
+*	date 	  : date;
+*	clicked   : clicked;
+*	msg text  : message;
+*	offset    : offset;
+*	images    : image;
+*	images source extraction in 3 steps:
+*		1. remove '"[' from the beginning and '"]"' from the end
+*		2. split on 'data:image/png;base64,'
+*		3. for each source string remove the '","' tail end 
 *********************************************************************************/
-function createMessage(/*jsonMessage -previous version*/ message){
-	
-	//var message   = JSON.parse(jsonMessage);
-	var user 	  = message.user;
-	var sender	  = message.sender;
-	var date 	  = Number(message.date);
-	var clicked   = message.clicked;
-	var msg_text  = message.message;
-	var offset    = message.offset;
-	
-	var frame 	  = document.createElement("div");
-	var userTag   = document.createElement("a");
-	var replyUser = document.createElement("a");
-	var p 		  = document.createElement("p");
-	var spanStart = document.createElement("span");
-	var spanDate   = document.createElement("span");
-	var reply 	  = document.createElement("span");
-	var clkd      = document.createElement("a");
-	var rawDate	  = document.createElement("pre");
-	//alert(offset);
+function createMessage1(message){
 
+	var user 	  	= message.user;
+	var sender	  	= message.sender;
+	var date 	  	= Number(message.date);
+	var clicked   	= message.clicked;
+	var msg_text  	= message.message;
+	var offset    	= message.offset;
+	var images    	= message.image;
+	var imagesSrc	= "";
+	var src			= null;	
+	var splitImg	= null;
+	var width		= '53%';
+	var space		= '10%';
+	
+	var newMessage 	= document.createElement("div");
+	var frame 	  	= document.createElement("div");
+	var imgsFrame 	= document.createElement("div");
+	var userTag   	= document.createElement("a");
+	var replyUser 	= document.createElement("a");
+	var replyTo 	= document.createElement("a");
+	var pDate  		= document.createElement("p");
+	var p 		  	= document.createElement("p");
+	var spanMsg 	= document.createElement("span");
+	var dateSpan	= document.createElement("span");
+	var reply 	  	= document.createElement("span");
+	var clkd      	= document.createElement("a");
+	var rawDate	  	= document.createElement("pre");
+	var del	  		= document.createElement("a");
+	var br	  		= document.createElement("div");
+	
+	
+	del.setAttribute('id', 'delete' + date);
+	del.setAttribute('href', '#delete' + date);
+	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
+	del.setAttribute('onclick', 'hideMessage(' + date + ')');
+	del.innerHTML = ' hide';
 	
 	clkd.setAttribute('id', 'clicked' + date);
 	clkd.setAttribute('style', 'visibility:hidden;');
 	clkd.innerHTML = clicked;
+
+	spanMsg.innerHTML = ": " + msg_text;
+	pDate.innerHTML =  " on " + new Date(date).toUTCString().split(' ').slice(0, 5);
+	pDate.setAttribute("id", 'date' + date );
+	pDate.setAttribute("style", 'text-align:right;' );
 	
-	spanStart.innerHTML = ": " + msg_text + " on ";
-	spanDate.innerHTML =  new Date(date).toUTCString().split(' ').slice(0, 5);
-	spanDate.setAttribute("id", 'date' + date );
-	
-	userTag.setAttribute('id', 'user' + date);
+	userTag.setAttribute('id', 'user-tag' + date);
+	userTag.setAttribute('class', 'user-tag');
 	userTag.setAttribute('href', '#user' + date);
+	userTag.setAttribute('onclick', 'userClick(' + date + ')' );
 	userTag.innerHTML = sender;
 	
 	replyUser.setAttribute('id', 'user-reply' + date);
-	replyUser.setAttribute('href', '#reply' + date);
+	replyUser.setAttribute('href', '#messageElement' + date);
 	replyUser.setAttribute('onclick', 'replyClicked(' + date + ')' );
+	replyUser.setAttribute('style', 'color:green;');
 	replyUser.innerHTML = " reply";
+	
+	replyTo.setAttribute('class', 'reply-to');
+	replyTo.setAttribute('id', 'reply-to' + date);
+	replyTo.setAttribute('style', 'color:green;');
+	replyTo.innerHTML = 'reply to message you sent on: ' + new Date(date).toUTCString().split(' ').slice(0, 5);
 	
 	rawDate.setAttribute('id', 'raw-date' + date);
 	rawDate.setAttribute('style', 'display: none;');
+	rawDate.class = 'user-date';
+	rawDate.name = user + date;
 	rawDate.innerHTML = date;
 	
-	p.appendChild(userTag);
-	p.appendChild(spanStart);
-	p.appendChild(spanDate);
-	p.appendChild(rawDate);
+	br.class = 'container';
 	
-	if(user == "admin" ){
-		reply.appendChild(replyUser);
-		p.appendChild(reply);
-	}
+	p.appendChild(userTag);
+	p.appendChild(spanMsg);
+	p.appendChild(pDate);
+	
+	reply.appendChild(replyUser);
+	p.appendChild(del);
+	pDate.appendChild(reply);
+	pDate.appendChild(del);
+		
 
-	frame.setAttribute('style', 'margin-left:' + offset + 'px;');
+	if( images != '{}' )
+	{	
+		imagesSrc	= images.slice(2, images.length - 4);	
+		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
+
+		for(var i = 1; i < splitImg.length; i++){	
+			if( splitImg[i] === "") { continue; }		
+			if( i < splitImg.length ){
+				//alert('message number: ' + i + '\nof length: ' + splitImg[i].length + '\nstarts with: ' + splitImg[i][0] + ' \nends with: ' + splitImg[i][splitImg[i].length - 1] + '\nis: ' + splitImg[i]);
+				src	= splitImg[i].replace('","', '');
+			}
+			var img 	= document.createElement("img"); 
+			img.src 	= 'data:image/png;base64,' + src;
+			img.setAttribute('class', 'image');
+			imgsFrame.appendChild(img);
+		}
+	}
+	
+	
 	frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
-	frame.appendChild(clkd);
-	if(clicked == 'true'){
-		frame.setAttribute('style', 'background: rgba(0.0, 0.0, 0.0, 0.0); margin-left:' + offset + 'px;');
+	frame.appendChild(imgsFrame);
+	
+	newMessage.setAttribute.innerHTML = message.message;
+	newMessage.setAttribute('style',   'width:' + width + '				\
+										border: 1px solid black;		\
+										border-radius: 5px;				\
+										background-color: lightblue;	\
+										padding-top: 5px;				\
+									  	padding-right: 10px;			\
+									  	padding-bottom: 5px;			\
+									  	padding-left: 10px;				\
+									  	margin-top: 30px;				\
+									  	margin-right: 80px;				\
+									  	margin-left: 0px;'); 
+									  	
+	if(message.sender !== sessionStorage.getItem('username')){
+		newMessage.setAttribute('style',   	'width:' + width +			
+											'border: 1px solid black;		\
+											border-radius: 5px;				\
+											background-color: lightblue;	\
+											padding-top: 5px;				\
+										  	padding-right: 10px;			\
+										  	padding-bottom: 5px;			\
+										  	padding-left: 10px;				\
+										  	margin-top: 30px;				\
+										  	margin-right: 0px;				\
+										  	margin-left: 80px;'); 
 	}
 	
-	return frame;	
+	newMessage.appendChild(frame);
+	return newMessage ;
+}
+
+
+
+/*********************************************************************************
+*	this function shows outgoing messages only
+*	@param:		long, date a unique identifier for the user clicked
+*	return:		null
+*********************************************************************************/
+function userClick(date){
+
+	var user			= sessionStorage.getItem('username');
+	var clickedUser		= document.getElementById('user-tag' + date);
+	var message			= null;
+	
+	if(user === clickedUser.innerHTML )
+		message = createSocketMessageByteArray("5", user, user, "", date, false, "", 0, "", "");
+	else
+		message = createSocketMessageByteArray("6", clickedUser.innerHTML, user, "", date, false, "", 0, "", "");
+		
+	wsocket.send(message); 
+}
+
+
+
+/*********************************************************************************
+*	this function deletes a given message
+*********************************************************************************/
+function hideMessage(id){
+	var user		= sessionStorage.getItem('username');
+	var sender		= document.getElementById('user-tag' + id).innerHTML;
+	var msgElement 	= document.getElementById('messageElement' + id);
+	var message		= createSocketMessageByteArray("3", sender, user, "", id, false, "", 0, "", "");
+	msgElement.remove();
+	wsocket.send(message); 
 }
 
 
@@ -507,9 +829,7 @@ function createMessage(/*jsonMessage -previous version*/ message){
 function messageClicked(p){
 
 	var click 		= document.getElementById('clicked' + p);
-	var user 		= sessionStorage.getItem('username');
-	
-
+	var user 		= document.getElementById('user-tag' + p).innerHTML;
 	var formData 	= new FormData();
 	
 	if(click.innerHTML == 'false'){
@@ -520,88 +840,172 @@ function messageClicked(p){
 		formData.append("date", p); 
 		
 	    $.ajax({
-		    url: 'UserServlet', 	// point to server-side 
-		    dataType: 'text',  		// what to expect back from the server, if anything
-		    cache: false,
-		    contentType: false,
-		    processData: false,
-		    data: formData,                         
-		    type: 'post',
-		    success: function(response){
-		    			
-       					var msg = document.getElementById('messageElement' + p);
-       					var compStyles = window.getComputedStyle(msg);
-       					var offset = compStyles.getPropertyValue('margin-left');
-						msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
-						click.innerHTML = 'true';
-						//alert('success');
-	    			}
+		    url: 			'UserServlet', 	 
+		    dataType: 		'text',  		
+		    cache: 			false,
+		    contentType: 	false,
+		    processData: 	false,
+		    data: 			formData,                         
+		    type: 			'post',
+		    success: 		function(response){
+		       					var msg = document.getElementById('messageElement' + p);
+		       					var compStyles = window.getComputedStyle(msg);
+		       					var offset = compStyles.getPropertyValue('margin-left');
+								msg.setAttribute('style', 'border-radius: 5px; border: 1px solid #000000; background-color: #ffffff; margin-left:' + offset);
+								click.innerHTML = 'true';
+								
+			    			}
 	 	});
  	}
 }
 
 
 /*********************************************************************************
-*	this function is fired up when reply to specific message is clicked. reply
-*	area is being added to page under the chosen message and 'message clicked' 
-*	is sent
+*	this function is fired up when the reply hyper link to specific message is 
+*	clicked. reply area is being added to page under the chosen message and 
+*	'message clicked' is sent.
+*	@param:		p,	unique identifier (date of creation)
+*	return:		null
 *********************************************************************************/
 function replyClicked(p){
-	var count = p;
-	var date = document.getElementById('date' + count).innerHTML;
-	var user = sessionStorage.getItem('username');
-	var dateMiliseconds	=	Date.parse(date);
-	//alert(dateMiliseconds);
+
+	var imgReplies	= document.getElementsByClassName('upload-image');
+	var txtReplies	= document.getElementsByClassName('msg-area');
 	
+	// erase all other reply messages text AND images upload from page 
+	for(var i = txtReplies.length - 1; i >= 0; --i){ txtReplies[i].remove(); } 
+	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 	
-	var existingNode = document.getElementById("messageElement" + count);	
-	var reply = document.createElement("div");
-	var replyText = document.createElement("textarea");
-	var form = document.createElement("form");
-	var span1 = document.createElement("span");
-	var span2 = document.createElement("span");
-	var p = document.createElement("p");	
-	var btnUpload = document.createElement("button");
-	var btnCancel = document.createElement("button");
+	var count 		= p;
+	var date 		= document.getElementById('date' + count).innerHTML;
+	var user 		= sessionStorage.getItem('username');
+	var time		= Date.parse(date);	
+	var users		= loadUsers(false);
+	var userTag		= document.getElementById('user-tag' + p).innerHTML;
+	var msgReply	= createMsgTextArea(p, users, userTag);
+	var imgReply	= createImageUploadArea(p);
+	var currnetNode	= document.getElementById('messageElement' + count);	
+
+	//alert('date: ' + p + '\nusers: ' + users + '\ncurrent node element: ' + currnetNode);
 	
-	replyText.setAttribute("id", "reply-msg-txt" + count);
-	replyText.setAttribute("name", "msg-txt");
-	replyText.setAttribute("onkeypress", "onTextChange()");
+	currnetNode.parentNode.insertBefore(msgReply, currnetNode.nextSibling);
+	currnetNode.parentNode.insertBefore(imgReply, currnetNode.nextSibling);
+	end = replyText.selectionEnd;
+	replyText.focus();
+	replyText.selectionEnd + 1;
+	notifyMessageClicked(user, time);
+}
+
+
+/*********************************************************************************
+*	this function create the file upload area as an html element and return it.
+*	@param:		p, unique identifier
+*	return:		null
+*********************************************************************************/
+function createImageUploadArea(p){
+	//alert('date: ' + p);
+	var div			= document.createElement('div');
+	div.setAttribute('id', 'upload-image' + p);
+	div.setAttribute('class', 'upload-image');
+	div.innerHTML 	=  "<label for='file-input' >" +
+							"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+						"</label>" +
+						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'/>";
+	return div;
+}
+
+
+
+/*********************************************************************************
+*	this function create the message text area as an html element and return it.
+*	@param:		p, 		unique identifier
+*	@param:		user, 	a specific user name to be replied to. if @user is empty,
+*						the first option of users is displayed, i.e. NO REPLY: 
+*						fresh new message
+*	@param:		users, 	an array of users names
+*	return:		div, 	the element created which holds the functionality
+*********************************************************************************/
+function createMsgTextArea(msgNumber, users, user){
 	
-	form.setAttribute("id", "output1");
-	form.setAttribute("action", "upload");
-	form.setAttribute("method", "post");
-	form.setAttribute("enctype", "multipart/form-data");
+	var div			= document.createElement('div');
+	var p			= document.createElement('p');
+	var pp			= document.createElement('p');
+	var a			= document.createElement('a');
+	var select		= document.createElement('select');
+	var textArea	= document.createElement('textarea');
+	var form		= document.createElement('form');
+	var span1		= document.createElement('span');
+	var span2		= document.createElement('span');
+	var btnUpload	= document.createElement('button'); 
+	var btnCancel	= document.createElement('button');
 	
-	span1.setAttribute("style", "display:inline-block");
-	span2.setAttribute("style", "float:right; padding-right:0px;");
+	div.setAttribute('id', 'msg-text-upload' + msgNumber);
+	div.setAttribute('class', 'msg-area');
 	
-	btnUpload.innerHTML = "upload";
-	btnUpload.setAttribute('id', 'upload-file-btn' + count);
+	p.setAttribute('style', 'display: inline;');
+	p.innerHTML		= 'send a message to ';
+	
+	a.setAttribute('id', 'user' + msgNumber);
+	a.setAttribute('style', 'display: inline;');
+	a.setAttribute('href', 'msg-text-upload' + msgNumber);
+	a.setAttribute('onclick', '');
+	a.innerHTML = user;
+	
+	select.setAttribute('name', 'users');
+	select.setAttribute('id', 'users' + msgNumber);
+	select.setAttribute('style', 'display: inline;');
+	
+	for(var i = 0; i < users.length; i++){
+		var option = document.createElement("option");
+		option.value = users[i];
+		option.text = users[i];
+		select.appendChild(option);
+	}
+	
+	textArea.setAttribute('id', 'msg-text' + msgNumber);
+	textArea.setAttribute('name', 'msg-text');
+	textArea.setAttribute('onkeypress', 'onTextChange()');
+	textArea.setAttribute('placeholder', 'enter text here...');
+	
+	form.setAttribute('id', 'output' + msgNumber);
+	form.setAttribute('action', 'upload');
+	form.setAttribute('method', 'post');
+	form.setAttribute('enctype', 'multipart/form-data');
+	
+	span1.setAttribute('style', 'display:inline-block;');
+	span2.setAttribute('style', 'float:right; padding-right:0px;');
+	
+	btnUpload.setAttribute('id', 'upload-file-btn' + msgNumber);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute("onclick", 'replyMessage(' + count + ')');
+	btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
+	btnUpload.innerHTML = 'upload';
 	
-	btnCancel.innerHTML = "cancel";
-	btnCancel.setAttribute('id', 'cancel-file-btn' + count);
+	btnCancel.setAttribute('id', 'cancel-file-btn' + msgNumber);
 	btnCancel.setAttribute('type', 'button');
 	btnCancel.setAttribute('class', 'btn btn-danger');
-	btnCancel.setAttribute("onclick", 'cancel(' + count + ')' );
+	btnCancel.setAttribute('onclick', 'cancelMsgText()');
+	btnCancel.innerHTML = 'cancel';
 	
-	
-	// build the element hierarchy and add to page
-	reply.setAttribute("id", 'reply' + count);
-	reply.appendChild(replyText);	
-	reply.appendChild(form);
-	form.appendChild(p);
-	p.appendChild(span1);
-	p.appendChild(span2);
 	span1.appendChild(btnUpload);
 	span2.appendChild(btnCancel);
-	existingNode.parentNode.insertBefore(reply, existingNode.nextSibling);
+	pp.appendChild(span1);
+	pp.appendChild(span2);
+	form.appendChild(pp);
 	
-	//alert(user);
-	notifyMessageClicked(user, dateMiliseconds);
+	div.appendChild(p);
+	if( user === ""){
+		div.appendChild(select);
+	}
+	else{
+		div.appendChild(a);
+	}
+	div.appendChild(textArea);
+	div.appendChild(form); 
+		
+	//alert('create message area with number: ' + msgNumber);			
+	return div;
+	
 }
 
 
@@ -611,11 +1015,11 @@ function replyClicked(p){
 *	the DB: format is: { user: 'user', sender: 'sender', text: 'text', date: 'date',
 *						 offset:'offset',  }
 *********************************************************************************/
-function sendUserReply(jmessage){
+function sendReplyMessage(jmessage){
 	
 	//var message 	= JSON.parse(jmessage);
 	var message 	= jmessage;
-	var formData 	= new FormData();
+
 	var user 		= message.user;
 	var sender 		= message.sender;
 	var msg			= message.text;
@@ -623,67 +1027,48 @@ function sendUserReply(jmessage){
 	var offset		= message.offset;
 	var repliedTo	= message.repliedTo;
 	
-	//alert('user: ' + user);
+	var message 	= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, imgs, 0, "", "");	
+	var msgByteArr	= [...message];
+	var msgBuffer	= new ArrayBuffer(message.length);
+	var messageArray= new Uint8Array(msgBuffer);
 	
-	formData.append("code", "1");
-	formData.append("user", user); 	
-	formData.append("sender", sender);
-	formData.append("message", msg);	
-	formData.append("date", date);
-	formData.append("offset", offset); 
-	formData.append("repliedTo", repliedTo);  
-	alert(message);
-	
-    $.ajax({
-    url: 'UserServlet', 	// point to server-side 
-    dataType: 'text',  		// what to expect back from the server, if anything
-    cache: false,
-    contentType: false,
-    processData: false,
-    data: formData,                         
-    type: 'post',
-    success: function(response){
-    			/*
-				var msg = document.getElementById('messageElement' + p);
-				var compStyles = window.getComputedStyle(msg);
-				var offset = compStyles.getPropertyValue('margin-left');
-				msg.setAttribute('style', 'background-color: #ffffff; margin-left:' + offset);
-				click.innerHTML = 'true';
-				*/
-				//alert('success');
-			}
-	});
-	
+	for(var i = 0; i < msgByteArr.length; i++){
+		messageArray[i] = message.charCodeAt(i);
+	}
 }
 
 
 
 /*********************************************************************************
-*	this function gather 'pop up' text area text, user ,sender etc. and send
+*	this function gather 'pop up' text area text, user ,sender etc. and send the
+*	message through websocket via binary option
+*	@param:		p, the message unique identifier (its date) 
 *********************************************************************************/
 function replyMessage(p){
-
+	
+	var	step		= 20;
 	var	msgElement	= document.getElementById('messageElement' + p);
 	var offsetVal	= window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
-	var senderName	= sessionStorage.getItem("username");			// who is sending
-	var userName 	= document.getElementById('user' + p);			// to whom
-	var dateMilis	= new Date().getTime();							// date in miliseconds
-	var msgText 	= document.getElementById('reply-msg-txt' + p);	// message 
-	var offs		= parseInt(offsetVal) + 20;						// offset
+	var sender		= sessionStorage.getItem("username");			// who is sending
+	var user	 	= document.getElementById('user' + p);			// to whom
+	var date		= new Date().getTime();							// date in miliseconds
+	var msg		 	= document.getElementById('reply-msg-txt' + p);	// message 
+	var offs		= parseInt(offsetVal) + step;					// offset
 	var rawDate		= document.getElementById('raw-date' + p);		// raw date
-	var jsonMessage = {	user: 		userName.innerHTML, 
-						sender: 	senderName,
-						date: 		dateMilis,
-						clicked: 	false,
-						message: 	msgText.value,
-						offset: 	offs,
-						repliedTo:  userName.innerHTML + rawDate.innerHTML};										
-	var replyElement = createMessage(jsonMessage);
-
-	sendUserReply(jsonMessage);	
-	cancel(p);
-	msgElement.parentNode.insertBefore(replyElement, msgElement.nextSibling);
+	var imgsElement	= document.getElementById('image-upload' + p);	// images element
 	
+										
+	var message 	= createSocketMessage("2", sender, user.innerHTML, msg.value, date, false, imgs, offs, user.innerHTML + rawDate.innerHTML, "");	
+	var msgByteArr	= [...message];
+	var msgBuffer	= new ArrayBuffer(message.length);
+	var msgArray= new Uint8Array(msgBuffer);
+	//alert('reply message length: ' );
+	for(var i = 0; i < msgByteArr.length; i++){
+		msgArray[i] = message.charCodeAt(i);
+	}
+	cancel(p);
+	//alert('reply message length: ' + msgArray.length);
+	wsocket.send(msgArray);
 }
 
 
@@ -767,22 +1152,27 @@ function edit(){
 }
 
 /*********************************************************************************
-*	this function iterate over all images, checked if chosen and sent to server
+*	this function is fires up when a reply to a message was pressed, iterate over 
+*	all images, checked if chosen and sent to the sendMessage function
+*	@param:		p, unique identifier
+*	return:		null
 *********************************************************************************/
-function upload(){
-	
-	let arr 		  = [];
-	var ckbx 		  = document.getElementById("output").getElementsByTagName("input");
-	var images 		  = document.getElementById("output").getElementsByTagName("img");
+function upload(p){
+
+	var imgReplyEle		= document.getElementById('upload-image' + p);
+	let imgs 		  	= [];
+	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
+	var images 		  	= document.getElementById('upload-image' + p).getElementsByTagName("img");
+
 	for (var i=0; i<ckbx.length; i++) {
   		if( ckbx[i].checked == Boolean(true) ){
-  			arr.push(images[i]);
+  			imgs.push(images[i].src);
   			//alert("array at:" + i + " = " + images[i].name);
   		}
 	}
-	//sendImages(arr);
-	sendMessage1(arr);
+	sendMessage(imgs, p);
 }
+
 
 
 /*********************************************************************************
@@ -800,7 +1190,24 @@ function uploadMessage(number){
   		}
 	}
 	//sendImages(arr);
-	sendMessage1(arr);
+	sendMessage(arr);
+}
+
+
+/*********************************************************************************
+*	this function gathers all selected images for a specific message
+*********************************************************************************/
+function getSelectedImages(number){
+	let arr 		 = [];
+	var ckbx 		 = document.getElementById("output").getElementsByTagName("input");
+	var images 		 = document.getElementById("output").getElementsByTagName("img");
+	for (var i=0; i<ckbx.length; i++) {
+  		if( ckbx[i].checked == Boolean(true) ){
+  			arr.push(images[i]);
+  			//alert("array at:" + i + " = " + images[i].name);
+  		}
+	}
+	return arr;
 }
 
 
@@ -808,35 +1215,88 @@ function uploadMessage(number){
 *	this function simply shows the hidden elements to allow images upload
 *********************************************************************************/
 function showFileLoad(){
+	alert('obsolete');
+	/*
+	var messages	= document.getElementsByClassName('message');
+	var uploadImg	= document.getElementsByClassName('upload-image');
+	var upldLength	= uploadImg.length;
+	var msgLength	= messages.length;
+	var	newMessage	= document.getElementById("new-msg");
+	var fileUpload	= createImageUploadArea(msgLength + 1);
+	
+	alert(uploadImg.length);
+	for(var i = 0; i < upldLength; i++){
+		uploadImg.remove();
+	}
+	newMessage.appendChild(fileUpload);
+	
 	document.getElementById("file-upload-area").style.display = "block";
+	document.getElementById("upload-file-btn").style.display = "block";
+	document.getElementById("cancel-file-btn").style.display = "block";
+	document.getElementById("msg-text-upload").style.display = "none";
+	*/
+} 
+
+
+/*********************************************************************************
+*	this function simply shows the hidden elements to allow message text upload
+*	@param:		null
+*	return:		null
+*********************************************************************************/
+function showOutgoingMsgArea(){
+	var users		= loadUsers(false);
+	var messages	= document.getElementsByClassName('message');
+	var uploadImg	= document.getElementsByClassName('upload-image');
+	var upldLength	= uploadImg.length;
+	var msgLength	= messages.length;
+	var	newMessage	= document.getElementById("new-msg");
+	var msgArea		= document.getElementById("new-area");
+	var fileUpload	= null;
+	//alert('users: ' + users);
+	for(var i = 0; i < upldLength; i++){
+		//alert('i ' + i + ' ' + uploadImg[i]);
+		uploadImg[i].remove();
+	}
+	
+	newMessage.appendChild(createImageUploadArea(msgLength));
+	newMessage.appendChild(createMsgTextArea(msgLength, users, ''));
 } 
 
 
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload
 *********************************************************************************/
-function showMsgText(){
-	loadUsers();
-	document.getElementById("msg-text-upload").style.display = "block";
-	document.getElementById("upload-file-btn").style.display = "block";
-	document.getElementById("cancel-file-btn").style.display = "block";
+function cancelMsgText(){
+	var imgReplies	= document.getElementsByClassName('upload-image');
+	var txtReplies	= document.getElementsByClassName('msg-area');
+	
+	// erase all other reply messages text AND images upload from page 
+	for(var i = txtReplies.length - 1; i >= 0; --i){ txtReplies[i].remove(); } 
+	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 } 
 
 
 /*********************************************************************************
 *	this function does the same as the following but for 'browsing option'
 *********************************************************************************/
-function onChange(input){
-	var url = $(input).val();
-	var file = input.files[0];
-	var name = file.name;
-	var parent = document.getElementById("output");	
+function onChange(p, input){
+	//alert(p);
+	var url 	= $(input).val();
+	var file 	= input.files[0];
+	var name 	= file.name;
+	var parent 	= document.getElementById('upload-image' + p);	
+	var src		= null;
+	
 	var reader = new FileReader();
     reader.onload = function (event) {
-				    	parent.appendChild(createCheckedImage(event.target.result, name));
+    					var newImg	=	createCheckedImage(event.target.result, name);
+				    	parent.appendChild(newImg);
+ 						//alert('new image: ' + newImg);
+						//alert('file selected: ' + event.target.result);			    	
 				    };
-
+	
     reader.readAsDataURL(file);
+    //alert('file src: ' + src);	
 }
 
 
@@ -846,13 +1306,15 @@ function onChange(input){
 *
 *********************************************************************************/
 function drop(event){
+	alert('drop');
     event.stopPropagation();
     event.preventDefault();
     
-    var parent = document.getElementById("output");
-    var files = event.dataTransfer.files;
-    var file = files[0];
-	var reader = new FileReader();
+    //var date	= event.target;
+    var parent 	= document.getElementById("output");
+    var files 	= event.dataTransfer.files;
+    var file 	= files[0];
+	var reader 	= new FileReader();
   	
     reader.onload = function (event) {
 				    	var image = new Image();
@@ -885,6 +1347,7 @@ function createCheckedImage(source, name){
 	newCheckbox.setAttribute("type", "checkbox");
 	newCheckbox.setAttribute("class", "custom-control-input");
 	newCheckbox.setAttribute("id", id);
+	newCheckbox.setAttribute("checked", true);
 	
 	newImg.setAttribute("alt", "#");
 	newImg.setAttribute("class", "thumb");
@@ -939,15 +1402,19 @@ function loadUserDetails(){
 
 /*********************************************************************************
 *	this function loads registered user from db and add to the list of users
-*	to choose from while sending a new message 
+*	to choose from while sending a new message, and return the users as string
+*	array.
+*	@param:		null
+*	return:		result, a string array of users names
 *********************************************************************************/
-function loadUsers(){
+function loadUsers(sync){
 
-	const obj	   = {data: ''};
-	var selectList = document.getElementById("users");
-	var blob	   = new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
-	var formData   = new FormData();
-	var date	   = new Date();
+	const obj	   	= {data: ''};
+	var selectList 	= document.getElementById("users");
+	var blob	   	= new Blob([JSON.stringify(obj, null, 2)], {type : 'application/json'});
+	var formData   	= new FormData();
+	var date	   	= new Date();
+	var result		= [];
 	
 	formData.append("code", "0");
 	formData.append("user", "test");
@@ -955,12 +1422,6 @@ function loadUsers(){
 	formData.append("message", "");
 	formData.append("image", blob);
 	formData.append("date", date.getTime());
-	
-	
-	/*
-	for (var value of form_data.values()) {
-  		alert(value);
-	}*/
 	
     $.ajax({
         url: 'UserServlet', 	// point to server-side
@@ -970,135 +1431,125 @@ function loadUsers(){
         processData: false,
         data: formData,                         
         type: 'post',
+        async: sync,
         success: function(data){
         			
 		            var count;		
 					//var data = xhr.responseText;
 					var array = JSON.parse(data);
 					
-			
 					if ( (count = array.length) > 0) 
 					{
-						// init & fill  the selection 
 						for (var i = 0; i < count; i++) {
-							//alert(array[i]);
-							selectList.options[i] = null;
-							var option = document.createElement("option");
-					    	option.value = array[i];
-					    	option.text = array[i];
-					    	selectList.appendChild(option);
+							result[i] = array[i];
 						}
 					}	
 					else alert("no users found!");
         		}
      });
+     return result;
 }
 
 
 /*********************************************************************************
 *	this function sends a image(s) to the server 
 *********************************************************************************/
-function sendImages(images){
-	
-	for (var i = 0; i < images.length; i++){
-		var data = images[i];
-		var form_data = new FormData();
-		form_data.append("image", data);
-		form_data.append("user", "admin");
-		form_data.append("name", data.name); 
-		//alert(data);
-	    $.ajax({
-	        url: 'ImageServlet', 	// point to server-side PHP script 
-	        dataType: 'text',  		// what to expect back from the PHP script, if anything
-	        cache: false,
-	        contentType: false,
-	        processData: false,
-	        data: form_data,                         
-	        type: 'post',
-	        success: function(response){
-	            alert("file uploaded successfully!" + response); 
-	        }
-	     });
-	
-	}    
+function showAllMessages(){
+	var user		= sessionStorage.getItem('username');
+	var message		= createSocketMessageByteArray("4", "", user, "", 0, false, "", 0, "", "");
+	wsocket.send(message); 
+	alert('load user messages');
+	loadUserMessages(false);
 }
 
 
-/*********************************************************************************
-*	this function sends a new message to user: usr 
-*********************************************************************************/
-/*
-function sendMessage(){
-	var msg = document.getElementById("msg");
-	var usrs = document.getElementById("users");
-	var usr = usrs.options[usrs.selectedIndex].text;
-	var sender = sessionStorage.getItem('username');
-	var date = new Date();
-	var blob = new Blob(['0x0003'], {type: 'text/plain'});	
-	var form_data = new FormData();
-	
-	//alert(date.toISOString().split('T')[0]);
-	form_data.append("code", "2");
-	form_data.append("sender", sender.slice(0,20)); 
-	form_data.append("user", usr.slice(0,20));
-	form_data.append("message", msg);
-	form_data.append("date", date.toISOString().split('T')[0]);
-	form_data.append("image", blob);
-	
-    $.ajax({
-	    url: 'UserServlet', 	// point to server-side PHP script 
-	    dataType: 'text',  		// what to expect back from the PHP script, if anything
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    data: form_data,                         
-	    type: 'post',
-	    success: function(response){
-	       			alert("file uploaded successfully!" + response); 
-    			}
- 	});
-}
-*/
-
 
 /*********************************************************************************
-*	this function sends a new message to user: usr 
+*	this function sends a new message to a specific user
+*	@param:	images,		an array that contains all the images uploaded by the user
+*	@param:	msgNumber	int, a unique identifier (time stamp)
+*	return:				null  
 *********************************************************************************/
-function sendMessage1(images){
+function sendMessage(images, msgNumber){
 
-	var msg 	  = document.getElementById("msg-txt").value;
-	var usrs 	  = document.getElementById("users");
-	var usr  	  = usrs.options[usrs.selectedIndex].text;
-	var sender	  = sessionStorage.getItem('username');
-	var date	  = new Date();
-	var clicked   = false;
-	var formData  = new FormData();
+	var	msgElement	= document.getElementById('messageElement' + msgNumber);
+	var msg 	  	= document.getElementById("msg-text" + msgNumber).value;	
+	var usrs 	  	= document.getElementById('users' + msgNumber);
+	var usrElement 	= document.getElementById('user-tag' + msgNumber); 	
+	var usr			= "";
+	var sender	  	= sessionStorage.getItem('username');
+	var date	  	= new Date();
+	var clicked   	= 'false';
+	var imgs 		= [];
+	var msgBuffer 	= null;
+	var offset		= 0;
+	var offsetCalc	= null; 
+	var offsetStep	= 20;
+	var replyTo		= "";	
 	
-	//alert(date.getTime());
-	formData.append("code", "1");
-	formData.append("sender", sender.slice(0,20)); 
-	formData.append("user", usr.slice(0,20));
-	formData.append("message", msg);
-	formData.append("date", date.getTime());
-	formData.append("clicked", clicked);
-	
-	if( images.length > 0){
-		for(var i = 0; i < images.length; i++){
-			form_data.append("image", images[i]);
-		}		
+	if( usrElement === null ){
+		usr = usrs.options[usrs.selectedIndex].text;
+	}
+	else{
+		usr = usrElement.innerHTML;
+		replyTo = usr + msgNumber; 	
 	}
 	
-    $.ajax({
-	    url: 'UserServlet', 	// point to server-side PHP script 
-	    dataType: 'text',  		// what to expect back from the PHP script, if anything
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    data: formData,                         
-	    type: 'post',
-	    success: function(response){
-	       			alert("file uploaded successfully!" + response); 
-    			}
- 	});
+	if(msgElement !== null ){
+		offsetCalc = window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
+		offset = parseInt(offsetCalc) + offsetStep;
+		
+	}
+	
+	/*
+	alert(	'message element: ' + msgElement + 
+			'\nmsg: ' + msg + 
+			'\nusers: ' + users + 
+			'\nuser: ' + usr +
+			'\nsender: ' + sender+
+			'\nreply to: ' + replyTo);
+	*/
+	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, "");	
+	var msgByteArr		= [...message];
+	var msgBuffer		= new ArrayBuffer(message.length);
+	var messageArray	= new Uint8Array(msgBuffer);
+	
+	for(var i = 0; i < msgByteArr.length; i++){
+		messageArray[i] = message.charCodeAt(i);
+	}
+	
+	cancelMsgText();
+	wsocket.send(messageArray);
 }
+
+
+/*********************************************************************************
+*	this function handles message actions requests from the user: reset messages 
+*	to show the last view, show all, incoming or outgoing messages
+*	@param:	select,		the select element that holds the users required action
+*	return:				null  
+*********************************************************************************/
+function messagesAction(select){
+
+	switch (select.selectedIndex) {
+	  case 1:
+	 	showOutgoingMsgArea();
+	    break;
+	  case 2:
+	 	resetMessages();
+	    break;
+	  case 3:
+	  	showAllMessages()
+	  	break;
+	  case 4:
+		showOutgoingMessages();
+	    break;
+	  case 5:
+		showIncomingMessages();
+	    break;
+	  default:
+    	alert('selection not supported, contact @support');
+    }
+}
+
 

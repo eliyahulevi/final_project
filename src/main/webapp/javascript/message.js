@@ -1,6 +1,24 @@
 /**
  * 	file holds functionality to handle messages
  */
+ 
+ 
+
+
+/*********************************************************************************
+*	this function converts an image to Base64 encoding string
+*********************************************************************************/
+function encodeImageFileAsURL(image) {
+ 	var result;
+	var reader = new FileReader();
+	reader.onloadend = function() {
+    	result =  reader.result;
+  	}
+  	reader.readAsDataURL(image);
+  	alert(result);
+	return result;
+}
+
 
 
 /*********************************************************************************
@@ -39,9 +57,75 @@ function uploadMessage(message){
 				alert('success');
 			}
 	});
-	
+	 
 }
 */
+
+ /*********************************************************************************
+*	this function creates a JSON format message
+*********************************************************************************/
+function createSocketMessage(code, sender, user, msg, date, clckd, imgs, offset, repliedTo, display) {
+	//alert('create message: imgs ' + imgs.type);
+ 	var result =  {	
+ 					"code": 		code,
+ 					"sender": 		sender, 
+ 					"user": 		user,
+			 		"message": 		msg,
+			 		"date": 		date,
+			 		"clicked": 		clckd,
+			 		"image":		imgs,
+			 		"offset": 		offset,
+			 		"repliedTo": 	repliedTo,
+			 		"display": 		display
+			 		};
+	//alert('message.js >> images: ' + (imgs));
+	/*	 		
+	alert('sent message \ncode:' 		+ code + 
+						'\nsender:' 	+ sender + 
+						'\nuser: ' 		+ user +
+						'\nmessage:' 	+ msg + 
+						'\ndate: ' 		+ date + 
+						'\nclicked: ' 	+ clckd +
+						'\noffset: ' 	+ offset + 
+						'\nreplied to: '+ repliedTo + 
+						'\ndisplay: '	+ displayed +
+						'\nimage: ' 	+ imgs);
+	*/
+	return JSON.stringify(result);
+}
+
+
+ /*********************************************************************************
+*	this function creates a JSON format message, and places it into a byte array
+*********************************************************************************/
+function createSocketMessageByteArray(code, sender, user, msg, date, clckd, imgs, offset, repliedTo, display) {
+
+ 	var message	=  JSON.stringify({	
+ 					"code": 		code,
+ 					"sender": 		sender, 
+ 					"user": 		user,
+			 		"message": 		msg,
+			 		"date": 		date,
+			 		"clicked": 		clckd,
+			 		"image":		imgs,
+			 		"offset": 		offset,
+			 		"repliedTo": 	repliedTo,
+			 		"display":		display
+			 		});
+			 		
+	var msgByteArr		= [...message];
+	var msgBuffer		= new ArrayBuffer(message.length);
+	var messageArray	= new Uint8Array(msgBuffer);
+	for(var i = 0; i < msgByteArr.length; i++){
+		messageArray[i] = message.charCodeAt(i);
+	}
+	/* 		
+	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
+						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
+						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
+	*/
+	return messageArray;
+}
 
 
 

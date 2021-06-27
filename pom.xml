@@ -22,11 +22,61 @@
 
     <dependencies>
     
-	    <!-- dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11.2.0</version>
-	    </dependency -->
+    <!-- https://search.maven.org/artifact/org.apache.commons/commons-lang3/3.12.0/jar -->
+    <dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.12.0</version>
+	</dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.json/json -->
+	<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20210307</version>
+	</dependency>
+    
+    <dependency>
+    <groupId>commons-io</groupId>
+	    <artifactId>commons-io</artifactId>
+	    <version>2.8.0</version>
+	</dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.glassfish/javax.json -->
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>javax.json</artifactId>
+	    <version>1.1.4</version>
+	</dependency>
+    
+    
+    <!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
+	<dependency>
+	    <groupId>javax.enterprise</groupId>
+	    <artifactId>cdi-api</artifactId>
+	    <version>2.0.SP1</version>
+	    <scope>provided</scope>
+	</dependency>
+    
+    <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+	<dependency>
+	    <groupId>javax.json</groupId>
+	    <artifactId>javax.json-api</artifactId>
+	    <version>1.1.4</version>
+	</dependency>
+    
+    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
+	<dependency>
+	    <groupId>javax.inject</groupId>
+	    <artifactId>javax.inject</artifactId>
+	    <version>1</version>
+	</dependency>
+    
+	<dependency>
+	   <groupId>javax.websocket</groupId>
+	   <artifactId>javax.websocket-api</artifactId>
+	   <version>1.0</version>
+	</dependency>
 
     <!--  Gson: Java to Json conversion -->
 		<dependency>
@@ -129,6 +179,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
+                <configuration>
+		          	<additionalClasspathElements>
+		            	<additionalClasspathElement>/final_project/src/main/java/database/DerbyExtensions</additionalClasspathElement>
+	            		<!-- additionalClasspathElement>path/to/additional/jar</additionalClasspathElement -->
+		          	</additionalClasspathElements>
+		        </configuration>
             </plugin>
 
             <!-- Default 2.2 is too old, update to latest -->

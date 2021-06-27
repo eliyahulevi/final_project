@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -16,17 +20,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+/*import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader; 
+*/
 
 import database.DB;
 import model.message.*;
@@ -39,7 +45,8 @@ import model.order.Order;
 @MultipartConfig
 public class UserServlet extends HttpServlet 
 {
-	private static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
+	Set<HttpSession> sessions = new LinkedHashSet<HttpSession>();
 	DB db;
 	
 	
@@ -55,8 +62,8 @@ public class UserServlet extends HttpServlet
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
@@ -80,8 +87,15 @@ public class UserServlet extends HttpServlet
 		
 		try 
 		{
-			//long date = Long.parseLong(dateString);
-			System.out.println("code:" + code + " user:" + user + " sender: " + sender + " message: " + msg + " date: " + dateString + " offset: " + offset + " replied to: " + repliedTo);
+			
+			System.out.printf("\n%-15s %s%n ", "user servlet >> ", "imcoming message:");
+			System.out.printf("%-15s %s%n", "code: ", code); 
+			System.out.printf("%-15s %s%n", "user: ", user); 
+			System.out.printf("%-15s %s%n", "sender: ", sender); 
+			System.out.printf("%-15s %s%n", "message: ", msg); 
+			System.out.printf("%-15s %s%n", "date: ", dateString); 
+			System.out.printf("%-15s %s%n", "offset: ", offset); 
+			System.out.printf("%-15s %s%n", "replied to: ", repliedTo);
 			switch(code)
 			 {
 			 	case "0":		// get all users
@@ -102,8 +116,8 @@ public class UserServlet extends HttpServlet
 				 case "1":		// insert image
 				 {
 					Part image 	= request.getPart("image");
-					int off = Integer.parseInt(offset);
-					long date = Long.parseLong(dateString);
+					int off	 	= Integer.parseInt(offset);
+					long date 	= Long.parseLong(dateString);
 					
 					if(image == null)
 						db.insertMessage(new Message(sender, user, msg, date, blob, off, repliedTo)); 
@@ -112,25 +126,25 @@ public class UserServlet extends HttpServlet
 					{
 						fileContent = image.getInputStream();
 						if(fileContent.read() < 0)
-							System.out.println(">> image servlet: no data to read");
+							System.out.printf("%-15s %s%n", "User servlet>> " ,"unable to read image");
 						else
 						{
-							//System.out.println("image servlet >> user name " + name + " image name: " + imgName);		// TODO: erase if works
+							System.out.printf("%-15s %s%n", "user servlet>> ", "image source " + fileContent);		// TODO: erase if works
 							data = fileContent.readAllBytes();
 							blob = new SerialBlob(data);
 							db.insertMessage(new Message(sender, user, msg, date, blob,  off, repliedTo));
 						}
 					}
 					else
-						System.out.println("image servlet >>" + "no image file");
-					 break;
+						System.out.printf("%-15s %s%n", "image servlet>> ", "no image file");
+					break;
 				 }
 				 
 				 case "2":		// get user messages
 				 {
 					 String json = "";
-					 System.out.println("user servlet >> code:" + code + " message: " + msg);
-					 List<String> list = db.getUserMessages(user);
+					 System.out.printf("\n%-15s %s%n", "user servlet>> ", "code:" + code + " message: " + msg);
+					 List<String> list = db.getUserMessages1(user);
 					 if( list.size() > 0)
 					 {
 						 json = new Gson().toJson(list);
@@ -149,7 +163,7 @@ public class UserServlet extends HttpServlet
 				 case "4":		// user past orders
 				 {
 					 String json = "";
-					 System.out.println("user servlet >> code:" + code);
+					 System.out.printf("%-15s %s%n", "user servlet >> ", "code:" + code);
 					 List<Order> list = db.getOrders(user);
 					 if( list.size() > 0)
 					 {

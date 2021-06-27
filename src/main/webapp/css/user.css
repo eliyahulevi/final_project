@@ -1,11 +1,44 @@
 @charset "UTF-8";
 
+
+
+.upload-image /*label*/
+{
+	text-align: center;
+}
+
+.upload-image label
+{
+	text-align: center;
+	display: block;
+  	width: 100%;
+    cursor: pointer;
+	border: 2px solid rgb(192, 192, 192); 	/* Gray border */
+  	border-radius: 14px;  				/* Rounded border */
+  	float: center;
+  	background-color:#80ffff;
+}
+
+.close {
+  cursor: pointer; 
+  position: absolute;
+  padding: 12px 16px;  
+  transform: translate(0%, -50%);  
+}
+
+
+.close:hover {background: #bbb;}
+
+
+.image{
+	width: 50px;
+	height:50px;
+}
 .separator{
 	height:2px;
 	border-width:0;
 	background-color:gray;
 }
-
 
 .Table{
     width: 100%;
@@ -46,7 +79,7 @@ textarea {
 .thumb:hover {
   box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
-
+/*
 input#file {
   display: inline-block;
   width: 100%;
@@ -60,23 +93,35 @@ input#file {
   border-radius: 20px;
   background-size: 60px 60px;
 }
+*/
 
+
+.space {
+	background-color: blue;
+	width: 100%;
+	padding-top: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+
+}
 
 .container {
-  padding: 2px 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+	--parentWidth: 100%;
+	width: var(--parentWidth);
+	padding: 2px 16px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	position: relative;
 }
 
-
+/*
 .message{
-	width: 100%;
-	padding-right: 10px;
+	width: 90%;
 	background-color: #00ff00;
     border-radius: 5px;
-    /*border: 1px solid #000000;*/
+    border: 1px solid #000000;
 }
-
+*/
 .messages-icon{
 	width:4%;
 	float: left;

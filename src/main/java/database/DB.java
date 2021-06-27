@@ -22,15 +22,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+//import java.sql.SQLNonTransientConnectionException;
 
 import model.product.AlternativeProduct;
 import model.product.Product;
 import model.users.*;
 import model.message.*;
 import model.order.Order;
+
 import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
+
+import database.DerbyExtensions;
 
 /**
  * @author shahar *
@@ -104,7 +108,8 @@ public class DB
 			+ "CLICKED boolean,"
 			+ "OFFSET int,"
 			+ "REPLIEDTO varchar(100), "
-			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE)"
+			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE),"
+			+ "DISPLAY varchar(20)"
 			+ ")";
 
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
@@ -171,9 +176,15 @@ public class DB
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=?";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO " +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
+															 + "	NOT DISPLAY=? AND USERNAME=? ORDER BY DATE ASC";
+	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
+	private String SELECT_SENDER_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
+	private String INSERT_USER_MESSAGE = 	"INSERT INTO "   +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
+	private String HIDE_MESSAGE = 			"UPDATE " 		 + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? WHERE USERDATE=?";
+	private String INCOMING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND USERNAME=? ORDER BY DATE ASC";
+	private String OUTGOING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? ORDER BY DATE ASC";
 	
 	/************************************************************************
 	 *	 					image
@@ -196,7 +207,12 @@ public class DB
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
 	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
 	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
-
+	private String REGISTER_REPLACE_FUNC=	"CREATE FUNCTION REPLACE(SRC VARCHAR(8000), SEARCH VARCHAR(8000), REP VARCHAR(8000) ) " + 
+											"RETURNS VARCHAR(8000) " + 
+											"LANGUAGE JAVA " +
+											"PARAMETER STYLE JAVA " + 
+											"NO SQL " + 
+											"EXTERNAL NAME 'database.DerbyExtensions.replace'";
 	
 	String[] createQueryString = {	CREATE_USERS_TABLE, 
 									CREATE_MESSAGE_TABLE, 
@@ -240,6 +256,8 @@ public class DB
 		init();
 	}
 	
+	
+	
 	/************************************************************************
 	 *	 					private class methods	
 	 ***********************************************************************/
@@ -248,24 +266,23 @@ public class DB
 		int count = 0;
 		this.map = new HashMap<String, String>();
 		DB.dbURL = "jdbc:derby:" + DB.dbPath + ";create=true";
-		this.user = new User();
+		DB.user = new User();
 		for(String s: this.tables_str)
 		{
 			this.map.put(s, createQueryString[count]); 
-			System.out.println("tabel: " + s + " has query "+ createQueryString[count]);
+			//System.out.printf("%-15s %s%n", "DB >> ", "tabel: " + s + " has query "+ createQueryString[count]);
 			count++;
 		}
 		try 
 		{
 			//Class.forName(driverURL);
-			this.createAdmin(); 	
-			this.createP();
+
+			this.createFunctions();
+			this.createAdmin(); 		
 			this.createTables();
-//			this.insertProduct(p);
-			if (this.isEmpty("USERS")) {
-				this.insertUser(this.user, true);
-				
-			}			
+			if (this.isEmpty("USERS"))
+				this.insertUser(DB.user, true);
+
 		} 
 		catch 
 		(Exception e) 
@@ -278,15 +295,72 @@ public class DB
 		}
 		
 	}	
-	private void createAdmin()
+	private void createFunctions()
 	{
-		this.user.setName("admin");
-		this.user.setNickName("administrator");
-		this.user.setAddress("1501 Yemmen road, Yemmen");
-		this.user.setEmail("israel@gmail.com");
-		this.user.setPassword("1234");
-		this.user.setPhone("050-55555351");
-		this.user.setDescription("Joey doesn't share food!!");
+		PreparedStatement ps = null;
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "create db functions");
+			
+			this.connection.setAutoCommit(false); 
+			//this.connection.createStatement().execute("DROP FUNCTION REPLACE");
+			ps = this.connection.prepareStatement(REGISTER_REPLACE_FUNC); 
+			ps.execute();
+			this.connection.commit();
+		}
+		catch (SQLException e1) 
+		{
+			System.out.printf("\n%-15s %s%n", "DB>>", "sql error: " + e1.getSQLState());
+			if("X0Y68".equals(e1.getSQLState()) )
+			{
+				
+				String DROP_REPLACE_FUNCTION = "DROP FUNCTION REPLACE";
+				if(this.connect() < 0)
+				{
+					System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+					System.exit(-1);
+				}
+				try 
+				{
+					this.connection.createStatement().execute(DROP_REPLACE_FUNCTION);
+					//this.connection.createStatement().execute(REGISTER_REPLACE_FUNC);
+				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+				this.disconnect();
+			}
+			e1.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+			} 
+			catch(Exception e2)
+			{
+				
+			}
+		}
+	}
+ 	private void createAdmin()
+	{
+		DB.user.setName("admin");
+		DB.user.setNickName("administrator");
+		DB.user.setAddress("1501 Yemmen road, Yemmen");
+		DB.user.setEmail("israel@gmail.com");
+		DB.user.setPassword("1234");
+		DB.user.setPhone("050-55555351");
+		DB.user.setDescription("Joey doesn't share food!!");
 	}
 	
 	private void createP() throws IOException {
@@ -331,10 +405,10 @@ public class DB
 					if (!rs.next())
 					{
 						stat.executeUpdate(createQueryString[index]);
-						System.out.println("DB >>table: " + tables_str[index] + " created");
+						System.out.printf("%-15s %s%n", "DB >>", "table: " + tables_str[index] + " created");
 					}
 					else
-						System.out.println("DB >> table: " + tables_str[index] + " exists");
+						System.out.printf("%-15s %s%n", "DB >>",  "table: " + tables_str[index] + " exists");
 				}
 			}
 		} 
@@ -381,33 +455,33 @@ public class DB
 		}
 	}
 	@SuppressWarnings("deprecation")
-	private int connect()
+	private synchronized int connect()
 	{
 		int result = -1;
         try 
         {
         	Class.forName(DB.driverURL).newInstance();
-			System.out.println("DB >> database url: " + DB.dbURL);	
+			System.out.printf("%-15s %s%n", "DB >>", "database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("DB >> already connected to database: " + DB.dbName);	
+				System.out.printf("%-15s %s%n", "DB >>", "already connected to database: " + DB.dbName);	
 			result = 0;
 			
         }
         catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-        	System.out.println("\n>>DB >>  error: " + e.getMessage());
+        	System.out.printf("%-15s %s%n", "DB >>", "error: " + e.getMessage());
         	if(((SQLException) e).getSQLState().equals("XJ040"))
         	{
-        		System.out.println("DB >> db exist already");
+        		System.out.printf("%-15s %s%n", "DB >>", "db exist already");
         		try 
         		{
         			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
     				DB.dbURL = "jdbc:derby:" + "C:/final_project/ClientsDB";//DB.dbPath + ";";
-    				System.out.println("DB >> dbURL: " + DB.dbURL);
+    				System.out.printf("%-15s %s%n", "DB >>", "dbURL: " + DB.dbURL);
 					this.connection = DriverManager.getConnection(DB.dbURL);
 				} 
         		catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
@@ -420,7 +494,7 @@ public class DB
         
         return result;
 	}
-	private int disconnect() 
+	private synchronized int disconnect() 
 	{
 		int result = -1;
 		try 
@@ -429,8 +503,9 @@ public class DB
 			{
 				try 
 				{
+					this.connection.commit();
 					this.connection.close();
-					System.out.println("DB >> disconnect from database: " + dbName);
+					System.out.printf("%-15s %s%n", "DB >>", "disconnect from database: " + dbName);
 				} 
 				catch (SQLException e) 
 				{
@@ -465,7 +540,7 @@ public class DB
 			}
 			else
 			{
-				System.out.println("DB >> no connection to DB");
+				System.out.printf("%-15s %s%n", "DB >>", "no connection to DB");
 			}
 			
 		} 
@@ -487,12 +562,13 @@ public class DB
 					e.printStackTrace();
 				}
 			this.disconnect();
-			System.out.println("tabel " + tabelName + " has " + count + " records");
+			System.out.printf("%-15s %s%n", "DB >>", "tabel " + tabelName + " has " + count + " records");
 		}
 
 		return result;
 	}
 
+	
 	
 	/************************************************************************
 	*	USER related code here: (insert, update, get all, etc. )
@@ -575,14 +651,14 @@ public class DB
  		int rs = -1;
  		long time = System.currentTimeMillis();
  		PreparedStatement state = null;
- 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, null, 0, null);
- 		System.out.println("DB >> initial message user:" + user.getName() + " at: " + time);			
+ 		Message message = new Message("admin", user.getName(), Message.WELCOME, time, (Blob)null, 0, null);
+ 		System.out.printf("%-15s %s%n", "DB >>", "initial message user:" + user.getName() + " at: " + time);			
 		try 
 		{
 			// connect to db
 			if (this.connect() < 0 )
 			{
-				System.out.println("DB >> cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return;
 			}
 			// insert user			
@@ -598,7 +674,7 @@ public class DB
 			if (rs > 0)
 			{
 				this.insertMessage(message);
-				System.out.println("DB >> user " + user.getName() + " added");	
+				System.out.printf("%-15s %s%n", "DB >>", "user " + user.getName() + " added");	
 			}
 						
 		} 
@@ -606,12 +682,12 @@ public class DB
 		{
 			if (e.getSQLState().equals("42X05"))
 			{
-				System.out.println("DB >> error >> need to update table");
+				System.out.printf("%-15s %s%n", "DB >>", "error >> need to update table");
 				this.createTable(CREATE_USERS_TABLE);
 				this.insertUser(user, first);
 			}
 			else if(e.getSQLState() == "23505")
-				System.out.println("DB >> warning >> user alerady exist");
+				System.out.printf("%-15s %s%n", "DB >>", "warning >> user alerady exist");
 			else
 				e.printStackTrace();
 		}
@@ -641,7 +717,7 @@ public class DB
 				
 		try 
 		{
-			System.out.println("DB >> searching for user " + name + " with password " + password);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for user " + name + " with password " + password);
 			this.connect();
 			state = this.connection.prepareStatement(SELECT_USER);
 			state.setString(1, name);			//name
@@ -653,7 +729,7 @@ public class DB
 				// TODO: erase after debug!!
 				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
 				{
-					System.out.println("user " + name + "  found"); 
+					System.out.printf("%-15s %s%n", "DB >>", "user " + name + "  found"); 
 					result = true;
 				}
 			}
@@ -697,10 +773,10 @@ public class DB
 				
 		try 
 		{
-			System.out.println("DB >> searching for user " + name + " with password " + password);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for user " + name + " with password " + password);
 			if (this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return result;
 			}
 			state = this.connection.prepareStatement(SELECT_USER);
@@ -743,6 +819,7 @@ public class DB
 	}
 	
 	
+	
 	/************************************************************************
 	*	MESSAGE related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
@@ -756,7 +833,7 @@ public class DB
 		String result = "";
 		Blob blob = message.getImage();
 		Map<String,String> map = new HashMap<String,String>();
-		System.out.println("DB >> " + message.getUser());
+		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
 		try
 		{
 			
@@ -767,10 +844,14 @@ public class DB
 			map.put("clicked", String.valueOf(message.getClicked()));
 			map.put("offset", String.valueOf(message.getOffset()));
 			map.put("repliedTo", String.valueOf(message.getRepliedTo()));
+			map.put("display", String.valueOf(message.getDisplay()));
 			if(blob == null)
 				map.put("image", "");
 			else 
 				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+			
+			// TODO: try map.put("image", new String(blob.getBytes(0, (int)blob.length() - 1 )));
+			// and correct client side
 		}
 		catch(Exception e)
 		{
@@ -798,17 +879,20 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("DB >> cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
 				System.exit(-1);
 			}
-			System.out.println("DB >> getting messages for: " + user);
+			System.out.printf("%-15s %s%n", "DB>>", "getting messages for: " + user);
 			message = new Message();
 			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
 			
+			this.connection.setAutoCommit(false); 
 			ps = this.connection.prepareStatement(SELECT_USERS_MESSAGE); 
 			ps.setString(1, user);
+			ps.setBoolean(2, true);
 			rs = ps.executeQuery();
 			
+			 
 			while(rs.next())
 			{
 				message.setSender(rs.getString(2));				// sender
@@ -819,14 +903,93 @@ public class DB
 				message.setClicked(rs.getBoolean(7));			// clicked
 				message.setOffset(rs.getInt(8));	 			// offset
 				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getString(10));			// display
 				String s = this.message2JSON(message);
 				// TODO: erase later
-				System.out.println("DB >> msgs: " + s);
+				System.out.printf("%-15s %s%n", "DB>>", "msgs: " + s);
 				result.add(s);
 			}
+			this.connection.commit();
 		}
-		catch(Exception e)
+		catch(SQLException e)
 		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+				if(rs != null && !rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	public List<String> getUserMessages1(String user)
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "getting messages for: " + user);
+			message = new Message();
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			this.connection.setAutoCommit(false); 
+			ps = this.connection.prepareStatement(SELECT_USER_MESSAGE); 
+			ps.setString(1, user);		// not to display for sender
+			ps.setString(2, user);		// sender
+			ps.setString(3, user);		// not to display for this user
+			ps.setString(4, user);		// user
+			rs = ps.executeQuery();
+			
+			 
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));				// sender
+				message.setUser(rs.getString(3));				// user
+				message.setMessage(rs.getString(4));			// message content
+				message.setDate(rs.getLong(5));					// date
+				message.setImage(rs.getBlob(6));				// image source
+				message.setClicked(rs.getBoolean(7));			// clicked
+				message.setOffset(rs.getInt(8));	 			// offset
+				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getString(10));			// display
+				String s = this.message2JSON(message);
+				result.add(s);
+			}
+			this.connection.commit();
+		}
+		catch(SQLException e)
+		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
 			e.printStackTrace();
 		}
 		finally
@@ -841,6 +1004,8 @@ public class DB
 			} 
 			catch (SQLException e1) 
 			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
 				e1.printStackTrace();
 			}
 		}
@@ -849,7 +1014,8 @@ public class DB
 	}
 	
 	/*
-	 *  insert a new message
+	 *  insert a new message into MESSAGES table. primary key
+	 *  of each message is the 'sender' name concatenated with 'date'
 	 *  @param	Message	message, a message instance to be inserted
 	 *  return	int	non negative integer in case of success, -1 on failure
 	 */
@@ -865,9 +1031,9 @@ public class DB
 				System.out.println(this.ABORT_CONNECTION);
 				System.exit(-1);
 			}
-			
+			message.print();
 			ps = this.connection.prepareStatement(this.INSERT_USER_MESSAGE);
-			ps.setString(1, message.getUser() + message.getDate());
+			ps.setString(1, message.getSender() + message.getDate());
 			ps.setString(2, message.getSender());
 			ps.setString(3, message.getUser());
 			ps.setString(4, message.getMessage());
@@ -875,7 +1041,8 @@ public class DB
 			ps.setBlob(6, message.getImage());
 			ps.setBoolean(7, message.getClicked());
 			ps.setInt(8, message.getOffset()); 
-			ps.setString(9,  message.getRepliedTo()); 
+			ps.setString(9,  message.getRepliedTo());
+			ps.setString(10, message.getDisplay());
 			ps.execute();
 			result = 0;
 		}
@@ -921,7 +1088,7 @@ public class DB
 			ps = this.connection.prepareStatement(UPDATE_TABLE_CLICKED);
 			ps.setBoolean(1, true);
 			ps.setString(2, user + date);
-			ps.execute();
+			ps.executeUpdate();
 		}
 		catch(Exception e)
 		{
@@ -944,6 +1111,255 @@ public class DB
 		return result;
 	}
 
+	/*
+	 * 	hides specific message, identified by the user-date string,
+	 *  from displaying mode in the user page. this function
+	 *  actually updates the message 'display' field to 'false'.
+	 *  @param	String	the user name, to hide the message from
+	 *  @param	String	sender, the user that sent the message
+	 *  @param	long	date, the time stamp, unique identifier
+	 *  return	int		non negative upon success, negative else
+	 */
+	public int messageHide(String user, String sender, long date)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			System.out.printf("%n%-15s %s", "DB >>", "delete message: " + user + date);		// TODO: erase if works
+			ps = this.connection.prepareStatement(HIDE_MESSAGE);
+			ps.setString(1, user);				// user to hide from
+			ps.setString(2, sender + date);		// message to hide
+			result = ps.executeUpdate();
+			if(result == 0) throw new Exception();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				if(ps != null)
+					ps.close();
+				disconnect();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	
+	/*
+	 *  resets the display field for specific user, in ALL messages
+	 *  @param:	user,	String that represent the user to which the
+	 *  				query applies
+	 *  return: int,	non-negative upon success 
+	 */
+	public int messageReset(String user)
+	{
+		int result = -1;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.println(ABORT_CONNECTION);
+				System.exit(-1);
+			}
+			System.out.printf("%n%-15s %s", "DB >>", "reset message display for " + user);	//TODO: erase if works
+			//RESET_MESSAGE_4USER1.replace("?", user);
+			//ps = this.connection.prepareStatement(RESET_MESSAGE_4USER1);
+			//ps.setString(1, user);
+			//ps.setString(2, user);
+			//result = ps.executeUpdate();
+			this.connection.createStatement().execute(	"UPDATE " + tables_str[tables.MESSAGES.value] + " SET DISPLAY=" +
+															" REPLACE(DISPLAY, '" + user + "', '') " +
+														"WHERE DISPLAY LIKE '%" + user + "%'");
+			if(result == 0) throw new Exception();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try 
+			{
+				if(ps != null)
+					ps.close();
+				disconnect();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+
+	/*
+	 *  get outgoing messages only: messages sent by user
+	 *  @param:		String, user: the name of the user
+	 *  return 		void
+	 */
+	public List<String> outgoingMessages(String user)
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "getting outgoing messages from: " + user);
+			message = new Message();
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			this.connection.setAutoCommit(false); 
+			ps = this.connection.prepareStatement(OUTGOING_MESSAGES); 
+			ps.setString(1, user);		// user
+			rs = ps.executeQuery();
+			
+			 
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));				// sender
+				message.setUser(rs.getString(3));				// user
+				message.setMessage(rs.getString(4));			// message content
+				message.setDate(rs.getLong(5));					// date
+				message.setImage(rs.getBlob(6));				// image source
+				message.setClicked(rs.getBoolean(7));			// clicked
+				message.setOffset(rs.getInt(8));	 			// offset
+				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getString(10));			// display
+				String s = this.message2JSON(message);
+				result.add(s);
+			}
+			this.connection.commit();
+		}
+		catch(SQLException e)
+		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+				if(rs != null && !rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	
+	/*
+	 *  get outgoing messages only: messages sent by user
+	 *  @param:		String, user: the name of the user
+	 *  return 		void
+	 */
+	public List<String> incomingMessages(String user, String sender)
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Message message = null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "getting outgoing messages from: " + user);
+			message = new Message();
+			//String statement = this.SELECT_USERS_MESSAGE + "'" + user + "'";
+			
+			this.connection.setAutoCommit(false); 
+			ps = this.connection.prepareStatement(INCOMING_MESSAGES); 
+			ps.setString(1, sender);	// sender
+			ps.setString(2, user);		// user
+			rs = ps.executeQuery();
+			
+			 
+			while(rs.next())
+			{
+				message.setSender(rs.getString(2));				// sender
+				message.setUser(rs.getString(3));				// user
+				message.setMessage(rs.getString(4));			// message content
+				message.setDate(rs.getLong(5));					// date
+				message.setImage(rs.getBlob(6));				// image source
+				message.setClicked(rs.getBoolean(7));			// clicked
+				message.setOffset(rs.getInt(8));	 			// offset
+				message.setRepliedTo(rs.getString(9));			// replied to
+				message.setDisplay(rs.getString(10));			// display
+				String s = this.message2JSON(message);
+				result.add(s);
+			}
+			this.connection.commit();
+		}
+		catch(SQLException e)
+		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+				if(rs != null && !rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
+				e1.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
 	
 	
 	/************************************************************************
@@ -966,10 +1382,10 @@ public class DB
 		ResultSet rs = null;
 		try
 		{
-			System.out.println("DB >> upload image");
+			System.out.printf("%-15s %s%n", "DB >>", "upload image");
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
 				return result;
 			}
 
@@ -1001,7 +1417,7 @@ public class DB
 			} 
 			catch (SQLException e) 
 			{
-				System.out.println("result set failed to close");
+				System.out.printf("%-15s %s%n", "DB >> ", "result set failed to close");
 			}
 			this.disconnect();	
 		}
@@ -1064,7 +1480,7 @@ public class DB
 		ResultSet res = null;
 		try 
 		{
-			System.out.println("in db searching for order id " + orderID);
+			System.out.printf("%-15s %s%n", "DB >>", "searching for order id " + orderID);
 			this.connect();
 			PreparedStatement state = this.connection.prepareStatement(SELECT_ORDER);
 			state.setInt(1, orderID);
@@ -1206,6 +1622,10 @@ public class DB
 				Product p = order.getProducts().get(i);
 				String productQty = "," + p.getType() + Float.toString(p.getPrice());
 				System.out.println(productQty);
+				/*
+				String productQty = "," + p.getCatalog() + Float.toString(p.getLength());
+				System.out.printf("%-15s %s%n", "DB >> ", productQty);
+				*/
 			}
 			
 	 		// 3. fire up the insert query
@@ -1259,7 +1679,7 @@ public class DB
 	 	{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return result;
 			}
 			ps = this.connection.prepareStatement(INSERT_PRODUCT);
@@ -1280,6 +1700,10 @@ public class DB
 			
 			if (result > 0)
 				System.out.println("DB >> product " + product.getType() + " added");	
+
+				// augment message branch
+				// System.out.printf("%-15s %s%n", "DB >> ", "product " + product.getCatalog() + " added");	
+
 			
 			
 	 	}
@@ -1317,7 +1741,7 @@ public class DB
 	 	{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return;
 			}
 			ps = this.connection.prepareStatement(INSERT_ORDERED_PRODUCT);
@@ -1368,7 +1792,7 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return null;
 			}
 					
@@ -1437,7 +1861,7 @@ public class DB
 		{
 			if(this.connect() < 0)
 			{
-				System.out.println("cannot connect to database.. aborting");
+				System.out.println("DB >> cannot connect to database.. aborting");
 				return null;
 			}
 			ps = this.connection.prepareStatement(SELECT_ALL_PRODUCTS);	
@@ -1479,6 +1903,7 @@ public class DB
  	}
  	
  	
+ 	
  	/**************************************************************************
 	*								general methods
 	***************************************************************************/ 
@@ -1494,19 +1919,19 @@ public class DB
 		{
         	Class.forName(DB.driverURL);
         	DB.dbURL = "jdbc:derby:;shutdown=true";
-			System.out.println("DB >> database url: " + DB.dbURL);	
+			System.out.printf("%-15s %s%n", "DB >> ", "database url: " + DB.dbURL);	
 			if (this.connection == null)
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else if (this.connection.isClosed())
 				this.connection = DriverManager.getConnection(DB.dbURL);		
 			else
-				System.out.println("DB >> connected to database: " + DB.dbName);	
+				System.out.printf("%-15s %s%n", "DB >> ", "connected to database: " + DB.dbName);	
 			result = 0;
 		}
 		catch(Exception e)
 		{
 			if(((SQLException) e).getSQLState().equals("XJ015")) {
-				System.out.println("DB >> shutting down..");
+				System.out.printf("%-15s %s%n", "DB >> ", "shutting down..");
 	        }
 		}
 		
