@@ -34,6 +34,8 @@ import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 import database.DerbyExtensions;
 
 /**
@@ -70,7 +72,7 @@ public class DB
 	
 	
 	static User user;
-	static Product p = new Product("5X15",(float) 13.8,null);
+	//static Product p = new Product("5X15",(float) 13.8,null);
 	String[] tables_str = {"USERS", "MESSAGES", "CHANNELS", "PRODUCTS", "ORDERS", "ORDERED_PRODUCT" ,"IMAGES", "USER_IMAGES"};
 	
 	PreparedStatement prepStatement;
@@ -362,7 +364,7 @@ public class DB
 		DB.user.setPhone("050-55555351");
 		DB.user.setDescription("Joey doesn't share food!!");
 	}
-	
+	/*
 	private void createP() throws IOException {
 //		this.p.setCatalog(112);
 //		this.p.setColor("red");
@@ -387,6 +389,7 @@ public class DB
 		
 		
 	}
+	*/
 	private void createTables()
 	{
 		Statement stat = null;
@@ -1677,6 +1680,7 @@ public class DB
  		PreparedStatement ps = null;
 	 	try
 	 	{
+	 		Blob blob;
 			if(this.connect() < 0)
 			{
 				System.out.println("DB >> cannot connect to database.. aborting");
@@ -1685,17 +1689,18 @@ public class DB
 			ps = this.connection.prepareStatement(INSERT_PRODUCT);
 			
 			ps.setString(1, product.getType());
-//			ps.setInt(2, product.getType());
+			//ps.setInt(2, product.getType());
 			ps.setFloat(2, product.getPrice());
-//			ps.setFloat(4, product.getLength());
-//			ps.setString(5, product.getColor());
+			ps.setFloat(4, product.getLength());
+			ps.setString(5, product.getColor());
 			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
 //			File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
 			InputStream is = new FileInputStream(new File(path));
 //			InputStream in = new FileInputStream("E:\\images\\cat.jpg");
 //			this.p.setImage(img);
 //			ps.setBinaryStream(6, is, (int) img.length());
-			ps.setBlob(3, is);
+			//blob.setBytes(result, null, result, result)
+			ps.setBlob(3, new SerialBlob(product.getImage()));
 			result = ps.executeUpdate();
 			
 			if (result > 0)

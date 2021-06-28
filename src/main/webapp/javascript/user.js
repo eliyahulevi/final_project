@@ -210,11 +210,11 @@ function loadProducts(sync){
 *********************************************************************************/
 function addNewProduct(){
 		
-		var productID = document.getElementById('product-id');
-		var productLength = document.getElementById('product-length');
-		var productType = document.getElementById('product-type');
-		var productPrice = document.getElementById('product-price');
-		var productColor = document.getElementById('product-color');
+		var productID 		= document.getElementById('product-id');
+		var productLength 	= document.getElementById('product-length');
+		var productType 	= document.getElementById('product-type');
+		var productPrice 	= document.getElementById('product-price');
+		var productColor 	= document.getElementById('product-color');
 		
 		
 		if(productLength.value === ''){
@@ -292,8 +292,7 @@ function showAddProduct(){
 	var tdLengthInput 	= document.createElement('td');
 	var tdColorInput 	= document.createElement('td');
 	var hr			 	= document.createElement('hr');
-	
-	
+	var loadFile		= document.createElement('div');
 	
 	tbl.setAttribute('class', 'Table');
 	thCatalog.innerHTML = 'Catalog [integer]';
@@ -363,18 +362,35 @@ function showAddProduct(){
 	p.appendChild(addImage);
 	p.appendChild(cancelProductBtn);
 	
-	addImage.innerHTML = 'add image';
-	addImage.setAttribute('onclick', '');
-	addImage.setAttribute('style', 'align-self: flex-end;');
-	addImage.setAttribute('href', '#products');
+	//addImage.innerHTML = 	
+	
+	loadFile.setAttribute('id', 'product-image-upload');
+	loadFile .setAttribute('class', 'upload-image');
+	loadFile.innerHTML = "<label for='file-input' >" +
+							"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+							"</label>" +
+							"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onProductAdded(this)'>";
+
 	
 	form.appendChild(hr);
 	form.appendChild(tbl);
+	form.appendChild(loadFile);
 	form.appendChild(p);
 	
 	var container = document.getElementById("products");
 	container.appendChild(form);
 	
+}
+
+
+/*********************************************************************************
+*	this function displays the file upload module in the 'new product' area
+*	@param:		null
+*	return 		null
+*********************************************************************************/
+function showProductImageUpload(){
+	var ele		= document.getElementById('product-image-upload');
+	ele.style.display = 'block';
 }
 
 
@@ -909,14 +925,14 @@ function replyClicked(p){
 *	return:		null
 *********************************************************************************/
 function createImageUploadArea(p){
-	//alert('date: ' + p);
+
 	var div			= document.createElement('div');
 	div.setAttribute('id', 'upload-image' + p);
 	div.setAttribute('class', 'upload-image');
-	div.innerHTML 	=  "<label for='file-input' >" +
-							"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+	div.innerHTML 	=  	"<label for='file-input' >" +
+						"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
 						"</label>" +
-						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'/>";
+						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'>";
 	return div;
 }
 
@@ -1281,12 +1297,18 @@ function cancelMsgText(){
 	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 } 
 
+function onProductAdded(file){
+	alert('product added');
+}
 
 /*********************************************************************************
 *	this function does the same as the following but for 'browsing option'
+*	@param:			p, long a unique identifier
+*	@param:			input, the file upload selections
+*	return:			null
 *********************************************************************************/
 function onChange(p, input){
-	//alert(p);
+
 	var url 	= $(input).val();
 	var file 	= input.files[0];
 	var name 	= file.name;

@@ -62,6 +62,16 @@ public class ProductServlet extends HttpServlet
 		Blob blob 				= null;
 		byte[] data 			= null;
 		
+		
+		String code 			= request.getParameter("code");
+		String catalog 			= request.getParameter("catalog");
+		String type 			= request.getParameter("type");
+		String priceString 		= request.getParameter("price");
+		String length 			= request.getParameter("length"); 
+		String color 			= request.getParameter("color");
+		String image			= request.getParameter("image");
+		
+		/*
 		String code 			= request.getParameter("code");
 //		int id = 0;
 		String type = "";
@@ -85,7 +95,7 @@ public class ProductServlet extends HttpServlet
 								+ " type:" + type 
 								+ " price: " + price );
 		}
-		
+		*/
 		try 
 		{
 			
@@ -113,7 +123,9 @@ public class ProductServlet extends HttpServlet
 					 
 				case "1":		// add new product
 				{
-					Product product = new Product(type, price, image);
+					Blob img = new SerialBlob(image.getBytes());
+					float price = Float.valueOf(priceString);
+					Product product = new Product(type, price, img);
 					db.insertProduct(product);
 					System.out.println("product servlet >> add product");
 					break;
@@ -167,6 +179,12 @@ public class ProductServlet extends HttpServlet
 		}
 		catch (IOException e) 
 		{
+			e.printStackTrace();
+		} catch (SerialException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}

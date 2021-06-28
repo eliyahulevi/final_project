@@ -6,6 +6,7 @@ package model.product;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Blob;
 import java.util.Base64;
 
 // types of lumber cross sections
@@ -19,13 +20,14 @@ import java.util.Base64;
  */
 public class Product 
 {
-//	int 	catalog;
+	int 	catalog;
 	String 	type;
 	float 	price;
-//	float 	length;
-//	String 	color;
+	float 	length;
+	String 	color;
 //	InputStream    image;
-	byte[] image;
+	byte[] 	image;
+	Blob img;
 	
 	/**
 	 * constructor *
@@ -37,24 +39,33 @@ public class Product
 
 	public Product(String type, float price, byte[] image)// InputStream image) 
 	{
-//		this.catalog = id;
+		this.catalog = 0;
 		this.type = type;
 		this.price = price;
-//		this.length = length;
-//		this.color = color;
+		this.length = 0;
+		this.color = "";
 		this.image = image;
 	}
-
-//	public void setCatalog(int c) 	{ this.catalog = c; }
+	public Product(String type, float price, Blob image)// InputStream image) 
+	{
+		this.catalog = 0;
+		this.type = type;
+		this.price = price;
+		this.length = 0;
+		this.color = "";
+		this.img = image;
+	}
+	
+	public void setCatalog(int c) 	{ this.catalog = c; }
  	public void setType(String t) 		{ this.type = t; }
 	public void setPrice(float p) 	{ this.price = p; }
-//	public void setLength(float l) 	{ this.length = l; }
-//	public void setColor(String c) 	{ this.color = c; }
+	public void setLength(float l) 	{ this.length = l; }
+	public void setColor(String c) 	{ this.color = c; }
 //	public void setImage(InputStream image) { this.image = image;}
 	public void setImage(byte[] image) throws IOException {
-//		this.image = image;
+		this.image = image;
 
-	
+		/*
 		Base64.Encoder encoder = Base64.getEncoder();
 		byte[] arrEncode = encoder.encode(image);
 		System.out.println("Encoded image byte array: "+arrEncode);
@@ -62,19 +73,19 @@ public class Product
 		FileOutputStream fos = new FileOutputStream("try.jpg");
 		try {
 		fos.write(this.image);
-//		System.out.println(arrEncode);
+		System.out.println(arrEncode);
 		}
 		finally {
 			fos.close();	
 		}
-		
+		*/
 	}
 
-//	public int getCatalog() 		{ return this.catalog; }
+	public int getCatalog() 		{ return this.catalog; }
 	public String getType() 			{ return this.type; }
 	public float getPrice() 		{ return this.price; }
-//	public float getLength()		{ return this.length; }
-//	public String getColor()		{ return this.color; }
+	public float getLength()		{ return this.length; }
+	public String getColor()		{ return this.color; }
 //	public InputStream getImage()          { return this.image;}
 	public byte[] getImage()          { return this.image;}
 }
