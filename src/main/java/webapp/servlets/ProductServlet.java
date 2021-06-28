@@ -90,51 +90,51 @@ public class ProductServlet extends HttpServlet
 		{
 			
 			switch(code)
-			 {
-			 	case "0":		// get all products
-			 	{
-			 		 List<Product> list = db.getProducts();
-					 String json = "";
-					 if( list.size() > 0)
-					 {
-						 for (int i = 0; i < list.size(); i++ ) {
-							 System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
-						 }
-						 json = new Gson().toJson(list);
-						 System.out.println("product servlet >> " + list);
-					 } 
+			{
+				case "0":		// get all products
+				{
+					List<Product> list = db.getProducts();
+					String json = "";
+					if( list.size() > 0)
+					{
+						for (int i = 0; i < list.size(); i++ ) 
+							System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
 					
-					 
-					 System.out.println("heresssss json!!: " + json);
-					 response.getWriter().write(json);
-					 break;
-			 	}
+						json = new Gson().toJson(list);
+						System.out.println("product servlet >> " + list);
+					} 
+				
+				 
+				 	System.out.println("heresssss json!!: " + json);
+					response.getWriter().write(json);
+					break;
+				}
 				
 					 
-				 case "1":		// add new product
-				 {
-				 	Product product = new Product(type, price, image);
-					 db.insertProduct(product);
-					 System.out.println("product servlet >> add product");
-					 break;
-				 }
+				case "1":		// add new product
+				{
+					Product product = new Product(type, price, image);
+					db.insertProduct(product);
+					System.out.println("product servlet >> add product");
+					break;
+				}
 				 
-				 case "2":		// TBD
-				 {
+				case "2":		// TBD
+				{
 					 
-					 break;
-				 }
+					break;
+				}
 				 
-				 case "3":		// TBD
-				 {
+				case "3":		// TBD
+				{
 					
-					 break;
-				 }
+					break;
+				}
 				 
-				 case "4":		// get all user products
-				 {
-					 String json = "";
-					 System.out.println("user servlet >> code:" + code);
+				case "4":		// get all user products
+				{
+					String json = "";
+					System.out.println("user servlet >> code:" + code);
 					 /*
 					 List<Order> list = db.getOrders(user);
 					 if( list.size() > 0)
@@ -144,11 +144,11 @@ public class ProductServlet extends HttpServlet
 					 }
 					 response.getWriter().write(json);
 					 */
-					 break;
-				 }
+					break;
+				}
 				 
-				 default:
-					 break;
+				default:
+					break;
 			}
 
 		}

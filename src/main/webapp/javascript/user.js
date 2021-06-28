@@ -239,8 +239,8 @@ function addNewProduct(){
 		//alert('load products'); 
 		
 		$.ajax({    
-        url: 'ProductServlet', 	// point to server-side
-        dataType: 'text',  		// what to expect back from the server if anything
+        url: 'ProductServlet', 	
+        dataType: 'text',  		
         cache: false,
         contentType: false,
         processData: false,
@@ -257,13 +257,9 @@ function addNewProduct(){
 *	this function cancel the adding product procedure
 *********************************************************************************/
 function cancelAddProduct(){
-	var addProductBtn 		= document.getElementById('add-product-btn');
-	var cancelAddProductBtn = document.getElementById('cancel-product-btn');
-	var addProductFoprm 	= document.getElementById('new-product');
 	
-	addProductBtn.setAttribute('style', 'display:none;');
-	cancelAddProductBtn.setAttribute('style', 'display:none;');
-	addProductFoprm.setAttribute('style', 'display:none;');
+	var p	= document.getElementById('new-product');
+	p.remove();
 }
 
 
@@ -282,6 +278,7 @@ function showAddProduct(){
 	var cancelProductBtn= document.createElement("button");
 	var p 				= document.createElement("p");
 	var tbl 			= document.createElement('table');
+	var addImage		= document.createElement('a');
 	var trHeader 		= document.createElement('tr');
 	var trValues 		= document.createElement('tr');
 	var thCatalog 		= document.createElement('th');
@@ -349,6 +346,7 @@ function showAddProduct(){
     addProductBtn.innerHTML = "add product";
 	addProductBtn.setAttribute('id', 'add-product-btn');
 	addProductBtn.setAttribute('type', 'button');
+	addProductBtn.setAttribute('style', 'vertical-align:bottom !important');
 	addProductBtn.setAttribute('class', 'btn btn-success');
 	addProductBtn.setAttribute("onclick", 'addNewProduct()');
 	
@@ -359,8 +357,16 @@ function showAddProduct(){
 	cancelProductBtn.setAttribute('style', 'float:right; padding-right:10px;');
 	cancelProductBtn.setAttribute("onclick", 'cancelAddProduct()' );
 	
+	p.setAttribute('id', 'p-add-cancel');
+	p.setAttribute('style', 'align-items: bottom;');
 	p.appendChild(addProductBtn);
+	p.appendChild(addImage);
 	p.appendChild(cancelProductBtn);
+	
+	addImage.innerHTML = 'add image';
+	addImage.setAttribute('onclick', '');
+	addImage.setAttribute('style', 'align-self: flex-end;');
+	addImage.setAttribute('href', '#products');
 	
 	form.appendChild(hr);
 	form.appendChild(tbl);
