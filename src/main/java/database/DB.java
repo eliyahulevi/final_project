@@ -119,11 +119,11 @@ public class DB
 			+ "DESCRIPTION varchar(500)"
 			+ ")";
 	private final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + tables_str[tables.PRODUCTS.value] + "("
-//			+ "PRODUCT_ID int PRIMARY KEY,"
+			+ "PRODUCT_ID int PRIMARY KEY,"
 			+ "TYPE varchar(30),"
 			+ "PRICE float(10),"
-//			+ "LENGTH float(10),"
-//			+ "COLOR varchar(10)"
+			+ "LENGTH float(10),"
+			+ "COLOR varchar(10),"
 			+ "IMAGE BLOB"
 			+ ")"; 
 	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.value] + "("
@@ -199,7 +199,7 @@ public class DB
 	 ***********************************************************************/
 	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
 	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?)";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
 	
@@ -318,7 +318,7 @@ public class DB
 		catch (SQLException e1) 
 		{
 			System.out.printf("\n%-15s %s%n", "DB>>", "sql error: " + e1.getSQLState());
-			if("X0Y68".equals(e1.getSQLState()) )
+			if((e1.getSQLState().equals("X0Y68")) )
 			{
 				
 				String DROP_REPLACE_FUNCTION = "DROP FUNCTION REPLACE";
@@ -330,7 +330,7 @@ public class DB
 				try 
 				{
 					this.connection.createStatement().execute(DROP_REPLACE_FUNCTION);
-					//this.connection.createStatement().execute(REGISTER_REPLACE_FUNC);
+					this.connection.createStatement().execute(REGISTER_REPLACE_FUNC);
 				} 
 				catch (SQLException e) 
 				{
@@ -491,7 +491,7 @@ public class DB
         		{
 					e1.printStackTrace();
 				}
-        	}
+        	} 
         	
         }
         
@@ -1688,19 +1688,19 @@ public class DB
 			}
 			ps = this.connection.prepareStatement(INSERT_PRODUCT);
 			
-			ps.setString(1, product.getType());
-			//ps.setInt(2, product.getType());
-			ps.setFloat(2, product.getPrice());
+			ps.setInt(1, product.getCatalog());
+			ps.setString(2, product.getType());
+			ps.setFloat(3, product.getPrice());
 			ps.setFloat(4, product.getLength());
 			ps.setString(5, product.getColor());
-			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
+//			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
 //			File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
-			InputStream is = new FileInputStream(new File(path));
+//			InputStream is = new FileInputStream(new File(path));
 //			InputStream in = new FileInputStream("E:\\images\\cat.jpg");
 //			this.p.setImage(img);
 //			ps.setBinaryStream(6, is, (int) img.length());
 			//blob.setBytes(result, null, result, result)
-			ps.setBlob(3, new SerialBlob(product.getImage()));
+			ps.setBlob(6, product.getImg()); 
 			result = ps.executeUpdate();
 			
 			if (result > 0)

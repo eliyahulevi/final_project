@@ -215,7 +215,10 @@ function addNewProduct(){
 		var productType 	= document.getElementById('product-type');
 		var productPrice 	= document.getElementById('product-price');
 		var productColor 	= document.getElementById('product-color');
+		var productImage	= document.getElementById('new-product');
+		var images			= productImage.getElementsByClassName('thumb');
 		
+		alert(images[0].src);
 		
 		if(productLength.value === ''){
 			alert('productLength is empty');
@@ -236,16 +239,17 @@ function addNewProduct(){
 		formdata.append("price", productPrice.value);
 		formdata.append("length", productLength.value);
 		formdata.append("color", productColor.value);
+		formdata.append("image", images[0].src);
 		//alert('load products'); 
 		
 		$.ajax({    
-        url: 'ProductServlet', 	
-        dataType: 'text',  		
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formdata,                         
-        type: 'post',
+        url: 			'ProductServlet', 	
+        dataType: 		'text',  		
+        cache: 			false,
+        contentType:	false,
+        processData:	false,
+        data: 			formdata,                         
+        type: 			'post',
         success: function(response){ 
         			cancelAddProduct()
     			}
@@ -1297,8 +1301,25 @@ function cancelMsgText(){
 	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
 } 
 
-function onProductAdded(file){
-	alert('product added');
+
+/*********************************************************************************
+*	this function handles product image upload event, display the selected imnage
+*	to the 'addNewProduct' area
+*	@param:			input, the selected file from file-upload dialog
+*	return			null
+*********************************************************************************/
+function onProductAdded(input){
+	
+	var file 			= input.files[0];
+	var name 			= file.name;
+	var productArea		= document.getElementById('new-product');
+	var	image			= document.createElement('img');
+	var reader 			= new FileReader();
+    reader.onload = function (event) {
+    					var newImg	=	createCheckedImage(event.target.result, name);
+				    	productArea.appendChild(newImg);		    	
+				    };
+	reader.readAsDataURL(file);    
 }
 
 /*********************************************************************************

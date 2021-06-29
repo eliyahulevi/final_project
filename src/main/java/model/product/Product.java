@@ -61,7 +61,7 @@ public class Product
 	public void setPrice(float p) 	{ this.price = p; }
 	public void setLength(float l) 	{ this.length = l; }
 	public void setColor(String c) 	{ this.color = c; }
-//	public void setImage(InputStream image) { this.image = image;}
+	//public void setImage(InputStream image) { this.image = image;}
 	public void setImage(byte[] image) throws IOException {
 		this.image = image;
 
@@ -88,4 +88,5 @@ public class Product
 	public String getColor()		{ return this.color; }
 //	public InputStream getImage()          { return this.image;}
 	public byte[] getImage()          { return this.image;}
+	public Blob getImg()          { return this.img;}
 }

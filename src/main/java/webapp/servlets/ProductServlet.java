@@ -107,7 +107,7 @@ public class ProductServlet extends HttpServlet
 					String json = "";
 					if( list.size() > 0)
 					{
-						for (int i = 0; i < list.size(); i++ ) 
+						for (int i = 0; i < list.size(); i++ )  
 							System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
 					
 						json = new Gson().toJson(list);
