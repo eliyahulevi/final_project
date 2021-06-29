@@ -1699,7 +1699,7 @@ public class DB
 //			this.p.setImage(img);
 //			ps.setBinaryStream(6, is, (int) img.length());
 			//blob.setBytes(result, null, result, result)
-			ps.setBlob(6, product.getImg()); 
+			ps.setBlob(6, product.getImage()); 
 			result = ps.executeUpdate();
 			
 			if (result > 0)
@@ -1753,7 +1753,7 @@ public class DB
 //			ps.setString(1, Integer.toString(product.getCatalog()) + Float.toString(product.getLength()));
 			ps.setString(1, product.getType());
 			ps.setFloat(2, product.getPrice());
-			ps.setBytes(3,product.getImage());
+			ps.setBlob(3,product.getImage());
 //			ps.setInt(2, product.getCatalog());
 //			ps.setInt(3, (int)product.getLength());
 //			ps.setString(4, product.getColor());
@@ -1880,7 +1880,7 @@ public class DB
 // 				product.setLength(rs.getFloat(4));
 // 				product.setColor(rs.getString(5));
  				System.out.println("reading the blob...");
- 				product.setImage(rs.getBytes(3));
+ 				//product.setImage(rs.getBytes(3));
  				result.add(product); 
 	 		}
 		}
@@ -1975,17 +1975,15 @@ public class DB
  	{
  		String result = "";
  		
- 		Blob blob = product.getImg();
+ 		Blob blob = product.getImage();
 		Map<String,String> map = new HashMap<String,String>();
-		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
 		try
 		{
-			
 			map.put("catalog", String.valueOf(product.getCatalog()));
 			map.put("type", product.getType());
 			map.put("price", String.valueOf(product.getPrice()));	
 			map.put("length", String.valueOf(product.getLength()));
-			map.put("color", String.valueOf(product.getColor()));
+			map.put("color", product.getColor());
 
 			if(blob == null)
 				map.put("image", "");

@@ -67,7 +67,7 @@ public class ProductServlet extends HttpServlet
 		String catalog 			= request.getParameter("catalog");
 		String type 			= request.getParameter("type");
 		String priceString 		= request.getParameter("price");
-		String length 			= request.getParameter("length"); 
+		String lengthString 	= request.getParameter("length"); 
 		String color 			= request.getParameter("color");
 		String image			= request.getParameter("image");
 		
@@ -103,21 +103,15 @@ public class ProductServlet extends HttpServlet
 			{
 				case "0":		// get all products
 				{
-					//List<Product> list = db.getProducts();
 					List<String> list = db.getProducts1();
 					String json = "";
 					if( list.size() > 0)
 					{
-						/*
-						for (int i = 0; i < list.size(); i++ )  
-							System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
-						*/
 						json = new Gson().toJson(list);
-						System.out.println("product servlet >> " + list);
-					} 
-				
+						System.out.printf("%n%-15s %s","product servlet >> ", "");
+					}
 				 
-				 	System.out.println("heresssss json!!: " + json);
+					System.out.printf("%n%-15s %s", "product servlet >>", "product: ");
 					response.getWriter().write(json);
 					break;
 				}
@@ -126,10 +120,13 @@ public class ProductServlet extends HttpServlet
 				case "1":		// add new product
 				{
 					Blob img = new SerialBlob(image.getBytes());
+					int cat		= Integer.valueOf(catalog);
 					float price = Float.valueOf(priceString);
-					Product product = new Product(type, price, img);
+					float length = Float.valueOf(lengthString);
+					Product product = new Product(cat, type, price, length, color, img);
 					db.insertProduct(product);
 					System.out.println("product servlet >> add product");
+					product.print();
 					break;
 				}
 				 

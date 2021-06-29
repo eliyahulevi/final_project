@@ -186,19 +186,27 @@ function loadProducts(sync){
         type: 			'post',
         async: 			sync,
         success: function(response){
-        
-        			
+     			
         			var products 	= JSON.parse(response);
         			var table 		= document.getElementById("products-table");
-        			var img			= document.createElement("img");
         			var number		= document.getElementById('number-of-products');
-        			
-        			img.setAttribute('class', 'image');
+
         			number.innerHTML = products.length;
         			
         			for(var i = 0; i < products.length; i++){
         				var product = JSON.parse(products[i]);
+        				var img		= document.createElement("img");
+        				img.setAttribute('class', 'image');
         				img.src = product.image;
+        				
+        				alert(	'product:' 	+ 
+        						'\ncatalog: ' 	+ product.catalog +
+        						'\ntype: ' 		+ product.type + 
+        						'\nprice: ' 	+ product.price + 
+        						'\nlength: ' 	+ product.length +
+        						'\ncolor: ' 	+ product.color
+        					 );
+
         				var row = table.insertRow(-1);
         				var cell1 = row.insertCell(0);
         				var cell2 = row.insertCell(1);
@@ -207,11 +215,11 @@ function loadProducts(sync){
         				var cell5 = row.insertCell(4);
         				var cell6 = row.insertCell(5);
         				
-        				cell1.innerHTML = products[i].catalog;
-        				cell2.innerHTML = products[i].type;
-        				cell3.innerHTML = products[i].price;
-        				cell4.innerHTML = products[i].length;
-        				cell5.innerHTML = products[i].color;
+        				cell1.innerHTML = product.catalog;
+        				cell2.innerHTML = product.type;
+        				cell3.innerHTML = product.price;
+        				cell4.innerHTML = product.length;
+        				cell5.innerHTML = product.color;
         				cell6.appendChild(img);
         				
         			}
@@ -232,8 +240,6 @@ function addNewProduct(){
 		var productColor 	= document.getElementById('product-color');
 		var productImage	= document.getElementById('new-product');
 		var images			= productImage.getElementsByClassName('thumb');
-		
-		alert(images[0].src);
 		
 		if(productLength.value === ''){
 			alert('productLength is empty');

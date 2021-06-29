@@ -25,9 +25,7 @@ public class Product
 	float 	price;
 	float 	length;
 	String 	color;
-//	InputStream    image;
-	byte[] 	image;
-	Blob img;
+	Blob 	image;
 	
 	/**
 	 * constructor *
@@ -36,7 +34,6 @@ public class Product
 	{
 		
 	}
-
 	public Product(String type, float price, byte[] image)// InputStream image) 
 	{
 		this.catalog = 0;
@@ -44,7 +41,7 @@ public class Product
 		this.price = price;
 		this.length = 0;
 		this.color = "";
-		this.image = image;
+		
 	}
 	public Product(String type, float price, Blob image)// InputStream image) 
 	{
@@ -53,7 +50,27 @@ public class Product
 		this.price = price;
 		this.length = 0;
 		this.color = "";
-		this.img = image;
+		this.image = image;
+	}
+	public Product(int catalog, String type, float price, float length, String color, Blob image)// InputStream image) 
+	{
+		this.catalog = catalog;
+		this.type = type;
+		this.price = price;
+		this.length = length;
+		this.color = color;
+		this.image = image;
+	}
+	
+	public void print()
+	{
+		System.out.printf("%n%-15s %s", "product >>", "");
+		System.out.printf("%n%-15s %d", "", this.catalog);		// cat number
+		System.out.printf("%n%-15s %s", "", this.type);			// type
+		System.out.printf("%n%-15s %f", "", this.price);		// price
+		System.out.printf("%n%-15s %f", "", this.length);		// length
+		System.out.printf("%n%-15s %s", "", this.color);		// color
+		System.out.printf("%n%-15s %s", "", this.image);		// image
 	}
 	
 	public void setCatalog(int c) 		{ this.catalog = c; }
@@ -61,32 +78,12 @@ public class Product
 	public void setPrice(float p) 		{ this.price = p; }
 	public void setLength(float l) 		{ this.length = l; }
 	public void setColor(String c) 		{ this.color = c; }
-	public void setImage(Blob image) 	{ this.img = image;}
-	public void setImage(byte[] image) throws IOException {
-		this.image = image;
+	public void setImage(Blob image) 	{ this.image = image;}
 
-		/*
-		Base64.Encoder encoder = Base64.getEncoder();
-		byte[] arrEncode = encoder.encode(image);
-		System.out.println("Encoded image byte array: "+arrEncode);
-		this.image = image;
-		FileOutputStream fos = new FileOutputStream("try.jpg");
-		try {
-		fos.write(this.image);
-		System.out.println(arrEncode);
-		}
-		finally {
-			fos.close();	
-		}
-		*/
-	}
-
-	public int getCatalog() 		{ return this.catalog; }
-	public String getType() 		{ return this.type; }
-	public float getPrice() 		{ return this.price; }
-	public float getLength()		{ return this.length; }
-	public String getColor()		{ return this.color; }
-//	public InputStream getImage()   { return this.image;}
-	public byte[] getImage()        { return this.image;}
-	public Blob getImg()         	{ return this.img;}
+	public int getCatalog() 			{ return this.catalog; }
+	public String getType() 			{ return this.type; }
+	public float getPrice() 			{ return this.price; }
+	public float getLength()			{ return this.length; }
+	public String getColor()			{ return this.color; }
+	public Blob getImage()         		{ return this.image;}
 }
