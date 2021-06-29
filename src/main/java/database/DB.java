@@ -113,7 +113,6 @@ public class DB
 			+ "FOREIGN KEY (REPLIEDTO) REFERENCES MESSAGES(USERDATE),"
 			+ "DISPLAY varchar(20)"
 			+ ")";
-
 	private final String CREATE_CHANNEL_TABLE = "CREATE TABLE " + tables_str[tables.CHANNELS.value] + "("
 			+ "NAME varchar(30),"
 			+ "DESCRIPTION varchar(500)"
@@ -1906,8 +1905,105 @@ public class DB
  		
  		return result;
  	}
+ 	public List<String> getProducts1()
+ 	{
+ 		List<String> result 	= new ArrayList<String>();
+ 		PreparedStatement ps 	= null;
+		ResultSet rs 			= null;
+		Product product 		= null;
+		
+		try
+		{
+			if(this.connect() < 0)
+			{
+				System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+				System.exit(-1);
+			}
+			System.out.printf("%-15s %s%n", "DB>>", "getting all products");
+			product = new Product();
+			
+			this.connection.setAutoCommit(false); 
+			ps = this.connection.prepareStatement(SELECT_ALL_PRODUCTS); 
+			rs = ps.executeQuery();
+			
+			 
+			while(rs.next())
+			{
+				product.setCatalog(rs.getInt(1));				// catalog
+				product.setType(rs.getString(2));				// type
+				product.setPrice(rs.getFloat(3));				// price
+				product.setLength(rs.getFloat(4));				// length
+				product.setColor(rs.getString(5));				// color
+				product.setImage(rs.getBlob(6));				// image
+				String s = product2JSON(product);
+				result.add(s);
+			}
+			this.connection.commit();
+		}
+		catch(SQLException e)
+		{
+			if("08003".equals(e.getSQLState())) 
+				System.out.printf("%-15s %s%n", "DB>>", "no connection..");
+			else if("XCL16".equals(e.getSQLState()))
+				System.out.printf("%-15s %s%n", "DB>>", "operation next not permitted..");
+				
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.disconnect();
+			try 
+			{
+				if(ps != null && !ps.isClosed())
+					ps.close();
+				if(rs != null && !rs.isClosed())
+					rs.close();
+			} 
+			catch (SQLException e1) 
+			{
+				if(e1.getSQLState().equals("XCL16"))
+					System.out.printf("%-15s %s%n", "DB >>", "result set is closed");
+				e1.printStackTrace();
+			}
+		}
+ 		
+ 		return result;
+ 	}
  	
  	
+ 	private String product2JSON(Product product) 
+ 	{
+ 		String result = "";
+ 		
+ 		Blob blob = product.getImg();
+		Map<String,String> map = new HashMap<String,String>();
+		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
+		try
+		{
+			
+			map.put("catalog", String.valueOf(product.getCatalog()));
+			map.put("type", product.getType());
+			map.put("price", String.valueOf(product.getPrice()));	
+			map.put("length", String.valueOf(product.getLength()));
+			map.put("color", String.valueOf(product.getColor()));
+
+			if(blob == null)
+				map.put("image", "");
+			else 
+				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+			
+			// TODO: try map.put("image", new String(blob.getBytes(0, (int)blob.length() - 1 )));
+			// and correct client side
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		result = JSONValue.toJSONString(map);
+ 		
+ 		return result;
+ 	}
  	
  	/**************************************************************************
 	*								general methods

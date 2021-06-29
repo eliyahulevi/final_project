@@ -163,6 +163,8 @@ function addImage(image){
 
 /*********************************************************************************
 *	this function loads all available product from DB
+*	@param:			sync, boolean weather the function executes in/out of sync
+*	return:			null
 *********************************************************************************/
 function loadProducts(sync){
 		var formdata = new FormData();
@@ -175,30 +177,40 @@ function loadProducts(sync){
 		//alert('load products'); 
 		
 		$.ajax({    
-        url: 'ProductServlet', 	
-        dataType: 'text',  		
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formdata,                         
-        type: 'post',
-        async: sync,
-        success: function(response){ 
+        url: 			'ProductServlet', 	
+        dataType: 		'text',  		
+        cache: 			false,
+        contentType:	false,
+        processData:	false,
+        data: 			formdata,                         
+        type: 			'post',
+        async: 			sync,
+        success: function(response){
+        
+        			
         			var products = JSON.parse(response);
-        			var table = document.getElementById("products-table");
+        			var table 	= document.getElementById("products-table");
+        			var img		= document.createElement("img");
+        			img.setAttribute('class', 'image');
+        			
         			for(var i = 0; i < products.length; i++){
-        				var row = table.insertRow(i);
+        				var product = JSON.parse(products[i]);
+        				img.src = product.image;
+        				var row = table.insertRow(-1);
         				var cell1 = row.insertCell(0);
         				var cell2 = row.insertCell(1);
         				var cell3 = row.insertCell(2);
         				var cell4 = row.insertCell(3);
         				var cell5 = row.insertCell(4);
+        				var cell6 = row.insertCell(5);
         				
         				cell1.innerHTML = products[i].catalog;
         				cell2.innerHTML = products[i].type;
-        				cell1.innerHTML = products[i].price;
+        				cell3.innerHTML = products[i].price;
         				cell4.innerHTML = products[i].length;
         				cell5.innerHTML = products[i].color;
+        				cell6.appendChild(img);
+        				
         			}
     			}
      	});
@@ -251,6 +263,7 @@ function addNewProduct(){
         data: 			formdata,                         
         type: 			'post',
         success: function(response){ 
+        			loadProducts(false);
         			cancelAddProduct()
     			}
      	});

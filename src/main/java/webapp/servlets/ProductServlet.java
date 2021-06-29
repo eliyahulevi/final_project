@@ -103,13 +103,15 @@ public class ProductServlet extends HttpServlet
 			{
 				case "0":		// get all products
 				{
-					List<Product> list = db.getProducts();
+					//List<Product> list = db.getProducts();
+					List<String> list = db.getProducts1();
 					String json = "";
 					if( list.size() > 0)
 					{
+						/*
 						for (int i = 0; i < list.size(); i++ )  
 							System.out.println("well well well... if it ain't the invisible cunt." + list.get(i).getImage());
-					
+						*/
 						json = new Gson().toJson(list);
 						System.out.println("product servlet >> " + list);
 					} 
