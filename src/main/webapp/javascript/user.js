@@ -188,10 +188,13 @@ function loadProducts(sync){
         success: function(response){
         
         			
-        			var products = JSON.parse(response);
-        			var table 	= document.getElementById("products-table");
-        			var img		= document.createElement("img");
+        			var products 	= JSON.parse(response);
+        			var table 		= document.getElementById("products-table");
+        			var img			= document.createElement("img");
+        			var number		= document.getElementById('number-of-products');
+        			
         			img.setAttribute('class', 'image');
+        			number.innerHTML = products.length;
         			
         			for(var i = 0; i < products.length; i++){
         				var product = JSON.parse(products[i]);
@@ -317,7 +320,7 @@ function showAddProduct(){
 	thPrice.innerHTML 	= 'Price [decimal]';
 	thLength.innerHTML 	= 'Length [decimal]';
 	thColor.innerHTML 	= 'Color [name]';
-
+	
 	trHeader.appendChild(thCatalog);
 	trHeader.appendChild(thType);
 	trHeader.appendChild(thPrice);
