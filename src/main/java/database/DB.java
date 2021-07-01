@@ -7,6 +7,7 @@ package database;
 
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,6 +16,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -122,7 +126,7 @@ public class DB
 			+ "TYPE varchar(30),"
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
-			+ "COLOR varchar(10),"
+			+ "COLOR varchar(30),"
 			+ "IMAGE BLOB"
 			+ ")"; 
 	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.value] + "("
@@ -575,6 +579,7 @@ public class DB
 	/************************************************************************
 	*	USER related code here: (insert, update, get all, etc. )
 	*************************************************************************/		
+	
 	/*
 	 *	converts User instance to string in JSON format
 	 *	@param	user	instance of User class
@@ -825,6 +830,7 @@ public class DB
 	/************************************************************************
 	*	MESSAGE related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
+	
 	/*
 	 *  convert message to JSON format
 	 *  @param	Message message, a Message instance
@@ -1368,7 +1374,8 @@ public class DB
 	*	IMAGE related code here:  (insert, update, get all, etc. ), this 
 	*	section might by unified with MESSAGE section
 	*************************************************************************/	
- 	/*
+ 	
+	/*
  	 * 	inserting an image with name, by specific user and source
  	 * 	@param	imgName String	file name
  	 * 	@param	user	String	the name of the user that uploaded
@@ -1667,6 +1674,97 @@ public class DB
 	/************************************************************************
 	*	PRODUCT related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
+ 	
+ 	/*
+ 	 *  loadProducts create Product records out of all the entries in the path,
+ 	 *  each entry is an image (picture) file that holds the product details in
+ 	 *  the file name. The file name has the following format: 
+ 	 *  'catalog'(string);'type'(string);price(float);length(float);
+ 	 *  'color'(string);'cross-section'(string). Note: the delimiter ';' must be
+ 	 *  used!! for example: "10;pine;10.5;20.2;light_grey;5X5type.jpg"
+ 	 *  @param:		String path, the directory where the files exist
+ 	 *  return:		int, non-negative on success, negative otherwise
+ 	 */
+ 	public int loadProducts(String path)
+ 	{
+ 		Blob blob;
+ 		int result 				= -1;
+ 		File file				= null;
+ 		File[] paths;
+ 		PreparedStatement ps 	= null;
+ 		String imageString		= "";
+ 		
+ 		
+	 	try
+	 	{
+	 		
+	 		System.out.printf("%-15s %s%n", "DB >>", "products from: " + path);	
+	 		file = new File(path);
+	 		paths = file.listFiles();
+	 		
+			if(this.connect() < 0)
+			{
+				System.out.println("DB >> cannot connect to database.. aborting");
+				return result;
+			}
+			
+			for( File filePath : paths)
+			{
+				int lastIndex			= (filePath.toString()).lastIndexOf('\\');
+				String f				= (filePath.toString()).substring(lastIndex + 1); 
+				String[] productDetails = (f.toString()).split(";");
+				//String rootDir			= (filePath.toString()).substring(0, lastIndex);
+				Path p					= Paths.get(filePath.toString());
+				byte[] fileBytes 		= Files.readAllBytes(p); 
+				imageString				= Base64.getEncoder().encodeToString(fileBytes);
+				blob					= new SerialBlob(imageString.getBytes());
+				
+				System.out.printf("%-15s %s%n", "DB >>", "image source: " + imageString);	
+				
+				ps = this.connection.prepareStatement(INSERT_PRODUCT);
+				ps.setInt(1, Integer.valueOf(productDetails[0]));		// catalog
+				ps.setString(2, productDetails[1]);						// type 
+				ps.setFloat(3, Float.valueOf(productDetails[2]));		// price
+				ps.setFloat(4, Float.valueOf(productDetails[3]));		// length
+				ps.setString(5, productDetails[4]);						// color
+				ps.setBlob(6, blob); 
+				result = ps.executeUpdate();
+				
+				//if (result > 0)
+				//	System.out.println("DB >> product " + product.getType() + " added");
+				ps.close();
+				
+			}
+			
+
+			
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		if(((SQLException)e).getSQLState().equals("23505"))
+	 		{
+	 			System.out.printf("%-15s %s%n", "DB >>", "product already exist: ");
+	 		}
+	 		else
+	 			e.printStackTrace();
+	 	}
+
+	 	finally
+	 	{
+			try
+			{
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}
+ 		
+ 		return result;
+ 	}
  	
  	/*
  	 * 	insert a new product to DB
@@ -2004,7 +2102,7 @@ public class DB
  	}
  	
  	/**************************************************************************
-	*								general methods
+	*	general methods
 	***************************************************************************/ 
 	
 	/*

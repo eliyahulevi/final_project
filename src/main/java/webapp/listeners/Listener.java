@@ -10,6 +10,8 @@ import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,13 +48,16 @@ public class Listener implements ServletContextListener, HttpSessionListener
         try 
         {
 
-			Context context = new InitialContext();
-			Context env = (Context) context.lookup("java:comp/env");
-			String dbPath = (String)env.lookup("DB-PATH");
-			String dbName = (String)env.lookup("DB-NAME");
-			System.out.printf("%-15s %s%n", "listener >>", "database full path: " +  dbPath + dbName );		// TODO: erase after debug
-			this.db = new DB(driverURL, dbPath + dbName);
+			Context context 	= new InitialContext();
+			Context env 		= (Context) context.lookup("java:comp/env");
+			String dbPath 		= (String)env.lookup("DB-PATH");
+			String dbName 		= (String)env.lookup("DB-NAME");
+			String productsPath	= (String)env.lookup("PRODUCTS-PATH");
+			this.db 			= new DB(driverURL, dbPath + dbName);
+			
+			//System.out.printf("%-15s %s%n", "listener >>", "database full path: " +  dbPath + dbName );		// TODO: erase after debug
 			System.out.printf("%-15s %s%n", "listener >>", "data base created: " + dbName);					// TODO: erase after debug
+			this.db.loadProducts(productsPath); 
 			
 		} 
         catch (Exception e) 
@@ -74,6 +79,7 @@ public class Listener implements ServletContextListener, HttpSessionListener
 		*/
         }
     }
+    
 	/**
      * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
      */

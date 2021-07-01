@@ -1,6 +1,7 @@
 // 			TODO:	
 //			1. 	handle inserting replied message into RECIVING users messages area
-//				this is done in the insertMessage function
+//				this is done in the insertMessage function- DONE
+//			2. handle empty JSON responses
 
 
 
@@ -174,7 +175,7 @@ function loadProducts(sync){
 		formdata.append("price", "0");
 		formdata.append("length", "0");
 		formdata.append("color", "");
-		//alert('load products'); 
+		
 		
 		$.ajax({    
         url: 			'ProductServlet', 	
@@ -197,8 +198,8 @@ function loadProducts(sync){
         				var product = JSON.parse(products[i]);
         				var img		= document.createElement("img");
         				img.setAttribute('class', 'image');
-        				img.src = product.image;
-        				
+        				img.src = 'data:image/png;base64,' + product.image;
+        				/*
         				alert(	'product:' 	+ 
         						'\ncatalog: ' 	+ product.catalog +
         						'\ntype: ' 		+ product.type + 
@@ -206,7 +207,15 @@ function loadProducts(sync){
         						'\nlength: ' 	+ product.length +
         						'\ncolor: ' 	+ product.color
         					 );
-
+						*/
+						console.log('product source:' + 
+									'\nproduct catalog: ' + product.catalog +
+									'\nproduct type: ' + product.catalog +
+									'\nproduct price: ' + product.price +
+									'\nproduct length: ' + product.length +
+									'\nproduct color: ' + product.color +
+									'\nproduct image: ' + product.image);
+									
         				var row = table.insertRow(-1);
         				var cell1 = row.insertCell(0);
         				var cell2 = row.insertCell(1);
@@ -474,6 +483,7 @@ function loadUserOrders(sync){
         type: 'post',
         async: sync,
         success: function(response){ 
+        			if (response == '') return;
         			var products = JSON.parse(response);    			 			
 		            //var form = document.getElementById("items");
 		            var length = products.length;
@@ -511,7 +521,7 @@ function loadUserMessages(sync){
         type: 			'post',
         async: 			sync,
         success: function(response){ 
-               			
+               		if (response == '') return;
         		    var form 		= document.getElementById("msg-display");
         		    var numOfMsgs	= document.getElementById("numberOfMessages");
         			var messages 	= JSON.parse(response);  

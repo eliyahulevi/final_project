@@ -25,14 +25,20 @@
     <res-auth>Container</res-auth>
   </resource-ref>
   
-  <env-entry>
+  	<env-entry>
   		<env-entry-name>DB-NAME</env-entry-name>
     	<env-entry-type>java.lang.String</env-entry-type>
     	<env-entry-value>ClientsDB</env-entry-value> 
-  </env-entry>
+  	</env-entry>
 	<env-entry>
   		<env-entry-name>DB-PATH</env-entry-name>
     	<env-entry-type>java.lang.String</env-entry-type>
     	<env-entry-value>C:/final_project/</env-entry-value> 
-  </env-entry>
+	</env-entry>
+	
+	<env-entry>
+  		<env-entry-name>PRODUCTS-PATH</env-entry-name>
+    	<env-entry-type>java.lang.String</env-entry-type>
+    	<env-entry-value>C:\Users\shaha\Documents\github\final_project\src\main\webapp\resources\products</env-entry-value> 
+	</env-entry>
 </web-app>  
