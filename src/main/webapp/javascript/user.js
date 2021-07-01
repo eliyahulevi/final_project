@@ -194,20 +194,15 @@ function loadProducts(sync){
 
         			number.innerHTML = products.length;
         			
+        			for(var i = 1; i < table.rows.length; i++)
+        				table.deleteRow(i);
+        			
         			for(var i = 0; i < products.length; i++){
         				var product = JSON.parse(products[i]);
         				var img		= document.createElement("img");
         				img.setAttribute('class', 'image');
         				img.src = 'data:image/png;base64,' + product.image;
-        				/*
-        				alert(	'product:' 	+ 
-        						'\ncatalog: ' 	+ product.catalog +
-        						'\ntype: ' 		+ product.type + 
-        						'\nprice: ' 	+ product.price + 
-        						'\nlength: ' 	+ product.length +
-        						'\ncolor: ' 	+ product.color
-        					 );
-						*/
+  
 						console.log('product source:' + 
 									'\nproduct catalog: ' + product.catalog +
 									'\nproduct type: ' + product.catalog +
@@ -238,7 +233,11 @@ function loadProducts(sync){
 
 
 /*********************************************************************************
-*	this function send added product to the server (and from there to the DB)
+*	this function send added product to the server, thus allowing to upload a new
+*	product to the server\DB. if one of the fields is missing the function prompts
+*	a message urging user to complete the product form
+*	@param:			null
+*	return: 		null		
 *********************************************************************************/
 function addNewProduct(){
 		
