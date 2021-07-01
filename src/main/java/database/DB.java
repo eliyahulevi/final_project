@@ -320,10 +320,8 @@ public class DB
 		}
 		catch (SQLException e1) 
 		{
-			System.out.printf("\n%-15s %s%n", "DB>>", "sql error: " + e1.getSQLState());
-			if((e1.getSQLState().equals("X0Y68")) )
+			if(e1.getSQLState().equals("X0Y68") )
 			{
-				
 				String DROP_REPLACE_FUNCTION = "DROP FUNCTION REPLACE";
 				if(this.connect() < 0)
 				{
@@ -341,7 +339,28 @@ public class DB
 				}
 				this.disconnect();
 			}
-			e1.printStackTrace();
+			//	System.out.printf("\n%-15s %s%n", "DB>>", "sql error: " + e1.getSQLState());
+			
+			else//if(e1.getSQLState().equals("X0Y68") )
+			{
+				String DROP_REPLACE_FUNCTION = "DROP FUNCTION REPLACE";
+				if(this.connect() < 0)
+				{
+					System.out.printf("%-15s %s%n", "DB>>", "cannot connect to database.. aborting");
+					System.exit(-1);
+				}
+				try 
+				{
+					this.connection.createStatement().execute(DROP_REPLACE_FUNCTION);
+					this.connection.createStatement().execute(REGISTER_REPLACE_FUNC);
+				} 
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+				this.disconnect();
+			}
+			
 		}
 		finally
 		{
