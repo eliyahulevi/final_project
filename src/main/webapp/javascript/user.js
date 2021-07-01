@@ -250,16 +250,19 @@ function addNewProduct(){
 		var productImage	= document.getElementById('new-product');
 		var images			= productImage.getElementsByClassName('thumb');
 		
+		
+		
 		if(productLength.value === ''){
 			alert('productLength is empty');
 		}
 		if(productID.value == "" || productLength.value == "" || productType.value === "" || productPrice.value == "" || productColor.value == ""){
-			alert('please fill out ALL fields!');
-			alert('cat:' + productID.value+
-				  ' type:' + productType.value +
-				  ' length:' + productLength.value +
-				  ' price: ' + productPrice.value +
-				  ' color: ' + productColor.value);
+			
+			alert('one or all of the following fields is missing:' + 
+				  '\ncat:' + productID.value+
+				  '\ntype:' + productType.value +
+				  '\nlength:' + productLength.value +
+				  '\nprice: ' + productPrice.value +
+				  '\ncolor: ' + productColor.value);
 			return;
 		}
 		var formdata = new FormData();
@@ -269,8 +272,13 @@ function addNewProduct(){
 		formdata.append("price", productPrice.value);
 		formdata.append("length", productLength.value);
 		formdata.append("color", productColor.value);
-		formdata.append("image", images[0].src);
-		//alert('load products'); 
+		
+		if(images.length === 0 )
+			formdata.append("image", null);
+		else
+			formdata.append("image", images[0].src);
+		
+		alert('load products'); 
 		
 		$.ajax({    
         url: 			'ProductServlet', 	
@@ -281,7 +289,7 @@ function addNewProduct(){
         data: 			formdata,                         
         type: 			'post',
         success: function(response){ 
-        			loadProducts(false);
+        			loadProducts(true);
         			cancelAddProduct()
     			}
      	});
