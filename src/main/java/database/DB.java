@@ -9,12 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +22,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.sql.SQLNonTransientConnectionException;
 
 import model.product.AlternativeProduct;
 import model.product.Product;
@@ -37,10 +32,12 @@ import model.order.Order;
 import org.json.simple.JSONValue;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.rowset.serial.SerialBlob;
 
 import database.DerbyExtensions;
+import utilities.Utils;
 
 /**
  * @author shahar *
@@ -507,9 +504,9 @@ public class DB
         			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
     				DB.dbURL = "jdbc:derby:" + "C:/final_project/ClientsDB";//DB.dbPath + ";";
     				System.out.printf("%-15s %s%n", "DB >>", "dbURL: " + DB.dbURL);
-					this.connection = DriverManager.getConnection(DB.dbURL);
+ 
 				} 
-        		catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
+        		catch (InstantiationException | IllegalAccessException | ClassNotFoundException e1) 
         		{
 					e1.printStackTrace();
 				}
@@ -1709,9 +1706,11 @@ public class DB
  		Blob blob;
  		int result 				= -1;
  		File file				= null;
- 		File[] paths;
+ 		File[] paths			= null;
  		PreparedStatement ps 	= null;
  		String imageString		= "";
+ 		String coded_prefx		= "data:image/";
+ 		String coded_suffx		= ";base64,";
  		
  		
 	 	try
@@ -1732,13 +1731,23 @@ public class DB
 				int lastIndex			= (filePath.toString()).lastIndexOf('\\');
 				String f				= (filePath.toString()).substring(lastIndex + 1); 
 				String[] productDetails = (f.toString()).split(";");
-				//String rootDir			= (filePath.toString()).substring(0, lastIndex);
 				Path p					= Paths.get(filePath.toString());
-				byte[] fileBytes 		= Files.readAllBytes(p); 
-				imageString				= Base64.getEncoder().encodeToString(fileBytes);
-				blob					= new SerialBlob(imageString.getBytes());
 				
-				System.out.printf("%-15s %s%n", "DB >>", "image source: " + imageString);	
+				
+				
+				Optional<String> extn	= Utils.getExtensionByStringHandling(f);
+				String codedPrefix		= coded_prefx + extn.get() + coded_suffx;
+				byte[] codePrefxBytes	= codedPrefix.getBytes();
+				byte[] fileBytes 		= Files.readAllBytes(p); 
+				byte[] allBytes			= new byte[codePrefxBytes.length + fileBytes.length];
+				
+				System.arraycopy(fileBytes, 0, allBytes, 0, fileBytes.length);
+				System.arraycopy(codePrefxBytes, 0, allBytes, fileBytes.length, codePrefxBytes.length); 
+				
+				imageString				= Base64.getEncoder().encodeToString(allBytes);
+				blob					= new SerialBlob((codedPrefix + imageString).getBytes());
+				
+				System.out.printf("%-15s %s%n", "DB >>", "image source type: " + coded_prefx + extn.get() + coded_suffx);	
 				
 				ps = this.connection.prepareStatement(INSERT_PRODUCT);
 				ps.setInt(1, Integer.valueOf(productDetails[0]));		// catalog
@@ -1760,6 +1769,9 @@ public class DB
 	 	}
 	 	catch(Exception e)
 	 	{
+	 		int line = e.getCause().getStackTrace()[0].getLineNumber();
+	 		System.out.printf("%-15s %s%n", "DB >>", "exception line: " + line);
+	 		
 	 		if(((SQLException)e).getSQLState().equals("23505"))
 	 		{
 	 			System.out.printf("%-15s %s%n", "DB >>", "product already exist: ");

@@ -1,19 +1,21 @@
 package webapp.servlets;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-import javax.servlet.ServletConfig;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
@@ -24,6 +26,8 @@ import model.message.Message;
 import model.order.Order;
 import model.product.Product;
 
+import utilities.Utils;
+
 /**
  * Servlet implementation class ProductServlet
  */
@@ -33,14 +37,34 @@ public class ProductServlet extends HttpServlet
 {
 	
 	DB db;
+	File noDataFile;
+	Context context;
+	Context env;
+	String productsPath;
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public ProductServlet() {
-        super();
-        db = new DB();
+        super();        
+
+		try 
+		{
+			db 					= new DB();
+			context 			= new InitialContext();
+			env					= (Context) context.lookup("java:comp/env");
+			productsPath		= (String)env.lookup("PRODUCTS-PATH");
+			noDataFile			= new File(productsPath + "/no_data.png");
+			Optional<String> ext= Utils.getExtensionByStringHandling(productsPath);
+			
+			System.out.printf("%n%-15s %s","product servlet >> ", "no data" + noDataFile);
+		} 
+		catch (NamingException e) 
+		{
+			e.printStackTrace();
+		}
+
     }
 
 
@@ -58,9 +82,6 @@ public class ProductServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("trying to get product from products servlet");
-		InputStream fileContent = null;
-		Blob blob 				= null;
-		byte[] data 			= null;
 		
 		
 		String code 			= request.getParameter("code");
@@ -71,6 +92,11 @@ public class ProductServlet extends HttpServlet
 		String color 			= request.getParameter("color");
 		String image			= request.getParameter("image");
 		
+		
+		if(image == "" || image == null)
+		{
+			image = noDataFile.toString();
+		}
 		/*
 		String code 			= request.getParameter("code");
 //		int id = 0;
@@ -119,10 +145,10 @@ public class ProductServlet extends HttpServlet
 					 
 				case "1":		// add new product
 				{
-					Blob img = new SerialBlob(image.getBytes());
-					int cat		= Integer.valueOf(catalog);
-					float price = Float.valueOf(priceString);
-					float length = Float.valueOf(lengthString);
+					Blob img 		= new SerialBlob(image.getBytes());
+					int cat			= Integer.valueOf(catalog);
+					float price 	= Float.valueOf(priceString);
+					float length 	= Float.valueOf(lengthString);
 					Product product = new Product(cat, type, price, length, color, img);
 					db.insertProduct(product);
 					System.out.println("product servlet >> add product");
@@ -179,11 +205,13 @@ public class ProductServlet extends HttpServlet
 		catch (IOException e) 
 		{
 			e.printStackTrace();
-		} catch (SerialException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (SerialException e) 
+		{
 			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (SQLException e) 
+		{
 			e.printStackTrace();
 		} 
 	}

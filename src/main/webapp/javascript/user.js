@@ -148,7 +148,7 @@ function onError(event) {
 
 
 /*********************************************************************************
-*	this function insert imcomming images from sever into 'content' div in page.
+*	this function insert incoming images from sever into 'content' div in page.
 *	for now, only png format is handled. 
 *	@parameter image: 	the image SOURCE encoded in Base64
 *	return:				null
@@ -201,7 +201,7 @@ function loadProducts(sync){
         				var product = JSON.parse(products[i]);
         				var img		= document.createElement("img");
         				img.setAttribute('class', 'image');
-        				img.src = 'data:image/png;base64,' + product.image;
+        				img.src = product.image;// 'data:image/png;base64,' + product.image;
   
 						console.log('product source:' + 
 									'\nproduct catalog: ' + product.catalog +
@@ -248,8 +248,9 @@ function addNewProduct(){
 		var productColor 	= document.getElementById('product-color');
 		var productImage	= document.getElementById('new-product');
 		var images			= productImage.getElementsByClassName('thumb');
+		var formdata 		= new FormData();
 		
-		
+		console.log('image name: ' + images[0].name);
 		
 		if(productLength.value === ''){
 			alert('productLength is empty');
@@ -264,7 +265,7 @@ function addNewProduct(){
 				  '\ncolor: ' + productColor.value);
 			return;
 		}
-		var formdata = new FormData();
+		
 		formdata.append("code", "1");
 		formdata.append("catalog", productID.value);
 		formdata.append("type", productType.value); 
@@ -275,9 +276,7 @@ function addNewProduct(){
 		if(images.length === 0 )
 			formdata.append("image", null);
 		else
-			formdata.append("image", images[0].src);
-		
-		alert('load products'); 
+			formdata.append("image", images[0].src); 
 		
 		$.ajax({    
         url: 			'ProductServlet', 	
@@ -404,12 +403,10 @@ function showAddProduct(){
 	p.appendChild(addImage);
 	p.appendChild(cancelProductBtn);
 	
-	//addImage.innerHTML = 	
-	
 	loadFile.setAttribute('id', 'product-image-upload');
 	loadFile .setAttribute('class', 'upload-image');
-	loadFile.innerHTML = "<label for='file-input' >" +
-							"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+	loadFile.innerHTML = 	"<label for='file-input' >" +
+								"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
 							"</label>" +
 							"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onProductAdded(this)'>";
 
@@ -1352,11 +1349,10 @@ function onProductAdded(input){
 	var file 			= input.files[0];
 	var name 			= file.name;
 	var productArea		= document.getElementById('new-product');
-	var	image			= document.createElement('img');
 	var reader 			= new FileReader();
     reader.onload = function (event) {
-    					var newImg	=	createCheckedImage(event.target.result, name);
-				    	productArea.appendChild(newImg);		    	
+    					var image = createCheckedImage(event.target.result, name);
+				    	productArea.appendChild(image);		    	
 				    };
 	reader.readAsDataURL(file);    
 }
