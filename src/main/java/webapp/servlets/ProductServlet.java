@@ -46,7 +46,8 @@ public class ProductServlet extends HttpServlet
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductServlet() {
+    public ProductServlet() 
+    {
         super();        
 
 		try 
@@ -76,6 +77,7 @@ public class ProductServlet extends HttpServlet
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

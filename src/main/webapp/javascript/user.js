@@ -194,14 +194,24 @@ function loadProducts(sync){
 
         			number.innerHTML = products.length;
         			
-        			for(var i = 1; i < table.rows.length; i++)
+        			console.clear();
+        			console.log('number of table rows: ' + table.rows.length);
+        			console.log('number of products: ' + products.length);
+        			/*
+        			for(var i = 0; i < table.rows.length; i++)
         				table.deleteRow(i);
+        			*/
+        			while(table.rows.length > 0)
+        				table.deleteRow(i);
+        				
+        			console.log('number of table rows after deletion: ' + table.rows.length);
+        			
         			
         			for(var i = 0; i < products.length; i++){
         				var product = JSON.parse(products[i]);
         				var img		= document.createElement("img");
         				img.setAttribute('class', 'image');
-        				img.src = product.image;// 'data:image/png;base64,' + product.image;
+        				img.src = product.image;
   
 						console.log('product source:' + 
 									'\nproduct catalog: ' + product.catalog +
@@ -211,7 +221,7 @@ function loadProducts(sync){
 									'\nproduct color: ' + product.color +
 									'\nproduct image: ' + product.image);
 									
-        				var row = table.insertRow(-1);
+        				var row = table.insertRow(i);
         				var cell1 = row.insertCell(0);
         				var cell2 = row.insertCell(1);
         				var cell3 = row.insertCell(2);
@@ -225,8 +235,8 @@ function loadProducts(sync){
         				cell4.innerHTML = product.length;
         				cell5.innerHTML = product.color;
         				cell6.appendChild(img);
-        				
         			}
+        			
     			}
      	});
 }
