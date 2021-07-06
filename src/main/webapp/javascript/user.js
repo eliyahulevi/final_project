@@ -191,52 +191,46 @@ function loadProducts(sync){
         			var products 	= JSON.parse(response);
         			var table 		= document.getElementById("products-table");
         			var number		= document.getElementById('number-of-products');
-
-        			number.innerHTML = products.length;
-        			
+    			    var tr			= document.createElement("tr");
+    				
+        			number.innerHTML = products.length;        			
         			console.clear();
-        			console.log('number of table rows: ' + table.rows.length);
-        			console.log('number of products: ' + products.length);
-        			/*
-        			for(var i = 0; i < table.rows.length; i++)
-        				table.deleteRow(i);
-        			*/
-        			while(table.rows.length > 0)
-        				table.deleteRow(i);
-        				
-        			console.log('number of table rows after deletion: ' + table.rows.length);
+ 
+        			while(table.rows.length > 1)
+        				table.deleteRow(1);
         			
-        			
+        		       			
         			for(var i = 0; i < products.length; i++){
-        				var product = JSON.parse(products[i]);
-        				var img		= document.createElement("img");
+        			
+        				var product 		= JSON.parse(products[i]);
+        				var tr				= document.createElement("tr");
+        				var td_cat 			= document.createElement("td");
+        				var td_type 		= document.createElement("td");
+        				var td_price 		= document.createElement("td");
+        				var td_len 			= document.createElement("td");
+        				var td_clr 			= document.createElement("td");
+        				var td_img 			= document.createElement("td");
+        				var img				= document.createElement("img");
+        				
         				img.setAttribute('class', 'image');
         				img.src = product.image;
-  
-						console.log('product source:' + 
-									'\nproduct catalog: ' + product.catalog +
-									'\nproduct type: ' + product.catalog +
-									'\nproduct price: ' + product.price +
-									'\nproduct length: ' + product.length +
-									'\nproduct color: ' + product.color +
-									'\nproduct image: ' + product.image);
-									
-        				var row = table.insertRow(i);
-        				var cell1 = row.insertCell(0);
-        				var cell2 = row.insertCell(1);
-        				var cell3 = row.insertCell(2);
-        				var cell4 = row.insertCell(3);
-        				var cell5 = row.insertCell(4);
-        				var cell6 = row.insertCell(5);
         				
-        				cell1.innerHTML = product.catalog;
-        				cell2.innerHTML = product.type;
-        				cell3.innerHTML = product.price;
-        				cell4.innerHTML = product.length;
-        				cell5.innerHTML = product.color;
-        				cell6.appendChild(img);
+        				td_cat.innerHTML 	= product.catalog;
+        				td_type.innerHTML 	= product.type;
+        				td_price.innerHTML 	= product.price;
+        				td_len.innerHTML 	= product.length;
+        				td_clr.innerHTML 	= product.color;
+        				td_img.innerHTML	= img;
+        				
+        				tr.appendChild(td_cat);
+        				tr.appendChild(td_type);
+        				tr.appendChild(td_price);
+        				tr.appendChild(td_len);
+        				tr.appendChild(td_clr);
+        				tr.appendChild(img);
+        				table.appendChild(tr);
+        				
         			}
-        			
     			}
      	});
 }
