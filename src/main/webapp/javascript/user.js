@@ -204,8 +204,11 @@ function removeProduct(num){
     type: 			'post',
     async: 			true,
     success: function(response){
-    		console.log('response from server' + response);
-    		//console.log('product number: ' + num + ' deleted');
+    		if(response > 0)
+    		{
+    			loadProducts(true);
+    			console.log('response from server' + response);
+    		}
     	}
     });
 }
