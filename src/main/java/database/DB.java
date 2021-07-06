@@ -202,6 +202,7 @@ public class DB
 	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
+	private String REMOVE_PRODUCT	=		"DELETE FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	
 	/************************************************************************
 	 *	 					general app queries
@@ -1821,13 +1822,6 @@ public class DB
 			ps.setFloat(3, product.getPrice());
 			ps.setFloat(4, product.getLength());
 			ps.setString(5, product.getColor());
-//			String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
-//			File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
-//			InputStream is = new FileInputStream(new File(path));
-//			InputStream in = new FileInputStream("E:\\images\\cat.jpg");
-//			this.p.setImage(img);
-//			ps.setBinaryStream(6, is, (int) img.length());
-			//blob.setBytes(result, null, result, result)
 			ps.setBlob(6, product.getImage()); 
 			result = ps.executeUpdate();
 			
@@ -1860,6 +1854,50 @@ public class DB
  		return result;
  	}
  	
+ 	
+ 	/*
+ 	 *  delete a product from the products list
+ 	 *  @param:		catalog, int the product unique identifier
+ 	 *  return		int, non-negative upon success, negative, else
+ 	 */
+ 	public int deleteProduct(int catalog)
+ 	{
+ 		int result = -1;
+ 		PreparedStatement ps = null;
+	 	try
+	 	{
+	 		Blob blob;
+			if(this.connect() < 0)
+			{
+				System.out.println("DB >> cannot connect to database.. aborting");
+				return result;
+			}
+			ps = this.connection.prepareStatement(REMOVE_PRODUCT);
+			
+			ps.setInt(1, catalog);
+			result = ps.executeUpdate();
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		e.printStackTrace();
+	 	}
+	 	finally
+	 	{
+			try
+			{
+				if(ps != null)
+					ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}	
+ 		
+ 		
+ 		return result;
+ 	}
  	
  	/*
  	 * 	insert ordered product. ordered product is a table that binds a product

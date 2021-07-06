@@ -163,6 +163,56 @@ function addImage(image){
 
 
 /*********************************************************************************
+*	this function edit product
+*	@param:			num, the product number in the table
+*	return:			null
+*********************************************************************************/
+function editProduct(num){
+	console.log('product number: ' + num);
+	
+}
+
+
+/*********************************************************************************
+*	this function remove a product given its number in the table
+*	@param:			num, the product number in the table
+*	return:			null
+*********************************************************************************/
+function removeProduct(num){
+	
+	var table		= document.getElementById('products-table');
+	var catalog		= table.rows[num + 1].cells[0].innerHTML;
+	var formdata	= new FormData();
+	
+	console.log('deleting product catalog number: ' + catalog );
+	
+	formdata.append("code", "2");
+	formdata.append("catalog", catalog);
+	formdata.append("type", "0"); 
+	formdata.append("price", "0");
+	formdata.append("length", "0");
+	formdata.append("color", "");
+	
+	
+	$.ajax({    
+    url: 			'ProductServlet', 	
+    dataType: 		'text',  		
+    cache: 			false,
+    contentType:	false,
+    processData:	false,
+    data: 			formdata,                         
+    type: 			'post',
+    async: 			true,
+    success: function(response){
+    		console.log('response from server' + response);
+    		//console.log('product number: ' + num + ' deleted');
+    	}
+    });
+}
+
+
+
+/*********************************************************************************
 *	this function loads all available product from DB
 *	@param:			sync, boolean weather the function executes in/out of sync
 *	return:			null
@@ -221,8 +271,10 @@ function loadProducts(sync){
         				var td_del 			= document.createElement("td");
         				
         				edit.innerHTML		= 'edit';
+        				edit.setAttribute('onclick', 'editProduct(' + i + ')');
         				remove.innerHTML	= 'remove';
-        				span_re_del.innerHTML= edit + '/' + remove;
+        				remove.setAttribute('onclick', 'removeProduct(' + i + ')');
+        				span_re_del.innerHTML= edit + ' / ' + remove;
         				
         				img.setAttribute('class', 'image');
         				img.src = product.image;

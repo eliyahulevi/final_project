@@ -2,6 +2,7 @@ package webapp.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -83,8 +84,6 @@ public class ProductServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("trying to get product from products servlet");
-		
 		
 		String code 			= request.getParameter("code");
 		String catalog 			= request.getParameter("catalog");
@@ -99,31 +98,7 @@ public class ProductServlet extends HttpServlet
 		{
 			image = noDataFile.toString();
 		}
-		/*
-		String code 			= request.getParameter("code");
-//		int id = 0;
-		String type = "";
-		float price = 0;
-//		float length = 0;
-//		String color = null;
-//		InputStream image = null;
-		byte[] image = null;
-		
-		if (code=="1") {
-			System.out.println("this is code string: " + code);
-//			id	 				= Integer.parseInt(request.getParameter("catalog"));
-//			System.out.println("this is id int: " + id);
-			type 				= request.getParameter("type");
-			price 			= Float.parseFloat(request.getParameter("price"));
-//			length 			= Float.parseFloat(request.getParameter("length"));
-//			color 			= request.getParameter("color");
-//			image 			= request.getInputStream();
-			System.out.println("what!???");
-			System.out.println("product servlet >> "
-								+ " type:" + type 
-								+ " price: " + price );
-		}
-		*/
+
 		try 
 		{
 			
@@ -158,9 +133,12 @@ public class ProductServlet extends HttpServlet
 					break;
 				}
 				 
-				case "2":		// TBD
+				case "2":		// remove a product
 				{
-					 
+					System.out.printf("%n%-15s %s", "product servlet >>", "delete product: " + catalog); 
+					PrintWriter writer = response.getWriter();
+					int result = db.deleteProduct(Integer.valueOf(catalog));
+					writer.println(result);
 					break;
 				}
 				 
