@@ -192,8 +192,9 @@ function loadProducts(sync){
         			var table 		= document.getElementById("products-table");
         			var number		= document.getElementById('number-of-products');
     			    var tr			= document.createElement("tr");
-    				
-        			number.innerHTML = products.length;        			
+
+
+        			number.innerHTML = products.length;             			 			
         			console.clear();
  
         			while(table.rows.length > 1)
@@ -203,6 +204,12 @@ function loadProducts(sync){
         			for(var i = 0; i < products.length; i++){
         			
         				var product 		= JSON.parse(products[i]);
+        				var del				= document.createElement("input");
+        				del.setAttribute("type", "checkbox"); 
+	    			    var edit		= document.createElement("a");
+    			    	var remove		= document.createElement("a");
+    			    	var span_re_del	= document.createElement("span");
+        				
         				var tr				= document.createElement("tr");
         				var td_cat 			= document.createElement("td");
         				var td_type 		= document.createElement("td");
@@ -211,6 +218,11 @@ function loadProducts(sync){
         				var td_clr 			= document.createElement("td");
         				var td_img 			= document.createElement("td");
         				var img				= document.createElement("img");
+        				var td_del 			= document.createElement("td");
+        				
+        				edit.innerHTML		= 'edit';
+        				remove.innerHTML	= 'remove';
+        				span_re_del.innerHTML= edit + '/' + remove;
         				
         				img.setAttribute('class', 'image');
         				img.src = product.image;
@@ -221,6 +233,9 @@ function loadProducts(sync){
         				td_len.innerHTML 	= product.length;
         				td_clr.innerHTML 	= product.color;
         				td_img.innerHTML	= img;
+        				td_del.appendChild(edit);
+        				td_del.appendChild(span_re_del);
+        				td_del.appendChild(remove);
         				
         				tr.appendChild(td_cat);
         				tr.appendChild(td_type);
@@ -228,6 +243,7 @@ function loadProducts(sync){
         				tr.appendChild(td_len);
         				tr.appendChild(td_clr);
         				tr.appendChild(img);
+        				tr.appendChild(td_del);
         				table.appendChild(tr);
         				
         			}
