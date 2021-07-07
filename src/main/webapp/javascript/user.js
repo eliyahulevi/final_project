@@ -1,15 +1,3 @@
-// 			TODO:	
-//			1. 	handle inserting replied message into RECIVING users messages area
-//				this is done in the insertMessage function- DONE
-//			2. handle empty JSON responses
-
-
-
-
-
-
-
-
 
 /********************** 	handles user page messages ***************************
  *	the message format is a JSON object as follows:
@@ -21,7 +9,8 @@
  *		"date", 	date,
  *		"clicked", 	clicked,
  *		"image",	image(s),
- *		"offset", 	0
+ *		"offset", 	<message offset>,
+ *		"display",	<name of user NOT to display to>
  *	}
  *
  *	the messages codes are as follows:
@@ -1563,7 +1552,7 @@ function loadUserDetails(){
 *	this function loads registered user from db and add to the list of users
 *	to choose from while sending a new message, and return the users as string
 *	array.
-*	@param:		null
+*	@param:		sync, boolean, whether the function should run in parallel or not  
 *	return:		result, a string array of users names
 *********************************************************************************/
 function loadUsers(sync){

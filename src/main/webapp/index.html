@@ -14,7 +14,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="javascript/login.js"></script>
-  <script src="javascript/register.js"></script>
   <script src="javascript/index.js"></script>
   
 </head>
@@ -64,40 +63,40 @@
   		<tbody></tbody>
   	</table>
    
-  <div class="container">
-	  <!-- sign-in Modal -->
-	  <div class="modal fade" id="sign-in-Modal" role="dialog">
-	    <div class="modal-dialog">
-	    	<div class="wrapper fadeInDown">
-	  			<div id="formContent">
-	    		<!-- Tabs Titles -->
-				    <!-- Icon -->
-				    <div class="fadeIn first">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
-				    </div>
-	
-				    <!-- Login Form -->
-				    <form  id="sign-in-form"> 
-					      <input type="text" id="sign-in-model-name" class="fadeIn second" name="register" placeholder="user name">
-					      <input type="text" id="sign-in-model-password" class="fadeIn third" name="register" placeholder="password">
-					      <input type="button" class="fadeIn fourth" value="Log In" onclick=login() >
-				    </form>
-	
-				    <!-- Remind Passowrd -->
-				    <div id="formFooter">
-				      <a class="underlineHover" href="#">Forgot Password?</a>
-				    </div>
-	
+	<!-- sign-in Modal -->
+	<div class="container">
+		<div class="modal fade" id="sign-in-Modal" role="dialog">
+			<div class="modal-dialog">
+				<div class="wrapper fadeInDown">
+				<div id="formContent">
+				<!-- Tabs Titles -->
+				
+				<!-- Icon -->
+				<div class="fadeIn first">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
 				</div>
-			</div>      
-		</div>
-	  </div>  
-  </div>
+			
+			  	<!-- Login Form -->
+				<form  id="sign-in-form"> 
+				   <input type="text" id="sign-in-model-name" class="fadeIn second" name="register" placeholder="user name">
+				   <input type="text" id="sign-in-model-password" class="fadeIn third" name="register" placeholder="password">
+				   <input type="button" class="fadeIn fourth" value="Log In" onclick=login() >
+				</form>
+			
+				<!-- Remind Passowrd -->
+			    <div id="formFooter">
+			      <a class="underlineHover" href="#">Forgot Password?</a>
+			    </div>
+					</div>
+				</div>      
+			</div>
+		 </div>  
+	</div>
+	<!-- /sign-in Modal -->
   
-  
+  	<!-- register Modal -->
     <div class="container">
-	  <!-- register Modal -->
 	  <div class="modal fade" id="register-Modal" role="dialog">
 	    <div class="modal-dialog">
 	    	<div class="wrapper fadeInDown">
@@ -126,7 +125,8 @@
 		</div>
 	  </div>  
   </div>
-  
+	<!-- /register Modal -->
+	
 </nav>
 
 

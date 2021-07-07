@@ -384,32 +384,6 @@ public class DB
 		DB.user.setPhone("050-55555351");
 		DB.user.setDescription("Joey doesn't share food!!");
 	}
-	/*
-	private void createP() throws IOException {
-//		this.p.setCatalog(112);
-//		this.p.setColor("red");
-//		this.p.setLength(360);
-		this.p.setPrice(5);
-		this.p.setType("5x5");
-		String path = "C:\\Users\\onelo\\Downloads\\ee\\5X5_type.jpg";
-//		File img = new File("C:\\Users\\onelo\\Documents\\udemy web\\final\\resources\\5X5type.jpg");
-		InputStream is = new FileInputStream(new File(path));
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		byte[] buf = new byte[32768];
-		int n = 0;
-		try {
-			while ((n = is.read(buf)) >= 0)
-			    baos.write(buf, 0, n);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		byte[] content = baos.toByteArray();
-		this.p.setImage(content);
-		
-		
-	}
-	*/
 	private void createTables()
 	{
 		Statement stat = null;

@@ -5,14 +5,22 @@
 <title>user</title>
 
   	<link rel="stylesheet" type="text/css" href="css/user.css" />
+  	<link rel="stylesheet" type="text/css" href="css/order.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   	<link rel="icon" type="image/png" href="resources/lumber-icon-64.png">
+  	
+  	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+  	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  
+  	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="javascript/register.js"></script>
 	<script src="javascript/message.js"></script> 	<!-- DO NOT change order of script files !! -->
 	<!-- script src="javascript/websocket.js"></script> <!-- DO NOT change order of script files !! -->
 	<script src="javascript/utils.js"></script> 	<!-- DO NOT change order of script files !! -->
+	<script src="javascript/order.js"></script>		<!-- DO NOT change order of script files !! -->
 	<script src="javascript/user.js"></script>		<!-- DO NOT change order of script files !! -->
 	<!-- script src="javascript/websocket2.js"></script>		<!-- DO NOT change order of script files !! -->
 
@@ -41,21 +49,13 @@
 					you're connected as:
 					<a href="#personal" id="user-details-header" style="display: inline-block;"></a>
 					<a href="" id="user-sign-out">sign out</a>
-				<ul class="nav navbar-nav">
-					<li>
-						<div class="row">
-
-						</div>
-					</li>
-					
-				</ul>
 			</div>
 		</div>
 	</nav>
 </div>
 <!-- /navigation bar -->
 
-<div class="main-body">
+<div class="main-body" id='main-body'>
 
 	<div class="row gutters-sm"  >
 		<div class="container-fluid">
@@ -100,11 +100,12 @@
 			</table>
 		</form>
 	</div>
-	
 	<!-- /products -->
 	
 	
 	<!-- projects -->
+	<br>
+	<br>
 	<p><img alt="" src="resources/project-icon2.jpeg" class="messages-icon"><h3 style="display:inline;color:#1F618D">Projects</h3><a href=""> new</a>
 	<p></p>
 	<div class="row gutters-sm">	
@@ -181,9 +182,10 @@
 	<!-- /projects -->	
 	
 	<!-- orders -->
+	<br>
+	<br>
 	<img alt="" src="resources/order-icon.png" class="messages-icon">
-	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#Comment-Modal"> new</a> 
-	
+	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" onclick="openOrderModal()"> new</a> 	
 	<div class="container">
 		<table class="Table">
 			<thead>
@@ -211,7 +213,6 @@
 	<br>
 	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
-		<!--  a id="more-actions" href="#messages" onclick="test()" style="display:inline"><i class="fa fa-ellipsis-h"></i></a  -->
 			<select id="select-more-actions" style="display:inline;" onchange="messagesAction(this);">
 				<option selected>more..</option>
 				<option>new</option>
@@ -221,16 +222,12 @@
 				<option>show incoming messages</option>
 			</select>
 		</span>
-		
-		<!-- span style="float:right; padding:10px; padding-right:100px; ">
-			<a href="#file" onclick="showFileLoad()">load images</a>
-		</span  -->
+
   		<div class="container">
 	    	<div class="row">
 	    		<span>
 	    			showing (<label id="numberOfMessages"></label>) messages
 	    			out of <label id="totalNumberOfMessages"></label>
-	    			<!--  a href="#numberOfMessages" onclick="showAllMessages()">show all messages</a -->
 	    		</span>
 	    	</div>
 		    	<div class="row">
@@ -238,19 +235,12 @@
 					</form>
 		    	</div> 
   			<div class="row" id="msg-area">
-			    <!-- div class="col-sm-3" >
-			    	<div class="row"><label>users</label></div>
-			    	<div class="row"><select id="users-list" onchange="onSenderChosen()" style="width:90%;" multiple></select></div>
-			    </div  -->
-			    <!-- div class="col-sm-9" id="" -->
-
-			    <!-- /div>  -->
 	  		</div>  		
   		</div>
 
 
-
 	</div>
+	<!-- end of main body -->
 	
 	<div class="container" id="new-msg">
 	</div>
@@ -280,12 +270,13 @@
 				</span>		
 			</p>
 		</form>	
-	</div>
+	</div>	
+	<!-- / end of write messages -->
 	
-	<!-- /messages -->
 	
-	<!-- personal detail -->
-	<p>
+	<!-- personal detail --> 
+	<br>
+	<br>
 	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a></p>
 		<div class="container" id="personal">
 
@@ -335,9 +326,22 @@
 		</form>		
 		</div>
 	</p>
+	<!-- /end of personal detail -->
 	
-	<!-- /personal detail -->
 	
+	
+	
+	
+	
+	<!-- ************************************************************************
+	--		MODALS AREA HERE. Modals are the element that opens up on full page, 
+	--		to handle the uploading details of product, order, messages, user etc.
+	--		each modal has its own functionality in the respected .js file. all 
+	--		modals are hidden elements that displays on request.
+	--		 
+	--		the following area contains the following modals
+	--	
+	-- **************************************************************************>
 	
 	<!-- Modal user(send message) -->
  	<div class="modal fade" id="send-Message-Modal" role="dialog" onload="foo()">
@@ -363,7 +367,39 @@
 	      
 	    </div>
 	</div>
+	<!-- Modal user(send message) -->
 	
-</div>
+	<!-- Modal new Order -->
+	<div id="new-order-Modal" class="modal">
+		<div class="modal-content">
+			<button type="submit" class="btn btn-primary mt-3" style="float:right;" onclick="closeNewOrder()">&times;</button>
+			<br>
+		    <h4>New order</h4>
+			<br>
+			<h5>select product</h5>
+			<br>
+
+			<form id="new-order-form">
+				  <div class="row">
+				    <div class="col">
+				      <input type="text" class="form-control" id="email" placeholder=" " name="email">
+				    </div>
+				    <div class="col">
+				      <input type="password" class="form-control" placeholder=" " name="pswd">
+				    </div>
+				    <div class="col">
+				      <input type="password" class="form-control" placeholder=" " name="pswd">
+				    </div>
+				  	<div class="col">
+				      <input type="password" class="form-control" placeholder=" " name="pswd">
+				    </div>
+				  </div>
+			</form>
+			<br>
+	  	</div>
+	</div>
+	<!-- /Modal new Order -->
+
+
 
 </body>
