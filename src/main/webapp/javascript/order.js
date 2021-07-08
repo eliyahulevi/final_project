@@ -51,7 +51,7 @@ function createSelect(){
 	var button			= document.createElement('button');
 	var dropDown		= document.createElement('div');
 	var action			= document.createElement('a');
-	var i				= document.createElement('i');
+	var idiom			= document.createElement('i');
 	var img				= document.createElement('img');
 	
 	
@@ -59,7 +59,7 @@ function createSelect(){
 	img.setAttribute('class', 'image');
 	img.setAttribute('style', 'float:right;');
 	
-	i.setAttribute('class', 'fa fa-angle-down');
+	idiom.setAttribute('class', 'fa fa-angle-down');
 	action.setAttribute('class', 'dropdown-item');
 	action.setAttribute('href', '#select-group');
 	action.innerHTML = 'action';
@@ -71,8 +71,9 @@ function createSelect(){
 	button.setAttribute('aria-haspopup', 'true');
 	button.setAttribute('aria-expanded', 'false');
 	button.innerHTML = 'select ';
-	button.appendChild(i);
+	button.appendChild(idiom);
 	
+	dropDown.setAttribute('id', 'new-order-dropdown-menu');
 	dropDown.setAttribute('class', 'dropdown-menu');
 	dropDown.appendChild(action);
 	
@@ -150,25 +151,29 @@ function openOrderModal(){
         success: function(response){
 
         			var products 		= JSON.parse(response);
-					var newOrderModal	= document.getElementById('new-order-form');
- 					var select			= createSelect();
+					//var newOrderModal	= document.getElementById('new-order-form');
+ 					//var select			= createSelect();
+					var dropDown		= document.getElementById('new-order-dropdown-menu');
 				
-					newOrderModal.prepend(select);
+					//newOrderModal.prepend(select);
         		       			
         			for(var i = 0; i < products.length; i++){
-        				/*
-        				var product 		= JSON.parse(products[i]);
-        				var option			= document.createElement("option");
+	
+						var product 		= JSON.parse(products[i]);
+        				var option			= document.createElement("a");
 						var img				= document.createElement("img");
+						
+						img.setAttribute('class', 'image');
+						img.setAttribute('style', 'float:right;');
 						img.src				= product.image;
-        				option.innerHTML	= img;
-						option.text			= 'product catalog: ' + product.catalog + img;
+						
+						option.setAttribute('class', 'dropdown-item');
+						option.setAttribute('href', '#select-group');
+						option.setAttribute('onclick', 'addProduct(' + product.catalog + ')'); 
 						option.appendChild(img);
-						console.log('product image: ' + product.image);
-						option.setAttribute('data-thumbnail', 'https://glot.io/static/img/c.svg?etag=ZaoLBh_p');
-						option.setAttribute('style', "icon:" + product.image + ";" );
-						productList.appendChild(option);
-						*/
+						option.innerHTML 	= 'product catalog: ' + product.catalog;
+						
+						dropDown.appendChild(option);
         			}
 					modal.style.display = 'block';
 					console.log('new order modal ' + modal);
@@ -176,6 +181,16 @@ function openOrderModal(){
     			}
      	});
 
+}
+
+
+/*********************************************************************************
+*	this function add a product to an order
+*	@param:		cat, a unique product identifier
+*	return:		null
+*********************************************************************************/
+function addProduct(cat){
+	console.log('add product ' + cat);
 }
 
 

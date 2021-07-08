@@ -371,13 +371,23 @@
 	
 	<!-- Modal new Order -->
 	<div id="new-order-Modal" class="modal">
-		<div class="modal-content">
+		<div class="modal-content" id="new-order-modal-content">
 			<button type="submit" class="btn btn-primary mt-3" style="float:right;" onclick="closeNewOrder()">&times;</button>
 			<br>
 		    <h4>New order</h4>
 			<br>
 			<h5>select product</h5>
+				<div class="btn-group" style="width:80%; float:center;">
+					<button type="button" style="width:80%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    products <i style="font-size:24px" class="fa">&#xf0dd;</i>
+					</button>
+					<div class="dropdown-menu" id="new-order-dropdown-menu">
+					    <hr>
+					</div>
+				</div>
+			
 			<br>
+			
 
 			<form id="new-order-form">
 				  <div class="row">
