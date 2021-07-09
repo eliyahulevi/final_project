@@ -36,6 +36,10 @@
 	background-color:gray;
 	border-radius: 2px; 
 }
+.image:hover{
+	background-color:blue;
+
+}
 .separator{
 	height:2px;
 	border-width:0;

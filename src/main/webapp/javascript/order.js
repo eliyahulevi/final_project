@@ -10,34 +10,95 @@
 
 
 /*********************************************************************************
-*	this function creates new order modal
-*	@param:		null
-*	return:		result, div the created element
+*	this function adds a chosen product to order. according to unique identifier
+*	the function locates the correct 'new-order-product' element and extract
+*	product length and color. after product details are extracted the function
+*	adds the product to the 'new-order-form' form for display
+*	@param:		catalog, int a unique identifier for each product
+*	return:		onull
 *********************************************************************************/
-function createNewOrderModal(){
-	var select			= document.createElement('div');
-	var modalContent	= document.createElement('div');
-	var button			= document.createElement('button');
-	var close			= document.createElement('button');
+function addProductToOrder(prodObj){
+	console.log('image source: ' + prodObj.image);
+	var product		= document.createElement('div');
+	var lengthLbl	= document.createElement('label');
+	var colorLbl	= document.createElement('label');
+	var imgLbl		= document.createElement('img');
+	var edit		= document.createElement('a');
+	var remove		= document.createElement('a');
+	var space		= document.createElement('i');
+	var form		= document.getElementById('new-order-form'); 
+	var length		= document.getElementById('new-product-length-' + prodObj.catalog);
+	var color		= document.getElementById('new-product-color-' + prodObj.catalog);
+	var img			= document.getElementById('new-product-image-' + prodObj.catalog)
+ 	
 	
-	close.setAttribute('class', 'btn btn-primary mt-3');
-	close.setAttribute('type', 'submit');
-	select.setAttribute('id', 'new-order-modal');
-	select.setAttribute('class', 'modal');
+	lengthLbl.innerHTML = 'length: ' + prodObj.length;
+	colorLbl.innerHTML 	= 'color: ' + prodObj.color; 
+	imgLbl.setAttribute('class', 'image');
+	imgLbl.src			= prodObj.img;
+	edit.innerHTML		= 'edit';
+	remove.innerHTML	= 'remove';
+	space.innerHTML		= ' / ';
+	product.appendChild(lengthLbl);
+	product.appendChild(colorLbl);
+	product.appendChild(imgLbl);
+	product.appendChild(edit);
+	product.appendChild(space);
+	product.appendChild(remove);
 	
-	modalContent.setAttribute('id', 'new-order-modal-content');
-	modalContent.setAttribute('class', 'modal-content');
+	form.appendChild(product);
+}
+
+/*********************************************************************************
+*	this function creates new selected product option in the product selection
+*	drop-down
+*	@param:		product, a JSON object that holds all the products details
+*	return:		option, div the created element
+*********************************************************************************/
+function createNewProductOption(product){
+
 	
+	try
+	{
+		var option			= document.createElement('div');
+		var length			= document.createElement('input');
+		var color			= document.createElement('input');
+		var img				= document.createElement('img');
+		var add				= document.createElement('a');
+		var prodObj			= {};
+		option.setAttribute('class', 'new-order-product');	
+		option.setAttribute('id', 'new-order-product-' + product.catalog);	
+		length.setAttribute('id', 'new-product-length-' + product.catalog);
+		color.setAttribute('id', 'new-product-color-' + product.catalog);
+		add.setAttribute('id', 'new-product-add-' + product.catalog);
+		
+		//add.setAttribute('onclick', 'addProductToOrder(' + product.catalog + ',' + length.innerHTML + ',' + color.innerHTML + ')');
+		img.setAttribute('id', 'new-product-image-' + product.catalog);
+		img.setAttribute('class', 'image');
+		img.src = product.image;
+		add.innerHTML = 'add product';
+		
+		
+		prodObj.catalog		= length.catalog;
+		prodObj.length		= length.innerHTML;
+		prodObj.color		= color.innerHTML;
+		prodObj.img			= product.image;
+		
+		add.setAttribute('onclick', 'addProductToOrder(' + JSON.stringify(prodObj) + ')');
+		
+	}
+	catch(error)
+	{
+		console.log('error add product to selected products');
+	}
 	
-	button.setAttribute('type', 'button');
-	button.setAttribute('class', 'btn btn-danger dropdown-toggle');
-	button.setAttribute('data-toggle', 'dropdown');
-	button.setAttribute('aria-haspopup', 'true');
-	button.setAttribute('aria-expanded', 'false');
+
 	
-	select.appendChild(button);
-	select.appendChild(close);
-	return select;
+	option.appendChild(length);
+	option.appendChild(color);
+	option.appendChild(img);
+	option.appendChild(add);
+	return option;
 }
 
 
@@ -151,28 +212,18 @@ function openOrderModal(){
         success: function(response){
 
         			var products 		= JSON.parse(response);
-					//var newOrderModal	= document.getElementById('new-order-form');
- 					//var select			= createSelect();
 					var dropDown		= document.getElementById('new-order-dropdown-menu');
-				
-					//newOrderModal.prepend(select);
-        		       			
+					var existProducts	= dropDown.getElementsByClassName('new-order-product');
+        		    
+					// remove all previous products
+					if(existProducts.length > 0){
+						for(var i = existProducts.length - 1; i >= 0 ; i--)
+							existProducts[i].remove();
+					} 			
+					// populates with new products
         			for(var i = 0; i < products.length; i++){
-	
 						var product 		= JSON.parse(products[i]);
-        				var option			= document.createElement("a");
-						var img				= document.createElement("img");
-						
-						img.setAttribute('class', 'image');
-						img.setAttribute('style', 'float:right;');
-						img.src				= product.image;
-						
-						option.setAttribute('class', 'dropdown-item');
-						option.setAttribute('href', '#select-group');
-						option.setAttribute('onclick', 'addProduct(' + product.catalog + ')'); 
-						option.appendChild(img);
-						option.innerHTML 	= 'product catalog: ' + product.catalog;
-						
+        				var option			= createNewProductOption(product);
 						dropDown.appendChild(option);
         			}
 					modal.style.display = 'block';
