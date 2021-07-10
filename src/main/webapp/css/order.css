@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+.new-order-product {
+	padding: 10px;
+  	border: 1px solid #888;
+	background-color: rgb(128, 255, 128); 
+}
 
 .new-order-product:hover {
 	padding: 20px;

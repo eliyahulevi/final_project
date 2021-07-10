@@ -18,7 +18,11 @@
 *	return:		onull
 *********************************************************************************/
 function addProductToOrder(prodObj){
-	console.log('image source: ' + prodObj.image);
+	
+	
+	var prodStr		= new String(prodObj).split('#')[1];
+	var prod		= document.getElementById(prodStr); 
+	console.log('product: ' + prod);
 	var product		= document.createElement('div');
 	var lengthLbl	= document.createElement('label');
 	var colorLbl	= document.createElement('label');
@@ -29,13 +33,19 @@ function addProductToOrder(prodObj){
 	var form		= document.getElementById('new-order-form'); 
 	var length		= document.getElementById('new-product-length-' + prodObj.catalog);
 	var color		= document.getElementById('new-product-color-' + prodObj.catalog);
-	var img			= document.getElementById('new-product-image-' + prodObj.catalog)
+	var img			= prod.getElementsByTagName('img');
+	var dropDown	= document.getElementById('new-order-dropdown-menu');
+	var	items		= dropDown.getElementsByTagName('li');
+	var inputs		= prod.getElementsByTagName('input');
  	
+	console.log('number fo inputs: ' + inputs.length);
 	
-	lengthLbl.innerHTML = 'length: ' + prodObj.length;
-	colorLbl.innerHTML 	= 'color: ' + prodObj.color; 
+	product.setAttribute('class', 'new-order-product');
+	
+	lengthLbl.innerHTML = 'length: ' + inputs[0].value;
+	colorLbl.innerHTML 	= 'color: ' + inputs[1].value; 
 	imgLbl.setAttribute('class', 'image');
-	imgLbl.src			= prodObj.img;
+	imgLbl.src			= img[0].src;
 	edit.innerHTML		= 'edit';
 	remove.innerHTML	= 'remove';
 	space.innerHTML		= ' / ';
@@ -55,12 +65,13 @@ function addProductToOrder(prodObj){
 *	@param:		product, a JSON object that holds all the products details
 *	return:		option, div the created element
 *********************************************************************************/
-function createNewProductOption(product){
-
-	
+function createNewProductOption(product){	
 	try
 	{
+		var li			= document.createElement('li');
 		var option			= document.createElement('div');
+		var lengthLbl		= document.createElement('label');
+		var colorLbl		= document.createElement('label');
 		var length			= document.createElement('input');
 		var color			= document.createElement('input');
 		var img				= document.createElement('img');
@@ -71,8 +82,13 @@ function createNewProductOption(product){
 		length.setAttribute('id', 'new-product-length-' + product.catalog);
 		color.setAttribute('id', 'new-product-color-' + product.catalog);
 		add.setAttribute('id', 'new-product-add-' + product.catalog);
+		add.setAttribute('href', '#new-order-product-' + product.catalog);
+		add.setAttribute('onclick', 'addProductToOrder(this)');
+		lengthLbl.innerHTML	= 'length: ';
+		colorLbl.innerHTML	= 'color: ';
 		
 		//add.setAttribute('onclick', 'addProductToOrder(' + product.catalog + ',' + length.innerHTML + ',' + color.innerHTML + ')');
+		//add.setAttribute('onclick', 'addProductToOrder(' + product.catalog + ')');
 		img.setAttribute('id', 'new-product-image-' + product.catalog);
 		img.setAttribute('class', 'image');
 		img.src = product.image;
@@ -84,8 +100,8 @@ function createNewProductOption(product){
 		prodObj.color		= color.innerHTML;
 		prodObj.img			= product.image;
 		
-		add.setAttribute('onclick', 'addProductToOrder(' + JSON.stringify(prodObj) + ')');
 		
+		console.log('image: ' + prodObj.catalog + '\nlength: ' + product.length + '\ncolor: ' + products.color );
 	}
 	catch(error)
 	{
@@ -93,12 +109,14 @@ function createNewProductOption(product){
 	}
 	
 
-	
+	option.appendChild(lengthLbl);
 	option.appendChild(length);
+	option.appendChild(colorLbl);
 	option.appendChild(color);
 	option.appendChild(img);
 	option.appendChild(add);
-	return option;
+	li.appendChild(option);
+	return li;
 }
 
 
@@ -183,6 +201,22 @@ function insertOrder(order){
     });
 }
 
+
+
+function createNewProductOption1(product){
+	var li		= document.createElement('li');
+	var a		= document.createElement('a');
+	var img		= document.createElement('img');
+	a.innerHTML = 'produt ' + product.catalog;
+	a.setAttribute('href', 'li-' + product.catalog);
+	a.setAttribute('onclick', 'li-' + product.catalog);
+	img.setAttribute('class', 'image');
+	img.src		= product.image;
+	li.setAttribute('id', 'li-' + product.catalog);
+	li.appendChild(a);
+	li.appendChild(img);
+	return li;
+}
 
 /*********************************************************************************
 *	this function creates an order modal as HTML element and return to caller
