@@ -18,11 +18,11 @@
 *	return:		onull
 *********************************************************************************/
 function addProductToOrder(prodObj){
-	
-	
+
 	var prodStr		= new String(prodObj).split('#')[1];
-	var prod		= document.getElementById(prodStr); 
-	console.log('product: ' + prod);
+	var prod		= document.getElementById(prodStr);
+	var lstUndrIdx	= prodStr.lastIndexOf('-');
+	var catalog		= prodStr.substr(lstUndrIdx + 1, prodStr.length - 1);
 	var product		= document.createElement('div');
 	var lengthLbl	= document.createElement('label');
 	var colorLbl	= document.createElement('label');
@@ -31,32 +31,60 @@ function addProductToOrder(prodObj){
 	var remove		= document.createElement('a');
 	var space		= document.createElement('i');
 	var form		= document.getElementById('new-order-form'); 
-	var length		= document.getElementById('new-product-length-' + prodObj.catalog);
-	var color		= document.getElementById('new-product-color-' + prodObj.catalog);
 	var img			= prod.getElementsByTagName('img');
-	var dropDown	= document.getElementById('new-order-dropdown-menu');
-	var	items		= dropDown.getElementsByTagName('li');
-	var inputs		= prod.getElementsByTagName('input');
- 	
-	console.log('number fo inputs: ' + inputs.length);
+	var inputs		= prod.getElementsByTagName('input');	
+	var length		= inputs[0].value;
+	var color		= inputs[1].value;
+	var colLen		= new String(color + length);
+	var catLen		= new String(catalog + "_" + length);
 	
-	product.setAttribute('class', 'new-order-product');
+	console.log('catalog number: ' + catLen);
 	
-	lengthLbl.innerHTML = 'length: ' + inputs[0].value;
-	colorLbl.innerHTML 	= 'color: ' + inputs[1].value; 
+	lengthLbl.innerHTML = 'length: ' + length;
+	colorLbl.innerHTML 	= 'color: ' + color; 
 	imgLbl.setAttribute('class', 'image');
 	imgLbl.src			= img[0].src;
 	edit.innerHTML		= 'edit';
+	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
+	edit.setAttribute('href', '#' + prodStr);
+	remove.setAttribute('onclick', "removeOrderProduct(" + catLen + ")" );
+	remove.setAttribute('href', '#' + prodStr);
 	remove.innerHTML	= 'remove';
 	space.innerHTML		= ' / ';
+	
+	product.setAttribute('class', 'order-product');
+	product.setAttribute('id', 'order-product-' + catalog + length);
 	product.appendChild(lengthLbl);
 	product.appendChild(colorLbl);
 	product.appendChild(imgLbl);
 	product.appendChild(edit);
 	product.appendChild(space);
 	product.appendChild(remove);
-	
 	form.appendChild(product);
+}
+
+
+
+function removeOrderProduct(productID){
+	var str			= new String(productID);
+	console.log(' productID with this: ' + productID);
+	//var product	= new String(productID).split('#')[1];
+	//var prod		= document.getElementById('order-product-' + );
+	//prod.remove();
+	var product		= document.getElementById('order-product-' + productID);
+	var values		= product.getElementsByTagName('label');
+	//console.log('remove product with id: ' + str);
+	console.log('product id: ' + str + ' has values: ' + values[0].innerHTML + values[1].innerHTML);
+}
+
+
+
+function editOrderProduct(productElement){
+	var str			= new String(productElement);
+	var prodStr		= new String(productElement).split('#')[1];
+	var prod		= document.getElementById(prodStr);
+	console.log('edit product: ' + str);
+	
 }
 
 /*********************************************************************************
@@ -68,7 +96,7 @@ function addProductToOrder(prodObj){
 function createNewProductOption(product){	
 	try
 	{
-		var li			= document.createElement('li');
+		var li				= document.createElement('li');
 		var option			= document.createElement('div');
 		var lengthLbl		= document.createElement('label');
 		var colorLbl		= document.createElement('label');
@@ -77,6 +105,7 @@ function createNewProductOption(product){
 		var img				= document.createElement('img');
 		var add				= document.createElement('a');
 		var prodObj			= {};
+		
 		option.setAttribute('class', 'new-order-product');	
 		option.setAttribute('id', 'new-order-product-' + product.catalog);	
 		length.setAttribute('id', 'new-product-length-' + product.catalog);

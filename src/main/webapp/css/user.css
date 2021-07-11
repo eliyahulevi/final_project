@@ -35,7 +35,8 @@
 	height:50px;
 	background-color:gray;
 	border-radius: 2px; 
-	float:right;
+	vertical-align:middle;
+	/*float:right;*/
 }
 .image:hover{
 	background-color:blue;
