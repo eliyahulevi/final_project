@@ -73,6 +73,7 @@ function removeOrderProduct(productID){
 	//prod.remove();
 	var product		= document.getElementById('order-product-' + productID);
 	var values		= product.getElementsByTagName('label');
+	product.remove();
 	//console.log('remove product with id: ' + str);
 	console.log('product id: ' + str + ' has values: ' + values[0].innerHTML + values[1].innerHTML);
 }
