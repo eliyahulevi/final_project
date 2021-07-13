@@ -1,9 +1,16 @@
 @charset "UTF-8";
 
+.order-product-tyable{
+	table-layout: fixed ;
+ 	width: 100% ;	
+}
+
 .order-product {
+	text-align: right;
 	padding: 10px;
   	border: 1px solid #888;
-	background-color: rgb(128, 255, 128); 
+  	border-radius: 5px;
+	/*background-color: rgb(128, 255, 128);*/ 
 }
 
 .new-order-product:hover {
