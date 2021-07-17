@@ -1,8 +1,16 @@
 @charset "UTF-8";
 
-.order-product-tyable{
-	table-layout: fixed ;
- 	width: 100% ;	
+.box {
+	border: 1px solid #ccc;
+	width: 100%;
+  	display: flex;
+  	vertical-align: middle;
+  	align-items: flex-end;
+}
+
+.order-block-lower{
+	width: 100%;
+	margin-top: 10px;
 }
 
 .order-product {

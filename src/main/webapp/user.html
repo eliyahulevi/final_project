@@ -183,8 +183,9 @@
 	<!-- orders -->
 	<br>
 	<br>
+	<!-- onclick="openOrderModal()" -->
 	<img alt="" src="resources/order-icon.png" class="messages-icon">
-	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal"> new</a> 	
+	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 	
 	<div class="container">
 		<table class="Table">
 			<thead>
@@ -371,34 +372,79 @@
 
 	<!-- new Order Modal (v2) -->
 	<div class="modal fade" id="new-order-Modal" tabindex="-1" role="dialog" aria-labelledby="new-order-ModalTitle" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-scrollable" role="document">
-	    <div class="modal-content">
+	  <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+	    <div class="modal-content" style="width:100%;">
 	    	<button type="submit"  data-dismiss="modal" style="float:right;" onclick="closeNewOrder()">&times;</button>
 	      	<div class="modal-header">
 	        	<h5 class="modal-title" id="new-order-ModalTitle">New order</h5>
 	      	</div>
 	    	<div class="modal-body">
-				<div class="btn-group" style="width:80%; float:center;">
-					<button type="button" style="width:80%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					add products <i style="font-size:24px" class="fa">&#xf0dd;</i>
+				<div class="btn-group" style="width:100%; float:center;">
+					<button type="button" style="width:100%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						add products <i style="font-size:24px" class="fa">&#xf0dd;</i>
 					</button>
 					<!-- this is where we add product options to -->
-						<div class="dropdown-menu" id="new-order-dropdown-menu">
-							<h6>type in length and color</h6>
-						    <hr>
-						    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1"></ul>
-						</div>
+					<div class="dropdown-menu" style="width:100%;" id="new-order-dropdown-menu1">
+						<h6>type in length and color</h6>
+					    <hr>
+					    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1"></ul>
+					</div>
 				</div>
+				
+				<form id="new-order-form">
+					<label>selected products</label>
+				</form>
+				<br>
 	      	</div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary">Save changes</button>
+	        <button type="button" class="btn btn-primary">Send</button>
 	      </div>
 	    </div>
 	  </div>
 	</div>
 	
-	<!-- Modal new Order -->
+	
+
+  
+	<!-- Modal -->
+	<div class="modal fade" id="new-order-Modal1" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content" style="width:100%;">
+				<button type="submit"  data-dismiss="modal" style="float:right;" onclick="closeNewOrder()">&times;</button>
+				<div class="modal-header" >
+					<h4 class="modal-title">New Order</h4>
+				</div>
+				<div class="modal-body">
+					 <div class="btn-group" style="width:100%; float:center;">
+						<button type="button" style="width:100%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							add products <i style="font-size:24px" class="fa">&#xf0dd;</i>
+						</button>
+						<!-- this is where we add product options to -->
+						<div class="dropdown-menu" style="width:100%;" id="new-order-dropdown-menu">
+							<h6>type in length and color</h6>
+						    <hr>
+						    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1"></ul>
+						</div>
+					</div>
+					
+					<form id="new-order-form">
+						<label>selected products</label>
+					</form>
+					<br>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Send</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	
+	<!-- Modal new Order --
 	<div id="new-order-Modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-dialog-scrollable" role="document">
 			<div class="modal-content" id="new-order-modal-content">
@@ -411,8 +457,8 @@
 					<button type="button" style="width:80%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					    add products <i style="font-size:24px" class="fa">&#xf0dd;</i>
 					</button>
-					<!-- this is where we add product options to -->
-					<div class="dropdown-menu" id="new-order-dropdown-menu">
+					<!-- this is where we add product options to --
+					<div class="dropdown-menu" id="new-order-dropdown-menu-old">
 						<h6>type in length and color</h6>
 					    <hr>
 					    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1"></ul>
