@@ -9,6 +9,37 @@
 */
 
 
+function setLocalProduct(product, id){
+	localStorage.setItem('catalog-' + id, product.catalog);
+	localStorage.setItem('length-' + id, product.length);
+	localStorage.setItem('price-' + id, product.price);
+	localStorage.setItem('color-' + id, product.color);
+	localStorage.setItem('img-' + id, product.image);
+	
+	var cat = localStorage.getItem('catalog-' + id);
+	
+	console.log('set local storage for product: ' + cat);
+}
+
+
+function getLocalProduct(id){
+	console.log('get product: ' + id);
+	var product		= {'catalog': "", 'length': "", 'price':"", 'color':"", 'image':"" };
+	product.catalog = localStorage.getItem('catalog-' + id);
+	product.length	= localStorage.getItem('length-' + id);
+	product.price 	= localStorage.getItem('price-' + id);
+	product.color 	= localStorage.getItem('color-' + id);
+	product.image 	= localStorage.getItem('img-' + id);
+	/*
+	console.log('get product: ' + '\ncatalog:' + product.catalog
+								+ '\nlength:' + product.length
+								+ '\nprice:' + product.price
+								+ '\ncolor:' + product.color
+								+ '\nimage:' + product.image);
+	*/
+	return product;
+}
+
 
 /*********************************************************************************
 *	this function send a new order to the server async. it iterates over all 
@@ -37,33 +68,78 @@ function sendNewOrder(){
 	}
 }
 
-function addProductToOrder1(prodObj){
-	
-	var prodStr		= new String(prodObj).split('#')[1];
-	var prod		= document.getElementById(prodStr);
-	var product		= document.createElement('div');
+function addProductToOrder1(addBtnName){
+
+	var type		= new String(addBtnName.id).split('add-new-product')[1];
+	var product		= getLocalProduct(type);
 	var row			= document.createElement('div');
 	var col9		= document.createElement('div');
 	var col3		= document.createElement('div');
-	var imgs		= prod.getElementsByTagName('img');
-	var img 		= document.createElement('img'); 
+	var imgSrc		= product.image;
+	var imgLbl		= document.createElement('img');
 	var form		= document.getElementById('new-order-form');
+	var productElm	= document.createElement('div');
+	var lengthLbl	= document.createElement('label');
+	var colorLbl	= document.createElement('label');
+	var edit		= document.createElement('a');
+	var remove		= document.createElement('a');
+	var space		= document.createElement('i');
+	var colLen		= new String(product.color + product.length);
+	var catLen		= new String(product.catalog + "_" + product.length);
 	
-	img.setAttribute('class', 'image');
-	img.src		= imgs[0].src;
+	console.log('form to add to: ' + form.id);
 	
-	col9.setAttribute('class', 'col-9');
-	col3.setAttribute('class', 'col-3');
-	product.setAttribute('class', 'row');
-	//product.setAttribute('class', 'container');
+	var row			= document.createElement('div');
+	var colColor	= document.createElement('div');
+	var colLength	= document.createElement('div');
+	var colImage	= document.createElement('div');
+	var colEdRem	= document.createElement('div');
 	
-	col9.appendChild(img);
-	row.appendChild(col3);
-	row.appendChild(col9);
-	product.appendChild(row);
-	form.appendChild(product);
-	console.log('add new product 1');
+	row.setAttribute('class', 'row');	
+	colColor.setAttribute('class', 'col-sm');
+	colLength.setAttribute('class', 'col-sm');
+	colImage.setAttribute('class', 'col-sm');
+	colEdRem.setAttribute('class', 'col-sm');
 	
+	lengthLbl.setAttribute('style', 'text-align: left;');
+	lengthLbl.innerHTML = 'length: ' + product.length;
+	colorLbl.innerHTML 	= 'color: ' + product.color; 
+	colorLbl.setAttribute('style', 'margin-left: 15%;');
+	imgLbl.setAttribute('style', 'margin-left: 15%; margin-right: 10%;');
+	imgLbl.src			= imgSrc;
+	edit.innerHTML		= 'edit';
+	imgLbl.setAttribute('class', 'image');
+	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
+	edit.setAttribute('style', 'margin-left: 35%;');
+	edit.setAttribute('href', '#' + product.catalog);
+	remove.setAttribute('onclick', "removeOrderProduct(" + catLen + ")" );
+	remove.setAttribute('href', '#' + product.catalog);
+	remove.setAttribute('style', 'text-align:right;');
+	remove.innerHTML	= 'remove';
+	space.innerHTML		= ' / ';
+	
+	colLength.innerHTNL =(lengthLbl);
+	colColor.appendChild(colorLbl);
+	colImage.appendChild(imgLbl);
+	colEdRem.appendChild(edit)
+	
+	row.appendChild(colColor);
+	row.appendChild(colLength);
+	row.appendChild(colImage);
+	row.appendChild(colEdRem);
+	
+	productElm.setAttribute('class', 'order-product');
+	productElm.setAttribute('id', 'order-product-' + product.catalog + product.length);
+	productElm.appendChild(lengthLbl);
+	productElm.appendChild(colorLbl);
+	productElm.appendChild(imgLbl);
+	productElm.appendChild(edit);
+	productElm.appendChild(space);
+	productElm.appendChild(remove);
+	
+	form.appendChild(productElm);
+	
+	console.log('added product to order');
 }
 	
 	
@@ -129,13 +205,7 @@ function addProductToOrder(prodObj){
 	remove.setAttribute('style', 'text-align:right;');
 	remove.innerHTML	= 'remove';
 	space.innerHTML		= ' / ';
-	/*
-	table.rows[0].cells[0].innerHTML = lengthLbl.innerHTML;
-	table.rows[0].cells[1].innerHTML = colorLbl.innerHTML;
-	table.rows[0].cells[2].innerHTML = "img";
-	table.rows[0].cells[2].appendChild(imgLbl);
-	table.rows[0].cells[3].innerHTML = edit;
-	*/
+
 	colLength.innerHTNL =(lengthLbl);
 	colColor.appendChild(colorLbl);
 	colImage.appendChild(imgLbl);
@@ -161,21 +231,19 @@ function addProductToOrder(prodObj){
 }
 
 
-function addProductToOrder2(prodObj){
 
-	console.log('product : ' + prodObj);
+function addProductToOrder2(prodObj){
 	try{
-		var prodStr		= new String(prodObj).split('#')[1];
-		var product		= document.getElementById(prodStr);
+		var type		= new String(prodObj.id).split('add-new-product')[1];
+		console.log('product : ' + type);
+		
+		var product		= getLocalProduct(type);
 		
 		var type		= product.catalog;
 		var price		= product.price;
-		var img			= product.getElementById('order-product-image' + type);
-		var	length		= product.getElementsById('new-product-length' + type);
-		var form		= document.getElementById('new-order-form');
-		
-		//console.log('product image: ' + img.src);
-		
+		var img			= product.image;
+		var	length		= product.length;
+		var form		= document.getElementById('new-order-form');		
 		var shopItem = document.createElement("div");
 	  	//shopItem.classList.add("shop-item");
 	  	var shopItemContent = "	<span class='shop-item-title''>" + type + " type pine wood </span> 					\
@@ -230,10 +298,10 @@ function removeOrderProduct(productID){
 	var str			= new String(productID);
 	console.log('productID with this: ' + productID);
 	var product		= document.getElementById('order-product-' + productID);
-	var values		= product.getElementsByTagName('label');
+	//var values		= product.getElementsByTagName('label');
 	product.remove();
 
-	console.log('product id: ' + str + ' has values: ' + values[0].innerHTML + values[1].innerHTML);
+	//console.log('product id: ' + str + ' has values: ' + values[0].innerHTML + values[1].innerHTML);
 }
 
 
@@ -361,7 +429,8 @@ function createNewProductOption(product){
 	var div1		= document.createElement('div');
 	var div2		= document.createElement('div');
 	var div3		= document.createElement('div');
-
+	
+	setLocalProduct(product, product.catalog);
 
 	lengthInp.setAttribute('id','new-product-length' + product.catalog);
 	colorInp.setAttribute('id','new-product-color' + product.catalog);
@@ -369,7 +438,7 @@ function createNewProductOption(product){
 	add.setAttribute('class','btn btn-success');
 	add.setAttribute('id','add-new-product' + product.catalog);
 	add.setAttribute('style','width:85%;');
-	add.setAttribute('onclick','addProductToOrder2(this)');
+	add.setAttribute('onclick','addProductToOrder1(this)');
 	add.innerHTML		= 'add';	
 	img.src				= product.image;
 	img.setAttribute('class', 'order-product-image');
@@ -442,7 +511,7 @@ function openOrderModal(){
 
         			var products 		= JSON.parse(response);
 					var dropDown		= document.getElementById('new-order-dropdown-menu');
-					var existProducts	= dropDown.getElementsByClassName('new-order-product');
+					var existProducts	= dropDown.getElementsByClassName('box');
         		    
 					console.log('number of prducts: ' + products.length);
 					// remove all previous products
@@ -456,12 +525,7 @@ function openOrderModal(){
 						var product 		= JSON.parse(products[i]);
         				var option			= createNewProductOption(product);
 						dropDown.appendChild(option);
-						//console.log(JSON.stringify(product, null, 4));
-						//console.log('add prduct: ' + product);
         			}
-					//modal.style.display = 'block';
-					//console.log('new order modal ' + modal);
-					
     			}
      	});
 
@@ -516,5 +580,5 @@ function closeNewOrder(){
 	var select		= document.getElementById('select-group');
 	if( select !== null )
 		select.parentNode.removeChild(select);
-	elem.style.display = 'none';
+	//elem.style.display = 'none';
 }
