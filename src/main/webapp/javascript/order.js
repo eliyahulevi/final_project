@@ -9,6 +9,12 @@
 */
 
 
+/*********************************************************************************
+*	this function upload a product to the application localStorage memory
+*	@param:		product, a javascript object that holds products details
+*	@param:		id, a unique product identifier
+*	return:		null
+*********************************************************************************/
 function setLocalProduct(product, id){
 	localStorage.setItem('catalog-' + id, product.catalog);
 	localStorage.setItem('length-' + id, product.length);
@@ -22,6 +28,11 @@ function setLocalProduct(product, id){
 }
 
 
+/*********************************************************************************
+*	this function download a product from the application localStorage memory
+*	@param:		id, a unique product identifier
+*	return:		product, a javascript object that holds products details
+*********************************************************************************/
 function getLocalProduct(id){
 	console.log('get product: ' + id);
 	var product		= {'catalog': "", 'length': "", 'price':"", 'color':"", 'image':"" };
@@ -53,339 +64,40 @@ function sendNewOrder(){
 	var form		= document.getElementById('new-order-form');
 	var products	= form.getElementsByClassName('order-product')	
 	var length		= products.length;
+	var date		= new Date().getTime();
+	var formdata	= new FormData();
+	var	user		= sessionStorage.getItem('user');
+	var total		= Number(0);
+	var ordrdPrdLst	= [];
 	
 	if( length === 0 ){
 		alert('no products added..');
 		return;
 	}
 	
+	
 	for(var i = 0; i < length; i++){
-		var lengthElems	= form.getElementsByClassName('label');
-		var length		= new String(lengthElems[0].innerHTML);
-		var color		= new String(lengthElems[1].innerHTML);
-		
-		
+		console.log('product: ' + products[i].id);
+		var id		= products[i].id;
+		var prodLen	= id.split('-')[3];
+		var type	= id.split('-')[2];
+		var product	= getLocalProduct(type);
+		total		= total + Number(prodLen) * Number(product.price); 
+		var	ordrdPr	= {'type': type, 'length': prodLen};
+		ordrdPrdLst[i] = ordrdPr;
 	}
-}
-
-function addProductToOrder1(addBtnName){
-
-	var type		= new String(addBtnName.id).split('add-new-product')[1];
-	var product		= getLocalProduct(type);
-	var row			= document.createElement('div');
-	var col9		= document.createElement('div');
-	var col3		= document.createElement('div');
-	var imgSrc		= product.image;
-	var imgLbl		= document.createElement('img');
-	var form		= document.getElementById('new-order-form');
-	var productElm	= document.createElement('div');
-	var lengthLbl	= document.createElement('label');
-	var colorLbl	= document.createElement('label');
-	var edit		= document.createElement('a');
-	var remove		= document.createElement('a');
-	var space		= document.createElement('i');
-	var colLen		= new String(product.color + product.length);
-	var catLen		= new String(product.catalog + "_" + product.length);
 	
-	console.log('form to add to: ' + form.id);
-	
-	var row			= document.createElement('div');
-	var colColor	= document.createElement('div');
-	var colLength	= document.createElement('div');
-	var colImage	= document.createElement('div');
-	var colEdRem	= document.createElement('div');
-	
-	row.setAttribute('class', 'row');	
-	colColor.setAttribute('class', 'col-sm');
-	colLength.setAttribute('class', 'col-sm');
-	colImage.setAttribute('class', 'col-sm');
-	colEdRem.setAttribute('class', 'col-sm');
-	
-	lengthLbl.setAttribute('style', 'text-align: left;');
-	lengthLbl.innerHTML = 'length: ' + product.length;
-	colorLbl.innerHTML 	= 'color: ' + product.color; 
-	colorLbl.setAttribute('style', 'margin-left: 15%;');
-	imgLbl.setAttribute('style', 'margin-left: 15%; margin-right: 10%;');
-	imgLbl.src			= imgSrc;
-	edit.innerHTML		= 'edit';
-	imgLbl.setAttribute('class', 'image');
-	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
-	edit.setAttribute('style', 'margin-left: 35%;');
-	edit.setAttribute('href', '#' + product.catalog);
-	remove.setAttribute('onclick', "removeOrderProduct(" + catLen + ")" );
-	remove.setAttribute('href', '#' + product.catalog);
-	remove.setAttribute('style', 'text-align:right;');
-	remove.innerHTML	= 'remove';
-	space.innerHTML		= ' / ';
-	
-	colLength.innerHTNL =(lengthLbl);
-	colColor.appendChild(colorLbl);
-	colImage.appendChild(imgLbl);
-	colEdRem.appendChild(edit)
-	
-	row.appendChild(colColor);
-	row.appendChild(colLength);
-	row.appendChild(colImage);
-	row.appendChild(colEdRem);
-	
-	productElm.setAttribute('class', 'order-product');
-	productElm.setAttribute('id', 'order-product-' + product.catalog + product.length);
-	productElm.appendChild(lengthLbl);
-	productElm.appendChild(colorLbl);
-	productElm.appendChild(imgLbl);
-	productElm.appendChild(edit);
-	productElm.appendChild(space);
-	productElm.appendChild(remove);
-	
-	form.appendChild(productElm);
-	
-	console.log('added product to order');
-}
-	
-	
-	
-	
-/*********************************************************************************
-*	this function adds a chosen product to order. according to unique identifier
-*	the function locates the correct 'new-order-product' element and extract
-*	product length and color. after product details are extracted the function
-*	adds the product to the 'new-order-form' form for display
-*	@param:		catalog, int a unique identifier for each product
-*	return:		null
-*********************************************************************************/
-function addProductToOrder(prodObj){
-
-	var prodStr		= new String(prodObj).split('#')[1];
-	var prod		= document.getElementById(prodStr);
-	var lstUndrIdx	= prodStr.lastIndexOf('-');
-	var catalog		= prodStr.substr(lstUndrIdx + 1, prodStr.length - 1);
-	var product		= document.createElement('div');
-	var lengthLbl	= document.createElement('label');
-	var colorLbl	= document.createElement('label');
-	var imgLbl		= document.createElement('img');
-	var edit		= document.createElement('a');
-	var remove		= document.createElement('a');
-	var space		= document.createElement('i');
-	var form		= document.getElementById('new-order-form'); 
-	var img			= prod.getElementsByTagName('img');
-	var inputs		= prod.getElementsByTagName('input');	
-	var length		= inputs[0].value;
-	var color		= inputs[1].value;
-	var colLen		= new String(color + length);
-	var catLen		= new String(catalog + "_" + length);
-	var row			= document.createElement('div');
-	var colColor	= document.createElement('div');
-	var colLength	= document.createElement('div');
-	var colImage	= document.createElement('div');
-	var colEdRem	= document.createElement('div');
-	//var table		= createTable('productTable', 1, 4, false);
-	var imgURL		= null;
-	
-	
-	row.setAttribute('class', 'row');	
-	colColor.setAttribute('class', 'col-sm');
-	colLength.setAttribute('class', 'col-sm');
-	colImage.setAttribute('class', 'col-sm');
-	colEdRem.setAttribute('class', 'col-sm');
-	
-	
-	lengthLbl.setAttribute('style', 'text-align: left;');
-	lengthLbl.innerHTML = 'length: ' + length;
-	colorLbl.innerHTML 	= 'color: ' + color; 
-	colorLbl.setAttribute('style', 'margin-left: 15%;');
-	imgLbl.setAttribute('style', 'margin-left: 15%; margin-right: 10%;');
-	imgLbl.src			= img[0].src;
-	edit.innerHTML		= 'edit';
-	imgLbl.setAttribute('class', 'image');
-	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
-	edit.setAttribute('style', 'margin-left: 35%;');
-	edit.setAttribute('href', '#' + prodStr);
-	remove.setAttribute('onclick', "removeOrderProduct(" + catLen + ")" );
-	remove.setAttribute('href', '#' + prodStr);
-	remove.setAttribute('style', 'text-align:right;');
-	remove.innerHTML	= 'remove';
-	space.innerHTML		= ' / ';
-
-	colLength.innerHTNL =(lengthLbl);
-	colColor.appendChild(colorLbl);
-	colImage.appendChild(imgLbl);
-	colEdRem.appendChild(edit)
-	
-	row.appendChild(colColor);
-	row.appendChild(colLength);
-	row.appendChild(colImage);
-	row.appendChild(colEdRem);
-	
-	product.setAttribute('class', 'order-product');
-	product.setAttribute('id', 'order-product-' + catalog + length);
-	product.appendChild(lengthLbl);
-	product.appendChild(colorLbl);
-	product.appendChild(imgLbl);
-	product.appendChild(edit);
-	product.appendChild(space);
-	product.appendChild(remove);
-	
-	form.appendChild(product);
-	form.appendChild(row);
-	
-}
-
-
-
-function addProductToOrder2(prodObj){
-	try{
-		var type		= new String(prodObj.id).split('add-new-product')[1];
-		console.log('product : ' + type);
-		
-		var product		= getLocalProduct(type);
-		
-		var type		= product.catalog;
-		var price		= product.price;
-		var img			= product.image;
-		var	length		= product.length;
-		var form		= document.getElementById('new-order-form');		
-		var shopItem = document.createElement("div");
-	  	//shopItem.classList.add("shop-item");
-	  	var shopItemContent = "	<span class='shop-item-title''>" + type + " type pine wood </span> 					\
-		                        <img class='shop-item-image' src=" + img.src + " alt='product photo'> 						\
-		                        <div class='shop-item-details'>																\
-		                        	<input class='input-length' type='number' min='0' pattern='[0-9]*' inputmode='numeric'		\
-		                         	placeholder='length in centimeters' style='margin-bottom: 3px;'>							\
-		                        	<div>																						\
-		                         		<input class='input-quantity' type='number' min='0' pattern='[0-9]*' inputmode='numeric'	\
-		                         		placeholder='quantity'>																	\
-		                        	</div>																						\
-		                        </div>																						\
-		                        <div>																						\
-		                        	<span>" + price + "$ per meter</span>														\
-		                        	<button role='button' name='add' id='AddToCart' style='margin-top: 5px;'					\
-		                        		class='btn btn-primary shop-item-btn'>														\
-		                        		<span id='AddToCart'>																		\
-		                         			Add To Cart																				\
-		                        		</span>" + 																					
-		                        	"</button>" +																					
-		                        "</div>";																						
-		/*
-		shopItem
-		    .getElementsByClassName("input-length")[0]
-		    .addEventListener("change", lengthChange);
-		shopItem
-		    .getElementsByClassName("input-quantity")[0]
-		    .addEventListener("change", quantityChange);
-		shopItem
-		  	.getElementsByClassName("shop-item-btn")[0]
-		  	.addEventListener("click", addToCartClicked);
-		*/
-		shopItem.innerHTML = shopItemContent;
-		form.append(shopItem);
-	}
-	catch(error){
-		
-		console.log('error adding item: ' + error);
-	}
-
-	  //var shopItems = document.getElementsByClassName("shop-items")[0];
-	  //shopItems.append(shopItem);
-	 
-	//console.log('product added length: ' + values[0].innerHTML + ' and color:' + values[1].innerHTML);
-
-	
-}
-
-
-
-function removeOrderProduct(productID){
-	var str			= new String(productID);
-	console.log('productID with this: ' + productID);
-	var product		= document.getElementById('order-product-' + productID);
-	//var values		= product.getElementsByTagName('label');
-	product.remove();
-
-	//console.log('product id: ' + str + ' has values: ' + values[0].innerHTML + values[1].innerHTML);
-}
-
-
-
-function editOrderProduct(productElement){
-	
-	try{
-		var str			= new String(productElement);
-		var prodStr		= new String(productElement).split('#')[1];
-		//var prod		= document.getElementById(prodStr);
-		console.log('edit product: ' + str);
-		
-	}
-	catch(e){
-		console.log('error in edit product: ' + e);
-	}
-
-	
-}
-
-
-
-/*********************************************************************************
-*	this function creates a 'select' like element
-*	@param:		null
-*	return:		result, div the created element
-*********************************************************************************/
-function createSelect(){
-	var select			= document.createElement('div');
-	var button			= document.createElement('button');
-	var dropDown		= document.createElement('div');
-	var action			= document.createElement('a');
-	var idiom			= document.createElement('i');
-	var img				= document.createElement('img');
-	
-	
-	img.src = 'resources/no_data.png';
-	img.setAttribute('class', 'image');
-	img.setAttribute('style', 'float:right;');
-	
-	idiom.setAttribute('class', 'fa fa-angle-down');
-	action.setAttribute('class', 'dropdown-item');
-	action.setAttribute('href', '#select-group');
-	action.innerHTML = 'action';
-	action.appendChild(img);
-	
-	button.setAttribute('type', 'button');
-	button.setAttribute('class', 'btn btn-danger dropdown-toggle');
-	button.setAttribute('data-toggle', 'dropdown');
-	button.setAttribute('aria-haspopup', 'true');
-	button.setAttribute('aria-expanded', 'false');
-	button.innerHTML = 'select ';
-	button.appendChild(idiom);
-	
-	dropDown.setAttribute('id', 'new-order-dropdown-menu');
-	dropDown.setAttribute('class', 'dropdown-menu');
-	dropDown.appendChild(action);
-	
-	select.setAttribute('id', 'select-group');
-	select.setAttribute('class', 'btn-group');
-	select.setAttribute('style', 'width: 80%');
-	select.appendChild(button);
-	select.appendChild(dropDown);
-	
-	return select;
-}
-
-
-/*********************************************************************************
-*	this function handles new order creation and response
-*	@param:		order, JSON format
-*	return:		null
-*********************************************************************************/
-function insertOrder(order){
-	
-	console.log('new order');
+	console.log('new order: ' + '\nproduct type: ' + type + '\nproduct length: ' + prodLen + '\ntotal: ' + total);
 	formdata.append("code", "1");
-	formdata.append("catalog", catalog);
-	formdata.append("type", "0"); 
-	formdata.append("price", "0");
-	formdata.append("length", "0");
-	formdata.append("color", "");
+	formdata.append("date", date);
+	formdata.append("customer", user); 
+	formdata.append("address", address);
+	formdata.append("supplied", false);
+	formdata.append("total", total);
+	formdata.append("comment", comment);
+	formdata.append("products", ordrdPrdLst);
 	
-	
+	/*
 	$.ajax({    
     url: 			'OrderServlet', 	
     dataType: 		'text',  		
@@ -403,7 +115,137 @@ function insertOrder(order){
     		}
     	}
     });
+    
+    */
 }
+
+
+/*********************************************************************************
+*	this function creates a 'select' like element for each product was chosen from
+*	the products list and adds to the 'cart', along with 'edit' and 'remove' 
+*	options for each product. the element is appended to the 'new-order-for' form
+*	in the modal.
+*	@param:		addBtnName, the HTMLElement (button) that triggered the 'add'
+*							operation 
+*	return:		null
+*********************************************************************************/
+function addProductToOrder1(addBtnName){
+	var type		= new String(addBtnName.id).split('add-new-product')[1];
+	var product		= getLocalProduct(type);
+	var row			= document.createElement('div');
+	var imgSrc		= product.image;
+	var imgLbl		= document.createElement('img');
+	var productElm	= document.createElement('div');
+	var lengthLbl	= document.createElement('label');
+	var colorLbl	= document.createElement('label');
+	var priceLbl	= document.createElement('label');
+	var edit		= document.createElement('a');
+	var remove		= document.createElement('a');
+	var space		= document.createElement('i');
+	var form		= document.getElementById('new-order-form');
+	var colLen		= new String(product.color + product.length);
+	var catLen		= new String(product.catalog + "-" + product.length);
+	console.log('product cat len: ' + catLen);
+	
+	
+	var row			= document.createElement('div');
+	var colColor	= document.createElement('div');
+	var colLength	= document.createElement('div');
+	var colImage	= document.createElement('div');
+	var colEdRem	= document.createElement('div');
+	
+	row.setAttribute('class', 'row');	
+	colColor.setAttribute('class', 'col-sm');
+	colLength.setAttribute('class', 'col-sm');
+	colImage.setAttribute('class', 'col-sm');
+	colEdRem.setAttribute('class', 'col-sm');
+	
+	lengthLbl.setAttribute('style', 'text-align: left;');
+	lengthLbl.setAttribute('id', 'length-lbl-' + type);
+	lengthLbl.innerHTML = 'length: ' + product.length;
+	colorLbl.innerHTML 	= 'color: ' + product.color; 
+	colorLbl.setAttribute('id', 'color-lbl-' + type);
+	colorLbl.setAttribute('style', 'margin-left: 15%;');
+	//priceLbl.setAttribute('style', 'text-align: left;');
+	imgLbl.setAttribute('style', 'margin-left: 15%; margin-right: 10%;');
+	imgLbl.src			= imgSrc;
+	edit.innerHTML		= 'edit';
+	imgLbl.setAttribute('class', 'image');
+	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
+	edit.setAttribute('style', 'margin-left: 35%;');
+	edit.setAttribute('href', '#' + product.catalog);
+	remove.setAttribute('id', 'remove-' + catLen );
+	remove.setAttribute('onclick', 'removeOrderProduct(this)' );
+	remove.setAttribute('href', '#' + product.catalog);
+	remove.setAttribute('style', 'text-align:right;');
+	remove.innerHTML	= 'remove';
+	space.innerHTML		= ' / ';
+	
+	colLength.innerHTNL =(lengthLbl);
+	colColor.appendChild(colorLbl);
+	colImage.appendChild(imgLbl);
+	colEdRem.appendChild(edit)
+	
+	row.appendChild(colColor);
+	row.appendChild(colLength);
+	row.appendChild(colImage);
+	row.appendChild(colEdRem);
+	
+	productElm.setAttribute('class', 'order-product');
+	productElm.setAttribute('id', 'order-product-' + catLen);// product.catalog + product.length);
+	productElm.appendChild(lengthLbl);
+	productElm.appendChild(colorLbl);
+	productElm.appendChild(imgLbl);
+	productElm.appendChild(edit);
+	productElm.appendChild(space);
+	productElm.appendChild(remove);
+	
+	form.appendChild(productElm);	
+	console.log('added product to order: ' + productElm.id);
+}
+
+
+
+/*********************************************************************************
+*	this function removes a selected item (product) from the 'cart' (products list)
+*	by finding the correct item: item id is the catalog concat. with chosen length.
+*	@param:		null
+*	return:		result, div the created element
+*********************************************************************************/
+function removeOrderProduct(productID){
+	var str			= new String(productID.id);
+	var type		= str.split('-')[1];
+	var length		= str.split('-')[2];
+	console.log('parent node name: ' + type + '-' + length);
+	var product		= document.getElementById('order-product-' + type + '-' + length);
+	product.remove();
+}
+
+
+/*********************************************************************************
+*	this function allows to edit a selected item (product) from the 'cart'. (products 
+*	list). it opens the items dialog with parameters to be altered.
+*	TODO: complete functionality
+*	@param:		null
+*	return:		result, div the created element
+*********************************************************************************/
+function editOrderProduct(productID){	
+	try{
+			var str			= new String(productID.id);
+			var type		= str.split('-')[1];
+			var length		= str.split('-')[2];
+			console.log('parent node name: ' + type + '-' + length);
+			var product		= document.getElementById('order-product-' + type + '-' + length);
+			console.log('edit product: ' + product);
+		
+	}
+	catch(e){
+		console.log('error in edit product: ' + e);
+	}
+
+	
+}
+
 
 
 /*********************************************************************************
@@ -473,7 +315,8 @@ function createNewProductOption(product){
 	div.appendChild(div1);
 	div.appendChild(div2);
 	div.appendChild(div3);
-
+	
+	localStorage.setItem('currentLength-' + product.catalog, lengthInp.value);
 	return div;
 }
 
@@ -529,43 +372,6 @@ function openOrderModal(){
     			}
      	});
 
-}
-
-
-/*********************************************************************************
-*	this function add a product to an order
-*	@param:		cat, a unique product identifier
-*	return:		null
-*********************************************************************************/
-function addProduct(cat){
-	console.log('add product ' + cat);
-}
-
-
-/*********************************************************************************
-*	this function creates an order modal as HTML element and return to caller
-*	@param:		null
-*	return:		modal, a 'div' HTML element that holds all order fields
-*********************************************************************************/
-function createOrderModal(){
-	
-	
-	var modal			= document.createElement('div');
-	var modalContent	= document.createElement('div');
-	var span			= document.createElement('span');
-	
-	span.innerHTML		= '&times ';
-	span.setAttribute('class', 'close');
-	span.setAttribute('onclick', "function() { 	var modal = document.getElementById('modal') \
-												modal.style.display = 'none'}");
-	modal.setAttribute('id', 'order-modal');
-	modal.setAttribute('class', 'modal');
-	modalContent.setAttribute('class', 'modal-content');
-	modalContent.appendChild(span);
-	modal.appendChild(modalContent);
-	//modal.style.display = 'block';
-	
-	return modal;
 }
 
 

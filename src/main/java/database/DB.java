@@ -1526,7 +1526,6 @@ public class DB
 	{
  		String productString = "";
 		List<Order> result = new ArrayList<Order>();
-		List<Product> products = new ArrayList<Product>();
 		PreparedStatement ps = null, ps1 = null;
 		ResultSet rs = null, rs1 = null;
 		Order order = new Order();

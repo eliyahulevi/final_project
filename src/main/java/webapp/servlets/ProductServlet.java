@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
+
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -19,15 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
-
 import com.google.gson.Gson;
-
 import database.DB;
-import model.message.Message;
-import model.order.Order;
 import model.product.Product;
 
-import utilities.Utils;
 
 /**
  * Servlet implementation class ProductServlet
@@ -58,7 +53,7 @@ public class ProductServlet extends HttpServlet
 			env					= (Context) context.lookup("java:comp/env");
 			productsPath		= (String)env.lookup("PRODUCTS-PATH");
 			noDataFile			= new File(productsPath + "/no_data.png");
-			Optional<String> ext= Utils.getExtensionByStringHandling(productsPath);
+			//Optional<String> ext= Utils.getExtensionByStringHandling(productsPath);
 			
 			System.out.printf("%n%-15s %s","product servlet >> ", "no data" + noDataFile);
 		} 
@@ -150,7 +145,7 @@ public class ProductServlet extends HttpServlet
 				 
 				case "4":		// get all user products
 				{
-					String json = "";
+					//String json = "";
 					System.out.println("user servlet >> code:" + code);
 					 /*
 					 List<Order> list = db.getOrders(user);
