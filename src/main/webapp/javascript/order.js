@@ -143,20 +143,13 @@ function addProductToOrder(addBtnName){
 	var remove		= document.createElement('a');
 	var space		= document.createElement('i');
 	var form		= document.getElementById('new-order-form');
-	var colLen		= new String(product.color + product.length);
 	var catLen		= new String(product.catalog + "-" + product.length);
-	var chosenLen	= localStorage.getItem('currentLength-' + product.catalog);
-	var chosenCol	= localStorage.getItem('currentColor-' + product.catalog);
+
 	
 	
 	var btn			= document.getElementById(addBtnName.id);
-	console.log('add button parent: ' + btn.parentElement);
 	var parent		= btn.parentElement;
 	var inputs		= parent.parentElement.getElementsByTagName('input');
-	console.log('product inputs: ' + inputs);
-	console.log('product chosen length: ' + inputs[0].value + '\nproduct chosen color: ' + inputs[1].value);
-	
-	
 	var row			= document.createElement('div');
 	var colColor	= document.createElement('div');
 	var colLength	= document.createElement('div');
@@ -164,24 +157,26 @@ function addProductToOrder(addBtnName){
 	var colEdRem	= document.createElement('div');
 	
 	row.setAttribute('class', 'row');	
-	colColor.setAttribute('class', 'col-sm');
-	colLength.setAttribute('class', 'col-sm');
-	colImage.setAttribute('class', 'col-sm');
-	colEdRem.setAttribute('class', 'col-sm');
+	colColor.setAttribute('class', 'new-order-product');
+	colLength.setAttribute('class', 'new-order-product');
+	colImage.setAttribute('class', 'new-order-product');
+	colEdRem.setAttribute('class', 'new-order-product');
 	
+	lengthLbl.setAttribute('class', 'new-order-product');
 	lengthLbl.setAttribute('style', 'text-align: left;');
 	lengthLbl.setAttribute('id', 'length-lbl-' + type);
 	lengthLbl.innerHTML = 'length: ' + inputs[0].value;
 	colorLbl.innerHTML 	= 'color: ' + inputs[1].value; 
 	colorLbl.setAttribute('id', 'color-lbl-' + type);
 	colorLbl.setAttribute('style', 'margin-left: 15%;');
+	colorLbl.setAttribute('class', 'new-order-product');
 	//priceLbl.setAttribute('style', 'text-align: left;');
 	imgLbl.setAttribute('style', 'margin-left: 15%; margin-right: 10%;');
 	imgLbl.src			= imgSrc;
 	edit.innerHTML		= 'edit';
 	imgLbl.setAttribute('class', 'image');
 	edit.setAttribute('onclick', 'editOrderProduct(' + catLen + ')');
-	edit.setAttribute('style', 'margin-left: 35%;');
+	edit.setAttribute('style', 'width: 35px;');
 	edit.setAttribute('href', '#' + product.catalog);
 	remove.setAttribute('id', 'remove-' + catLen );
 	remove.setAttribute('onclick', 'removeOrderProduct(this)' );
@@ -194,6 +189,8 @@ function addProductToOrder(addBtnName){
 	colColor.appendChild(colorLbl);
 	colImage.appendChild(imgLbl);
 	colEdRem.appendChild(edit)
+	colEdRem.appendChild(space)
+	colEdRem.appendChild(remove)
 	
 	row.appendChild(colColor);
 	row.appendChild(colLength);
@@ -202,6 +199,7 @@ function addProductToOrder(addBtnName){
 	
 	productElm.setAttribute('class', 'order-product');
 	productElm.setAttribute('id', 'order-product-' + catLen);// product.catalog + product.length);
+
 	productElm.appendChild(lengthLbl);
 	productElm.appendChild(colorLbl);
 	productElm.appendChild(imgLbl);

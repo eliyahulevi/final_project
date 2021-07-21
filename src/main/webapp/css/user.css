@@ -35,12 +35,12 @@
 	height:100px;
 	background-color:gray;
 	border-radius: 2px; 
-	vertical-align:middle;
+	/*vertical-align:middle;*/
 	/*float:right;*/
 }
 .image:hover{
 	background-color:blue;
-
+	padding: 20px;
 }
 .separator{
 	height:2px;
