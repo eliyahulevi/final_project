@@ -129,8 +129,8 @@ function sendNewOrder(){
 *							operation 
 *	return:		null
 *********************************************************************************/
-function addProductToOrder1(addBtnName){
-	var type		= new String(addBtnName.id).split('add-new-product')[1];
+function addProductToOrder(addBtnName){
+	var type		= new String(addBtnName.id).split('add-new-product-')[1];
 	var product		= getLocalProduct(type);
 	var row			= document.createElement('div');
 	var imgSrc		= product.image;
@@ -145,7 +145,16 @@ function addProductToOrder1(addBtnName){
 	var form		= document.getElementById('new-order-form');
 	var colLen		= new String(product.color + product.length);
 	var catLen		= new String(product.catalog + "-" + product.length);
-	console.log('product cat len: ' + catLen);
+	var chosenLen	= localStorage.getItem('currentLength-' + product.catalog);
+	var chosenCol	= localStorage.getItem('currentColor-' + product.catalog);
+	
+	
+	var btn			= document.getElementById(addBtnName.id);
+	console.log('add button parent: ' + btn.parentElement);
+	var parent		= btn.parentElement;
+	var inputs		= parent.parentElement.getElementsByTagName('input');
+	console.log('product inputs: ' + inputs);
+	console.log('product chosen length: ' + inputs[0].value + '\nproduct chosen color: ' + inputs[1].value);
 	
 	
 	var row			= document.createElement('div');
@@ -162,8 +171,8 @@ function addProductToOrder1(addBtnName){
 	
 	lengthLbl.setAttribute('style', 'text-align: left;');
 	lengthLbl.setAttribute('id', 'length-lbl-' + type);
-	lengthLbl.innerHTML = 'length: ' + product.length;
-	colorLbl.innerHTML 	= 'color: ' + product.color; 
+	lengthLbl.innerHTML = 'length: ' + inputs[0].value;
+	colorLbl.innerHTML 	= 'color: ' + inputs[1].value; 
 	colorLbl.setAttribute('id', 'color-lbl-' + type);
 	colorLbl.setAttribute('style', 'margin-left: 15%;');
 	//priceLbl.setAttribute('style', 'text-align: left;');
@@ -217,6 +226,8 @@ function removeOrderProduct(productID){
 	var type		= str.split('-')[1];
 	var length		= str.split('-')[2];
 	console.log('parent node name: ' + type + '-' + length);
+	localStorage.removeItem('currentLength-' + type);
+	localStorage.removeItem('currentColor-' + type);
 	var product		= document.getElementById('order-product-' + type + '-' + length);
 	product.remove();
 }
@@ -271,22 +282,25 @@ function createNewProductOption(product){
 	var div1		= document.createElement('div');
 	var div2		= document.createElement('div');
 	var div3		= document.createElement('div');
+
 	
 	setLocalProduct(product, product.catalog);
 
-	lengthInp.setAttribute('id','new-product-length' + product.catalog);
-	colorInp.setAttribute('id','new-product-color' + product.catalog);
+	lengthInp.setAttribute('id','new-product-length-' + product.catalog);
+	colorInp.setAttribute('id','new-product-color-' + product.catalog);
 	
 	add.setAttribute('class','btn btn-success');
-	add.setAttribute('id','add-new-product' + product.catalog);
+	add.setAttribute('id','add-new-product-' + product.catalog);
 	add.setAttribute('style','width:85%;');
-	add.setAttribute('onclick','addProductToOrder1(this)');
+	add.setAttribute('onclick','addProductToOrder(this)');
 	add.innerHTML		= 'add';	
 	img.src				= product.image;
 	img.setAttribute('class', 'order-product-image');
 	img.setAttribute('id', 'order-product-image' + product.catalog);  
 	
 	div.setAttribute('class', 'box');
+	div.setAttribute('id', 'product-option-' + product.catalog);
+	div.setAttribute('onclick', 'optionClicked(this)');
 	div1.setAttribute('class', 'order-block-lower');
 	div2.setAttribute('class', 'order-block-lower');
 	div3.setAttribute('class', 'order-block-lower');
@@ -315,12 +329,23 @@ function createNewProductOption(product){
 	div.appendChild(div1);
 	div.appendChild(div2);
 	div.appendChild(div3);
-	
-	localStorage.setItem('currentLength-' + product.catalog, lengthInp.value);
+
 	return div;
 }
 
 
+function optionClicked(option){
+	var inputs		= option.getElementsByTagName('input');
+	var type		= new String(option.id).split('-')[2];
+	
+	// clear local storage before insert into memory (in case prior choice was clicked)
+	localStorage.removeItem('currentLength-' + type);
+	localStorage.removeItem('currentColor-' + type);
+	
+	localStorage.setItem('currentLength-' + type, inputs[0].value);
+	localStorage.setItem('currentColor-' + type, inputs[1].value);
+	console.log('option clicked');
+}
 
 
 /*********************************************************************************
@@ -365,8 +390,8 @@ function openOrderModal(){
 					// populates with new products
         			for(var i = 0; i < products.length; i++){
 						
-						var product 		= JSON.parse(products[i]);
-        				var option			= createNewProductOption(product);
+						var product 	= JSON.parse(products[i]);
+        				var option		= createNewProductOption(product);
 						dropDown.appendChild(option);
         			}
     			}
@@ -388,3 +413,23 @@ function closeNewOrder(){
 		select.parentNode.removeChild(select);
 	//elem.style.display = 'none';
 }
+
+
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
