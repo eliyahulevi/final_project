@@ -69,6 +69,8 @@ function sendNewOrder(){
 	var	user		= sessionStorage.getItem('user');
 	var total		= Number(0);
 	var ordrdPrdLst	= [];
+	var address		= document.getElementById('shipping-address').value;
+	var comment		= document.getElementById('shipping-comment').value;
 	
 	if( length === 0 ){
 		alert('no products added..');
@@ -166,7 +168,7 @@ function addProductToOrder(addBtnName){
 	lengthLbl.setAttribute('style', 'text-align: left;');
 	lengthLbl.setAttribute('id', 'length-lbl-' + type);
 	lengthLbl.innerHTML = 'length: ' + inputs[0].value;
-	colorLbl.innerHTML 	= 'color: ' + inputs[1].value; 
+	colorLbl.innerHTML 	= 'color: ' + inputs[1 ].value; 
 	colorLbl.setAttribute('id', 'color-lbl-' + type);
 	colorLbl.setAttribute('style', 'margin-left: 15%;');
 	colorLbl.setAttribute('class', 'new-order-product');
