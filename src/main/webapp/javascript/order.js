@@ -77,19 +77,24 @@ function sendNewOrder(){
 		return;
 	}
 	
-	
 	for(var i = 0; i < length; i++){
-		console.log('product: ' + products[i].id);
-		var id		= products[i].id;
-		var prodLen	= id.split('-')[3];
-		var type	= id.split('-')[2];
-		var product	= getLocalProduct(type);
-		total		= total + Number(prodLen) * Number(product.price); 
-		var	ordrdPr	= {'type': type, 'length': prodLen};
-		ordrdPrdLst[i] = ordrdPr;
+				 
+		var id			= products[i].id;
+		var type		= id.split('-')[2];
+		var lengthElem	= document.getElementById('length-lbl-' + type);
+		var productLen	= lengthElem.innerHTML;	
+		var plen		= new String(productLen).split(':')[1];
+		var product		= getLocalProduct(type);
+		var	ordrdPrdct	= {'type': type, 'length': plen};
+		total			= total + Number(plen) * Number(product.price);
+		ordrdPrdLst[i] 	= ordrdPrdct;
+		
+		//console.log('product: ' + products[i].id);
+		console.log('new total: ' + total); 
+		//console.log('new order: ' + '\nproduct type: ' + type + '\nprice: ' + product.price + '\nproduct length: ' + plen + '\ntotal: ' + total);
 	}
 	
-	console.log('new order: ' + '\nproduct type: ' + type + '\nproduct length: ' + prodLen + '\ntotal: ' + total);
+	
 	formdata.append("code", "1");
 	formdata.append("date", date);
 	formdata.append("customer", user); 
