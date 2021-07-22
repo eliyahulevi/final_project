@@ -71,6 +71,7 @@ function sendNewOrder(){
 	var ordrdPrdLst	= [];
 	var address		= document.getElementById('shipping-address').value;
 	var comment		= document.getElementById('shipping-comment').value;
+	var totalElem	= document.getElementById('order-total');
 	
 	if( length === 0 ){
 		alert('no products added..');
@@ -94,7 +95,7 @@ function sendNewOrder(){
 		//console.log('new order: ' + '\nproduct type: ' + type + '\nprice: ' + product.price + '\nproduct length: ' + plen + '\ntotal: ' + total);
 	}
 	
-	
+	totalElem.innerHTML	= total;
 	formdata.append("code", "1");
 	formdata.append("date", date);
 	formdata.append("customer", user); 
