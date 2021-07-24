@@ -66,12 +66,13 @@ function sendNewOrder(){
 	var length		= products.length;
 	var date		= new Date().getTime();
 	var formdata	= new FormData();
-	var	user		= sessionStorage.getItem('user');
-	var total		= Number(0);
+	var	user		= sessionStorage.getItem('username');
 	var ordrdPrdLst	= [];
 	var address		= document.getElementById('shipping-address').value;
 	var comment		= document.getElementById('shipping-comment').value;
 	var totalElem	= document.getElementById('order-total');
+	var total		= new String(totalElem.innerHTML);//.split(":")[1];
+	console.log('total for order: ' + total); 
 	
 	if( length === 0 ){
 		alert('no products added..');
@@ -87,11 +88,11 @@ function sendNewOrder(){
 		var plen		= new String(productLen).split(':')[1];
 		var product		= getLocalProduct(type);
 		var	ordrdPrdct	= {'type': type, 'length': plen};
-		total			= total + Number(plen) * Number(product.price);
-		ordrdPrdLst[i] 	= ordrdPrdct;
+		//total			= total + Number(plen) * Number(product.price);
+		ordrdPrdLst[i] 	= JSON.stringify(ordrdPrdct);
 		
 		//console.log('product: ' + products[i].id);
-		console.log('new total: ' + total); 
+		
 		//console.log('new order: ' + '\nproduct type: ' + type + '\nprice: ' + product.price + '\nproduct length: ' + plen + '\ntotal: ' + total);
 	}
 	
@@ -105,7 +106,7 @@ function sendNewOrder(){
 	formdata.append("comment", comment);
 	formdata.append("products", ordrdPrdLst);
 	
-	/*
+	
 	$.ajax({    
     url: 			'OrderServlet', 	
     dataType: 		'text',  		
@@ -118,13 +119,12 @@ function sendNewOrder(){
     success: function(response){
     		if(response > 0)
     		{
-    			loadProducts(true);
-    			console.log('response from server' + response);
+    			closeNewOrder()
     		}
     	}
     });
     
-    */
+    
 }
 
 
@@ -152,9 +152,6 @@ function addProductToOrder(addBtnName){
 	var space		= document.createElement('i');
 	var form		= document.getElementById('new-order-form');
 	var catLen		= new String(product.catalog + "-" + product.length);
-
-	
-	
 	var btn			= document.getElementById(addBtnName.id);
 	var parent		= btn.parentElement;
 	var inputs		= parent.parentElement.getElementsByTagName('input');
@@ -163,6 +160,14 @@ function addProductToOrder(addBtnName){
 	var colLength	= document.createElement('div');
 	var colImage	= document.createElement('div');
 	var colEdRem	= document.createElement('div');
+
+	var totalElem	= document.getElementById('order-total');
+	var total		= Number(totalElem.innerHTML);
+	
+	total			= total + Number(inputs[0].value) * Number(product.price);
+	totalElem.innerHTML = total;
+	
+	console.log('length input: ' + inputs[0].value + ' price: ' + product.price + 'total: ' + total);
 	
 	row.setAttribute('class', 'row');	
 	colColor.setAttribute('class', 'new-order-product');

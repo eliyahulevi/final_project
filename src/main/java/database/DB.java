@@ -132,6 +132,7 @@ public class DB
 			+ "USERNAME varchar(40),"
 			+ "SHIPADDREDD varchar(100),"
 			+ "STATUS boolean," 
+			+ "TOTAL float," 
 			+ "COMMENT varchar(200),"
 			+ "PRODUCTS varchar(500),"
 			+ "FOREIGN KEY (USERNAME) REFERENCES USERS(USERNAME)" 
@@ -163,7 +164,7 @@ public class DB
 	/************************************************************************
 	 *	 					order	
 	 ***********************************************************************/
-	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE ORDER_ID=?";
 	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE USERNAME=?";
 	
@@ -1524,7 +1525,6 @@ public class DB
  	 */
 	public List<Order> getOrders(String user) 
 	{
- 		String productString = "";
 		List<Order> result = new ArrayList<Order>();
 		PreparedStatement ps = null, ps1 = null;
 		ResultSet rs = null, rs1 = null;
@@ -1552,10 +1552,11 @@ public class DB
 				order.setDate(rs.getLong(2));				// date
 				order.setCustomer(rs.getString(3));			// customer
 				order.setAddress(rs.getString(4));			// ship address
-				order.setIsSupplied(rs.getBoolean(5));		// is supplied
-				order.setComment(rs.getString(6));			// comment
-				productString = rs.getString(7);			// product string	
-				order.setProducts(productsFromList(productString));
+				order.setIsSupplied(rs.getBoolean(5));		// supplied
+				order.setTotal(rs.getFloat(6));				// supplied
+				order.setComment(rs.getString(7));			// comment
+				String[] products = rs.getString(8).split(";", 0);
+				order.setProducts(products);				// products
 				//String s = this.order2JSON(order);
 				// TODO: erase later
 				//System.out.println("DB >> msgs: " + s);
@@ -1591,13 +1592,15 @@ public class DB
 	 * 	@param	Order	order that holds all the info
 	 * 	return			null	
 	 */
- 	public void insertOrder(Order order)
+ 	public int insertOrder(Order order)
  	{
+ 		int result = -1;
+ 		int index = 0;
  	 	PreparedStatement ps = null, ps1 = null;
 		ResultSet rs = null, rs1 = null;
-		List<String> list = new ArrayList<String>();
-		int length = order.getProducts().size();
-		int index = 0;
+		String productsList = String.join(";", order.getProducts()); 
+		//int length = order.getProducts().size();
+		
 
 	 	try
 	 	{
@@ -1605,7 +1608,7 @@ public class DB
 			if(this.connect() < 0)
 			{
 				System.out.println("cannot connect to database.. aborting");
-				return;
+				return result;
 			}
 			
 	 		// 1. get the max order index
@@ -1615,6 +1618,7 @@ public class DB
 				index = rs1.getInt(1);
 	 		
 	 		// 2. create the ordered products string "product1qty1, product2qty2,..."
+			/*
 			list.add(order.getProducts().get(0).getType() + Float.toString(order.getProducts().get(0).getPrice()));
 			for(int i = 1; i < length; i++)
 			{
@@ -1624,19 +1628,22 @@ public class DB
 				/*
 				String productQty = "," + p.getCatalog() + Float.toString(p.getLength());
 				System.out.printf("%-15s %s%n", "DB >> ", productQty);
-				*/
+				*
 			}
+	 		*/
 			
 	 		// 3. fire up the insert query
 			ps = this.connection.prepareStatement(INSERT_ORDER);
-			ps.setInt(1, ++index);
-			ps.setLong(2, order.getDate());
-			ps.setString(3, order.getCustomerName());
-			ps.setString(4, order.getShipAddess());
-			ps.setBoolean(5, order.getIsSupplied());
-			ps.setString(6, order.getComment());
-			ps.setString(7, list.toString());
+			ps.setInt(1, ++index);									// index
+			ps.setLong(2, order.getDate());							// date
+			ps.setString(3, order.getCustomerName());				// customer
+			ps.setString(4, order.getShipAddess());					// address
+			ps.setBoolean(5, order.getIsSupplied());				// supplied
+			ps.setFloat(6, order.getTotal());						// total
+			ps.setString(7, order.getComment());					// comment
+			ps.setString(8, productsList);							// products
 			ps.execute();
+			result = 0;
 	 	}
 	 	catch(Exception e)
 	 	{
@@ -1646,10 +1653,8 @@ public class DB
 	 	{
 			try
 			{
-				if(rs != null)
-					rs.close();
-				if(ps != null)
-					ps.close();
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
 				this.disconnect();
 			}
 			catch(Exception e)
@@ -1657,6 +1662,7 @@ public class DB
 				e.printStackTrace();
 			}
 	 	}
+	 	return result;
  	}
 	
  	
@@ -1988,7 +1994,7 @@ public class DB
  		
  		return result;
  	}
- 	
+ 	//private String[] 
  		
  	/*
  	 * 	get ALL the products from the DB

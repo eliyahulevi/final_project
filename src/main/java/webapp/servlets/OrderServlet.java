@@ -2,10 +2,7 @@ package webapp.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.List;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,13 +10,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
-
 import com.google.gson.Gson;
-
 import database.DB;
-import model.product.Product;
+import model.order.Order;
+
 
 
 /**
@@ -63,17 +57,17 @@ public class OrderServlet extends HttpServlet {
 	{
 		
 		String code 			= request.getParameter("code");
-		String catalog 			= request.getParameter("index");
-		String type 			= request.getParameter("date");
-		String priceString 		= request.getParameter("customer");
-		String lengthString 	= request.getParameter("shipAddress"); 
-		String color 			= request.getParameter("supplied");
-		String image			= request.getParameter("Comment");
-		String products			= request.getParameter("products");
+		String dateStr	 		= request.getParameter("date");
+		String customer 		= request.getParameter("customer");
+		String address 			= request.getParameter("address");
+		String supplyStr	 	= request.getParameter("supplied"); 
+		String totalStr 		= request.getParameter("total");
+		String comment			= request.getParameter("comment");
+		String productsStr		= request.getParameter("products");
 		
 		try 
 		{
-			
+			PrintWriter writer = response.getWriter();
 			switch(code)
 			{
 				case "0":		// get all orders
@@ -94,23 +88,25 @@ public class OrderServlet extends HttpServlet {
 					 
 				case "1":		// add new order
 				{
-					Blob img 		= new SerialBlob(image.getBytes());
-					int cat			= Integer.valueOf(catalog);
-					float price 	= Float.valueOf(priceString);
-					float length 	= Float.valueOf(lengthString);
-					Product product = new Product(cat, type, price, length, color, img);
-					db.insertProduct(product);
-					System.out.println("product servlet >> add product");
-					product.print();
+					long date			= Long.valueOf(dateStr);
+					boolean supplied 	= Boolean.valueOf(supplyStr);
+					float total 		= Float.valueOf(totalStr);
+					String[] products	= productsStr.split(";", 0); 
+					Order order 	= new Order(customer, date, address, supplied, total, comment, products);
+					db.insertOrder(order);
+					System.out.println("order servlet >> add order ");
+					order.print();
+					writer.println(1);
 					break;
 				}
 				 
 				case "2":		// remove an order
 				{
-					System.out.printf("%n%-15s %s", "product servlet >>", "delete product: " + catalog); 
-					PrintWriter writer = response.getWriter();
-					int result = db.deleteProduct(Integer.valueOf(catalog));
-					writer.println(result);
+					int index = 0;
+					System.out.printf("%n%-15s %s", "order servlet >>", "delete order: " + index); 
+					
+					//int result = db.deleteOrder(index);
+					writer.println(-1);
 					break;
 				}
 				 
@@ -158,14 +154,7 @@ public class OrderServlet extends HttpServlet {
 		{
 			e.printStackTrace();
 		} 
-		catch (SerialException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (SQLException e) 
-		{
-			e.printStackTrace();
-		} 
+
 	}
 	
 
