@@ -21,9 +21,8 @@ function login(){
 	var name = document.getElementById("sign-in-model-name").value;
 	var password = document.getElementById("sign-in-model-password").value;
 	var requestString = 'name=' + name + ',password=' + password;
-	alert("requestString:" + requestString);
-	
 	var xhr = new XMLHttpRequest();
+	
 	xhr.open('POST', 'LoginServlet2', true);
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send(requestString);	
@@ -44,7 +43,6 @@ function login(){
 *	this function handles on successful login event
 *********************************************************************************/
 function onSuccess(data){
-
 	var user = JSON.parse(data);
 	sessionStorage.setItem('username', user.username);
 	sessionStorage.setItem('password', user.password);
@@ -52,6 +50,7 @@ function onSuccess(data){
 	sessionStorage.setItem('email', user.email);
 	sessionStorage.setItem('phone', user.phone);
 	sessionStorage.setItem('address', user.address);
+	console.log('log in success: ' + user.username);
 	window.location.replace("/final-project/user.html");
 }
 

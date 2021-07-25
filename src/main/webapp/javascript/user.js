@@ -1528,7 +1528,7 @@ function loadUserDetails(){
 	let email      = sessionStorage.getItem('email');
 	let address	   = sessionStorage.getItem('address');
 	
-	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+	console.log("user details: \nname: " + name + "\npassword: " + password + "\nnickname: " + nickname + "\nemail: " +  email + "\naddress: " + address);
 	document.getElementById("user-details-header").innerHTML = name;
 	
 	document.getElementById("pt-user-name").value = name;

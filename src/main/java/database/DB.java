@@ -98,7 +98,8 @@ public class DB
 			+ "PASSWORD varchar(8),"
 			+ "NICKNAME varchar(30),"
 			+ "ADDRESS varchar(50),"
-			+ "PHOTO varchar(100),"
+			+ "PHOTO blob,"
+			+ "EMAIL varchar(100),"
 			+ "DESCRIPTION varchar(200)"
 			+ ")";
 	private final String CREATE_MESSAGE_TABLE = "CREATE TABLE " + tables_str[tables.MESSAGES.value] + "("
@@ -171,7 +172,7 @@ public class DB
 	/************************************************************************
 	 *	 					user	
 	 ***********************************************************************/
-	private String INSERT_USER = 			"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER = 			"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_USERS = 			"SELECT * FROM " + tables_str[tables.USERS.value] ;
 	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[tables.USERS.value];
 	private String SELECT_USER		=		"SELECT * FROM " + tables_str[tables.USERS.value] + " WHERE USERNAME=? AND PASSWORD=?";
@@ -585,10 +586,10 @@ public class DB
 		map.put("username", user.getName());
 		map.put("password", user.getPassword());
 		map.put("nickname", user.getNickName());
-		map.put("email", user.getEmail());
-		map.put("phone", user.getPhone());
 		map.put("address", user.getAddress());
-		
+		map.put("photo", user.getPhoto().toString());
+		map.put("email", user.getEmail());
+		map.put("description", user.getDescription());
 		result = JSONValue.toJSONString(map);
 		return result;
 	}
@@ -662,12 +663,13 @@ public class DB
 			}
 			// insert user			
 			state = this.connection.prepareStatement(INSERT_USER);
-			state.setString(1, user.getName());	
-			state.setString(2, user.getPassword());		//email
-			state.setString(3, user.getNickName());		//phone
-			state.setString(4, user.getAddress());		//address
-			state.setString(5, user.getPhoto());		//photo
-			state.setString(6, user.getDescription());	//password
+			state.setString(1, user.getName());			// name	
+			state.setString(2, user.getPassword());		// password
+			state.setString(3, user.getNickName());		// nickname
+			state.setString(4, user.getAddress());		// address
+			state.setBlob(5, user.getPhoto());			// photo
+			state.setString(6, user.getEmail());		// e-mail
+			state.setString(7, user.getDescription());	// description
 			rs = state.executeUpdate();
 			
 			if (rs > 0)
@@ -787,7 +789,15 @@ public class DB
 			{
 				if(res.getString(1).equals(name) && res.getString(2).equals(password)) 
 				{
-					User user = new User(res.getString(1), res.getString(2), res.getString(3), res.getString(4), res.getString(5) );
+					User user = new User(	res.getString(1),  	// name
+											res.getString(2), 	// password
+											res.getString(3),	// nickname 
+											res.getString(4),	// address 
+											res.getBlob(5),		// photo
+											res.getString(6),	// email
+											res.getString(7)	// description
+										);
+					user.print();
 					return user2JSON(user);
 				}
 			}

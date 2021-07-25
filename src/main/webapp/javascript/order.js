@@ -366,9 +366,10 @@ function optionClicked(option){
 *********************************************************************************/
 function openOrderModal(){
 	
-	console.log('open modal..');
-	var modal		= document.getElementById('new-order-Modal'); 
-	var formdata 	= new FormData();
+
+	var addressElem		= document.getElementById('shipping-address'); 
+	var address			= sessionStorage.getItem('address');
+	var formdata 		= new FormData();
 	
 	formdata.append("code", 	"0");
 	formdata.append("catalog", 	"0");
