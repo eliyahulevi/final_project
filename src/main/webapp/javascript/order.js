@@ -418,12 +418,14 @@ function openOrderModal(){
 *	return:		null
 *********************************************************************************/
 function closeNewOrder(){
-	console.log('close order modal ');
-	var	elem		= document.getElementById('new-order-Modal');
+	/*
+	var	elem		= document.getElementById('new-order-Modal1');
 	var select		= document.getElementById('select-group');
 	if( select !== null )
 		select.parentNode.removeChild(select);
-	//elem.style.display = 'none';
+	elem.style.display = 'none';//remove();
+	*/
+	console.log('close order modal');
 }
 
 
