@@ -10,6 +10,51 @@
 
 
 /*********************************************************************************
+*	this function load all the users orders (past and present) from the server DB
+*	@param:		sync, boolean whether the action should be synchronous or not.
+*	return:		result, an array of orders in JSON format
+*********************************************************************************/
+function loadUserOrders(sync){
+		var date = new Date().getTime();
+		var formdata = new FormData();
+		formdata.append("code", "4");
+		formdata.append("date", date);
+		formdata.append("customer", sessionStorage.getItem('username'));
+		formdata.append("address", ""); 
+		formdata.append("supplied", "");
+		formdata.append("total", "");
+		formdata.append("comment", "");
+		formdata.append("products", "");
+		
+		console.log('load orders for: ' + sessionStorage.getItem('username')); 
+		
+		$.ajax({    
+        url: 			'OrderServlet', 	
+        dataType: 		'text',  		
+        cache: 			false,
+        contentType: 	false,
+        processData: 	false,
+        data: 			formdata,                         
+        type: 			'post',
+        async: 			sync,
+        success: function(response){ 
+        			console.log('load orders response: ' + response); 
+        			if (response == '') return;
+        			var products = JSON.parse(response);    			 			
+		            var length = products.length;
+		            
+		            for(var i = 0; i < length; i++){
+		            	//var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
+		            	//form.appendChild(item);
+		            	console.log('order number: ' + i);					
+		            }
+    			}
+     	});
+}
+
+
+
+/*********************************************************************************
 *	this function upload a product to the application localStorage memory
 *	@param:		product, a javascript object that holds products details
 *	@param:		id, a unique product identifier
@@ -263,9 +308,7 @@ function editOrderProduct(productID){
 	}
 	catch(e){
 		console.log('error in edit product: ' + e);
-	}
-
-	
+	}	
 }
 
 
@@ -345,6 +388,12 @@ function createNewProductOption(product){
 }
 
 
+/*********************************************************************************
+*	this function saves the last 'known' chosen length for each product with each
+*	time the user clicked on the product div element.
+*	@param:		option, the div element containing the product details
+*	return:		null
+*********************************************************************************/
 function optionClicked(option){
 	var inputs		= option.getElementsByTagName('input');
 	var type		= new String(option.id).split('-')[2];
@@ -366,9 +415,6 @@ function optionClicked(option){
 *********************************************************************************/
 function openOrderModal(){
 	
-
-	var addressElem		= document.getElementById('shipping-address'); 
-	var address			= sessionStorage.getItem('address');
 	var formdata 		= new FormData();
 	
 	formdata.append("code", 	"0");
@@ -428,22 +474,4 @@ function closeNewOrder(){
 	console.log('close order modal');
 }
 
-
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
-
-
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
 

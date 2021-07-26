@@ -581,15 +581,19 @@ public class DB
 	private String user2JSON(User user)
 	{
 		String result = "";
+		Blob photo = user.getPhoto();
 		
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("username", user.getName());
 		map.put("password", user.getPassword());
 		map.put("nickname", user.getNickName());
 		map.put("address", user.getAddress());
-		map.put("photo", user.getPhoto().toString());
 		map.put("email", user.getEmail());
 		map.put("description", user.getDescription());
+		
+		if( photo != null )
+			map.put("photo", user.getPhoto().toString());
+		
 		result = JSONValue.toJSONString(map);
 		return result;
 	}
@@ -1536,8 +1540,8 @@ public class DB
 	public List<Order> getOrders(String user) 
 	{
 		List<Order> result = new ArrayList<Order>();
-		PreparedStatement ps = null, ps1 = null;
-		ResultSet rs = null, rs1 = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		Order order = new Order();
 		try
 		{
@@ -1548,14 +1552,10 @@ public class DB
 				return result;
 			}	
 			
-			// 1. create the products list
-			ps1 = this.connection.prepareStatement(SELECT_USERS_ORDERS);
-			ps1.setString(1, user);
-			rs1 = ps1.executeQuery();
-			
-			// 2. create the orders list
+			// 1. create the orders list
 			ps = this.connection.prepareStatement(SELECT_USERS_ORDERS);
 			ps.setString(1, user);
+			System.out.printf("%n%-15s %s%n", "DB >>", "get order for: " + user);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				order.setIndex(rs.getInt(1));				// index
@@ -1563,7 +1563,7 @@ public class DB
 				order.setCustomer(rs.getString(3));			// customer
 				order.setAddress(rs.getString(4));			// ship address
 				order.setIsSupplied(rs.getBoolean(5));		// supplied
-				order.setTotal(rs.getFloat(6));				// supplied
+				order.setTotal(rs.getFloat(6));				// total
 				order.setComment(rs.getString(7));			// comment
 				String[] products = rs.getString(8).split(";", 0);
 				order.setProducts(products);				// products
@@ -1584,8 +1584,6 @@ public class DB
 			{
 				if(rs != null) rs.close();
 				if(ps != null) ps.close();
-				if(rs1 != null) rs1.close();
-				if(ps1 != null) ps1.close();
 				this.disconnect();
 			}
 			catch(Exception e)

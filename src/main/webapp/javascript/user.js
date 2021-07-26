@@ -527,42 +527,6 @@ function onTextChange(){
 }
 
 
-/*********************************************************************************
-*	this function load all the users orders (past and present) from the server DB
-*********************************************************************************/
-function loadUserOrders(sync){
-		var date = new Date().getTime();
-		var formdata = new FormData();
-		formdata.append("code", "4");
-		formdata.append("user", sessionStorage.getItem('username'));
-		formdata.append("sender", ""); 
-		formdata.append("message", "");
-		formdata.append("image", "");
-		formdata.append("date", date);
-		//alert('load products'); 
-		
-		$.ajax({    
-        url: 'UserServlet', 	// point to server-side
-        dataType: 'text',  		// what to expect back from the server if anything
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formdata,                         
-        type: 'post',
-        async: sync,
-        success: function(response){ 
-        			if (response == '') return;
-        			var products = JSON.parse(response);    			 			
-		            //var form = document.getElementById("items");
-		            var length = products.length;
-		            for(var i = 0; i < length; i++){
-		            	//var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
-		            	//form.appendChild(item);					
-		            }
-    			}
-     	});
-}
-
 
 /*********************************************************************************
 *	this function load all users messages from the server for the registered user 

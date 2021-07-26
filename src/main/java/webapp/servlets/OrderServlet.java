@@ -65,6 +65,8 @@ public class OrderServlet extends HttpServlet {
 		String comment			= request.getParameter("comment");
 		String productsStr		= request.getParameter("products");
 		
+		System.out.printf("%n%-15s %s%n","order servlet >> ", "code: " + code);
+		
 		try 
 		{
 			PrintWriter writer = response.getWriter();
@@ -77,10 +79,10 @@ public class OrderServlet extends HttpServlet {
 					if( list.size() > 0)
 					{
 						json = new Gson().toJson(list);
-						System.out.printf("%n%-15s %s","product servlet >> ", "");
+						System.out.printf("%n%-15s %s%n","order servlet >> ", "");
 					}
 				 
-					System.out.printf("%n%-15s %s", "product servlet >>", "product: ");
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "product: ");
 					response.getWriter().write(json);
 					break;
 				}
@@ -103,7 +105,7 @@ public class OrderServlet extends HttpServlet {
 				case "2":		// remove an order
 				{
 					int index = 0;
-					System.out.printf("%n%-15s %s", "order servlet >>", "delete order: " + index); 
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "delete order: " + index); 
 					
 					//int result = db.deleteOrder(index);
 					writer.println(-1);
@@ -116,19 +118,19 @@ public class OrderServlet extends HttpServlet {
 					break;
 				}
 				 
-				case "4":		// get all user orders
+				case "4":		// get (all) of user orders
 				{
-					//String json = "";
-					System.out.println("user servlet >> code:" + code);
-					 /*
-					 List<Order> list = db.getOrders(user);
-					 if( list.size() > 0)
-					 {
-						 json = new Gson().toJson(list);
-						 System.out.println(list);
-					 }
-					 response.getWriter().write(json);
-					 */
+					String json = "";
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "get order for: " + customer);
+					 
+					List<Order> list = db.getOrders(customer);
+					if( list.size() > 0)
+					{
+						json = new Gson().toJson(list);
+						System.out.println(list);
+					}
+					response.getWriter().write(json);
+					 
 					break;
 				}
 				 
