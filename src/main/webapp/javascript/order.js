@@ -71,7 +71,9 @@ function addUserOrder(orderObj){
 	var dateStr			= new String(new Date(Number(order.date))).split(' ').slice(0, 5);
 	tdDate.innerHTML	= dateStr;
 	tdTotal.innerHTML	= (order.total); 
-	console.log(order.date);	
+	tdSupplied.innerHTML= (order.supplied) ? "not yet.." : "yes";
+	tdIdx.innerHTML		= (order.index);
+	console.log(order.supplied);	
 	
 	row.appendChild(tdIdx);
 	row.appendChild(tdDate);

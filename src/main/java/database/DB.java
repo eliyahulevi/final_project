@@ -1742,7 +1742,7 @@ public class DB
 		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
 		try
 		{
-			
+			map.put("index", String.valueOf(order.getIndex()));
 			map.put("customer", order.getCustomerName());
 			map.put("address", order.getShipAddess());
 			map.put("date", Long.toString(order.getDate()));
