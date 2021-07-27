@@ -67,13 +67,14 @@ function addUserOrder(orderObj){
 	var tdDate			= document.createElement('td');
 	var tdTotal			= document.createElement('td');
 	var tdSupplied		= document.createElement('td');
-	
 	var dateStr			= new String(new Date(Number(order.date))).split(' ').slice(0, 5);
+	
 	tdDate.innerHTML	= dateStr;
 	tdTotal.innerHTML	= (order.total); 
 	tdSupplied.innerHTML= (order.supplied) ? "not yet.." : "yes";
 	tdIdx.innerHTML		= (order.index);
-	console.log(order.supplied);	
+	row.setAttribute('class', 'order-row');
+	row.setAttribute('onclick', 'orderRowClicked(this)');		
 	
 	row.appendChild(tdIdx);
 	row.appendChild(tdDate);
@@ -82,6 +83,12 @@ function addUserOrder(orderObj){
 	table.appendChild(row);
 }
 
+
+
+function orderRowClicked(row)
+{
+	console.log('row clicked:' + row);	
+}
 
 
 /*********************************************************************************
