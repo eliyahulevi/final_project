@@ -26,7 +26,7 @@ function loadUserOrders(sync){
 		formdata.append("comment", "");
 		formdata.append("products", "");
 		
-		console.log('load orders for: ' + sessionStorage.getItem('username')); 
+		console.log('load orders for: ' + sessionStorage.getItem('username') + ' now..'); 
 		
 		$.ajax({    
         url: 			'OrderServlet', 	
@@ -38,18 +38,46 @@ function loadUserOrders(sync){
         type: 			'post',
         async: 			sync,
         success: function(response){ 
-        			console.log('load orders response: ' + response); 
+        			
         			if (response == '') return;
-        			var products = JSON.parse(response);    			 			
-		            var length = products.length;
+        			var orders = JSON.parse(response);    			 			
+		            var length = orders.length;
 		            
 		            for(var i = 0; i < length; i++){
-		            	//var item = createItem(product[i]);		// TODO: implement 'createItem' (below)
-		            	//form.appendChild(item);
-		            	console.log('order number: ' + i);					
+		            	addUserOrder(orders[i]);	
 		            }
     			}
      	});
+}
+
+
+
+/*********************************************************************************
+*	this function upload an order to the users orders list. this function get a 
+*	json object of an order and append a new row to the orders table in the page 
+*	@param:		order, a JSON object that holds order details
+*	return:		null
+*********************************************************************************/
+function addUserOrder(orderObj){
+	var order			= JSON.parse(orderObj);
+	
+	var table			= document.getElementById('order-table');
+	var row				= document.createElement('tr');
+	var tdIdx			= document.createElement('td');
+	var tdDate			= document.createElement('td');
+	var tdTotal			= document.createElement('td');
+	var tdSupplied		= document.createElement('td');
+	
+	var dateStr			= new String(new Date(Number(order.date))).split(' ').slice(0, 5);
+	tdDate.innerHTML	= dateStr;
+	tdTotal.innerHTML	= (order.total); 
+	console.log(order.date);	
+	
+	row.appendChild(tdIdx);
+	row.appendChild(tdDate);
+	row.appendChild(tdTotal);
+	row.appendChild(tdSupplied);
+	table.appendChild(row);
 }
 
 

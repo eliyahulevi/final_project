@@ -1594,6 +1594,64 @@ public class DB
 		return result;
 	}
 	
+	/*
+	 * get orders for a specific user
+	 * @param:	customer, String that represent the customer name
+	 * return:	result, List of Strings	
+	 */
+	public List<String> getOrders1(String customer) 
+	{
+		List<String> result = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Order order = new Order();
+		try
+		{
+			// 0. connect
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}	
+			
+			// 1. create the orders list
+			ps = this.connection.prepareStatement(SELECT_USERS_ORDERS);
+			ps.setString(1, customer);
+			System.out.printf("%n%-15s %s%n", "DB >>", "get order for: " + user);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				order.setIndex(rs.getInt(1));				// index
+				order.setDate(rs.getLong(2));				// date
+				order.setCustomer(rs.getString(3));			// customer
+				order.setAddress(rs.getString(4));			// ship address
+				order.setIsSupplied(rs.getBoolean(5));		// supplied
+				order.setTotal(rs.getFloat(6));				// total
+				order.setComment(rs.getString(7));			// comment
+				String[] products = rs.getString(8).split(";", 0);
+				order.setProducts(products);				// products
+				result.add(order2String(order));
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return result; 
+	}
  	
 	/*
 	 * 	inserts a new order instance to DB
@@ -1673,6 +1731,36 @@ public class DB
 	 	return result;
  	}
 	
+ 	/*
+ 	 * convert an order to a string
+ 	 */
+ 	private String order2String(Order order)
+ 	{
+ 		String result = "";
+ 		//Blob blob = order.getPhoto();//.getImage();
+		Map<String,String> map = new HashMap<String,String>();
+		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
+		try
+		{
+			
+			map.put("customer", order.getCustomerName());
+			map.put("address", order.getShipAddess());
+			map.put("date", Long.toString(order.getDate()));
+			map.put("supplied", Boolean.toString(order.getIsSupplied()));	
+			map.put("comment", String.valueOf(order.getComment()));
+			map.put("products", String.valueOf(order.getProducts()));
+			map.put("total", String.valueOf(order.getTotal()));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		result = JSONValue.toJSONString(map);
+ 		
+ 		
+ 		return result;
+ 	}
  	
  	
 	/************************************************************************
@@ -2233,5 +2321,6 @@ public class DB
 		
 		return result;
 	}
+	
 
 }

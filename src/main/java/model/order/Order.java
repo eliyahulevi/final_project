@@ -21,12 +21,13 @@ public class Order
 	}
 	public Order(String user, long date, String shipAddress, boolean supplied, float total, String comment, String[] products)
 	{
-		this.customer = user;
-		this.date = date;
-		this.shipAddress = shipAddress;
-		this.supplied = supplied;
-		this.comment = comment;
-		this.products = products;
+		this.customer 		= user;
+		this.date 			= date;
+		this.shipAddress 	= shipAddress;
+		this.supplied 		= supplied;
+		this.comment 		= comment;
+		this.products 		= products;
+		this.total 			= total;
 	}
 	public Order(int index, String user, long date, String shipAddress, boolean supplied, String[] products)
 	{

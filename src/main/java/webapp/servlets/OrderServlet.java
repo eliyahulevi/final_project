@@ -65,7 +65,7 @@ public class OrderServlet extends HttpServlet {
 		String comment			= request.getParameter("comment");
 		String productsStr		= request.getParameter("products");
 		
-		System.out.printf("%n%-15s %s%n","order servlet >> ", "code: " + code);
+		System.out.printf("%n%-15s %s%n","order servlet >> ", "total: " + totalStr);
 		
 		try 
 		{
@@ -88,12 +88,13 @@ public class OrderServlet extends HttpServlet {
 				}
 				
 					 
-				case "1":		// add new order
+				case "1":		// insert new order
 				{
 					long date			= Long.valueOf(dateStr);
 					boolean supplied 	= Boolean.valueOf(supplyStr);
 					float total 		= Float.valueOf(totalStr);
 					String[] products	= productsStr.split(";", 0); 
+					System.out.printf("%n%-15s %s%n","order servlet >> ", "order total: " + total);
 					Order order 	= new Order(customer, date, address, supplied, total, comment, products);
 					db.insertOrder(order);
 					System.out.println("order servlet >> add order ");
@@ -123,7 +124,8 @@ public class OrderServlet extends HttpServlet {
 					String json = "";
 					System.out.printf("%n%-15s %s%n", "order servlet >>", "get order for: " + customer);
 					 
-					List<Order> list = db.getOrders(customer);
+					//List<Order> list = db.getOrders(customer);
+					List<String> list = db.getOrders1(customer);
 					if( list.size() > 0)
 					{
 						json = new Gson().toJson(list);
