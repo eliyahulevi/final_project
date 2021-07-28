@@ -421,6 +421,52 @@
 			</div>
 		</div>
 	</div>
-
+	<!-- /Modal new order -->
+	
+	
+		<!-- Modal user order -->
+	<div class="modal fade" id="user-order-Modal" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content" style="width:100%;">
+				<button type="submit"  data-dismiss="modal" style="float:right;" onclick="closeNewOrder()">&times;</button>
+				<div class="modal-header" >
+					<h4 class="modal-title">New Order</h4>
+				</div>
+				<div class="modal-body">
+					<div class="block">
+					    <label>shipping address</label>
+					    <input type="text" id="user-order-shipping-address"/>
+					</div>
+					<hr>
+					<div class="block">
+					    <label>comment</label>
+					    <input type="text" id="user-order-shipping-comment"/>
+					</div>
+					<br>
+					<div class="btn-group" style="width:100%; float:center;">
+						<button type="button" style="width:100%" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							add products <i style="font-size:24px" class="fa">&#xf0dd;</i>
+						</button>
+					</div>
+					
+					<form id="user-order-form">
+						<label>selected products</label>
+					</form>
+					<br>
+					<hr>
+					<div class="block">
+					    <label>total for order:</label>
+					    <label  id="user-order-total">0.0</label>
+					</div>
+					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sendNewOrder()">Send</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Modal new order -->
 
 </body>

@@ -73,8 +73,12 @@ function addUserOrder(orderObj){
 	tdTotal.innerHTML	= (order.total); 
 	tdSupplied.innerHTML= (order.supplied) ? "not yet.." : "yes";
 	tdIdx.innerHTML		= (order.index);
+	
+	row.setAttribute('id', 'order-row-' + order.index);
 	row.setAttribute('class', 'order-row');
-	row.setAttribute('onclick', 'orderRowClicked(this)');		
+	row.setAttribute('onclick', 'orderRowClicked(this)');
+	row.setAttribute('data-toggle', 'modal');	
+	row.setAttribute('data-target', '#user-order-Modal');	
 	
 	row.appendChild(tdIdx);
 	row.appendChild(tdDate);
@@ -87,7 +91,8 @@ function addUserOrder(orderObj){
 
 function orderRowClicked(row)
 {
-	console.log('row clicked:' + row);	
+	console.log('row clicked:' + row);  
+	//openOrderModal();
 }
 
 
@@ -482,13 +487,12 @@ function openOrderModal(){
 						for(var i = existProducts.length - 1; i >= 0 ; i--)
 							existProducts[i].remove();
 					} 			
-					// populates with new products
-        			for(var i = 0; i < products.length; i++){
-						
+
+					for(var i = 0; i < products.length; i++){
 						var product 	= JSON.parse(products[i]);
         				var option		= createNewProductOption(product);
 						dropDown.appendChild(option);
-        			}
+    				}
     			}
      	});
 
