@@ -18,6 +18,7 @@ function loadUserOrders(sync){
 		var date = new Date().getTime();
 		var formdata = new FormData();
 		formdata.append("code", "4");
+		formdata.append("index", "");
 		formdata.append("date", date);
 		formdata.append("customer", sessionStorage.getItem('username'));
 		formdata.append("address", ""); 
@@ -91,8 +92,46 @@ function addUserOrder(orderObj){
 
 function orderRowClicked(row)
 {
-	console.log('row clicked:' + row);  
-	//openOrderModal();
+	var customer		= sessionStorage.getItem('username');
+	var columns			= row.getElementsByTagName('td');
+	var orderId			= document.getElementById('user-order-index');
+	var orderTotal		= document.getElementById('user-order-total');
+	var orderDate		= document.getElementById('user-order-date');
+	var formdata		= new FormData();
+	
+	orderId.innerHTML	= columns[0].innerHTML; 
+	orderTotal.value	= columns[2].innerHTML;
+	orderDate.value		= columns[1].innerHTML;
+	
+	  
+	formdata.append("code", 	"3");
+	formdata.append("index", 	orderId.innerHTML);
+	formdata.append("date", 	orderDate.innerHTML);
+	formdata.append("customer", customer); 
+	formdata.append("address", 	"");
+	formdata.append("supplied", "");
+	formdata.append("total", 	"");
+	formdata.append("comment", 	"");
+	formdata.append("products", "");
+	
+	
+	$.ajax({    
+    url: 			'OrderServlet', 	
+    dataType: 		'text',  		
+    cache: 			false,
+    contentType:	false,
+    processData:	false,
+    data: 			formdata,                         
+    type: 			'post',
+    async: 			true,
+    success: function(response){
+    		var orderObj	= JSON.parse(response);
+    		var order	= JSON.parse(orderObj);
+    		console.log('order:' + order);
+    		document.getElementById('user-order-shipping-address').value = order.address;
+    		document.getElementById('user-order-comment').value  = order.comment;
+    	}
+    });
 }
 
 
@@ -185,6 +224,7 @@ function sendNewOrder(){
 	
 	totalElem.innerHTML	= total;
 	formdata.append("code", "1");
+	formdata.append("index", "");
 	formdata.append("date", date);
 	formdata.append("customer", user); 
 	formdata.append("address", address);
@@ -460,6 +500,7 @@ function openOrderModal(){
 	var formdata 		= new FormData();
 	
 	formdata.append("code", 	"0");
+	formdata.append("index", 	"");
 	formdata.append("catalog", 	"0");
 	formdata.append("type", 	"0"); 
 	formdata.append("price", 	"0");

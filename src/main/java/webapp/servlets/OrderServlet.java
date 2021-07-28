@@ -57,6 +57,7 @@ public class OrderServlet extends HttpServlet {
 	{
 		
 		String code 			= request.getParameter("code");
+		String index			= request.getParameter("index");
 		String dateStr	 		= request.getParameter("date");
 		String customer 		= request.getParameter("customer");
 		String address 			= request.getParameter("address");
@@ -105,17 +106,25 @@ public class OrderServlet extends HttpServlet {
 				 
 				case "2":		// remove an order
 				{
-					int index = 0;
-					System.out.printf("%n%-15s %s%n", "order servlet >>", "delete order: " + index); 
+					int idx = 0;
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "delete order: " + idx); 
 					
 					//int result = db.deleteOrder(index);
 					writer.println(-1);
 					break;
 				}
 				 
-				case "3":		// TBD
+				case "3":		// get order by id
 				{
+					String json = "";
+					String order = "";
 					
+					 
+					order 		= db.getOrder1(Integer.valueOf(index));
+					json 		= new Gson().toJson(order);
+					response.getWriter().write(json);
+					
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "get order with id: " + index);
 					break;
 				}
 				 
@@ -129,7 +138,7 @@ public class OrderServlet extends HttpServlet {
 					if( list.size() > 0)
 					{
 						json = new Gson().toJson(list);
-						System.out.println(list);
+						System.out.println(list );
 					}
 					response.getWriter().write(json);
 					 

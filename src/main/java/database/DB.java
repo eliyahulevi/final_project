@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.sql.rowset.serial.SerialBlob;
-
-import database.DerbyExtensions;
 import utilities.Utils;
 
 /**
@@ -85,14 +83,15 @@ public class DB
 	/************************************************************************
 	 *	 					create query strings	
 	 ***********************************************************************/
-	private final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
-	private final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
+	//private final String CREATE_TABLE = "CREATE TABLE ";				// MAYBE FOR FUTURE USE
+	/*private final String CHECK_TABLE_EXIST = "IF (EXISTS (SELECT * "
 			+ "FROM INFORMATION_SCHEMA.TABLES "
 			+ "WHERE TABLE_SCHEMA = 'TheSchema' "
 			+ "AND  TABLE_NAME = 'TheTable'))"
 			+ "BEGIN "
 			+ "    --Do Stuff\r\n"
 			+ "END";
+			*/
 	private final String CREATE_USERS_TABLE = "CREATE TABLE " + tables_str[tables.USERS.value] + "("  
 			+ "USERNAME varchar(40) not null PRIMARY KEY,"
 			+ "PASSWORD varchar(8),"
@@ -173,7 +172,7 @@ public class DB
 	 *	 					user	
 	 ***********************************************************************/
 	private String INSERT_USER = 			"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_USERS = 			"SELECT * FROM " + tables_str[tables.USERS.value] ;
+	//private String SELECT_USERS = 			"SELECT * FROM " + tables_str[tables.USERS.value] ;
 	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[tables.USERS.value];
 	private String SELECT_USER		=		"SELECT * FROM " + tables_str[tables.USERS.value] + " WHERE USERNAME=? AND PASSWORD=?";
 	
@@ -183,9 +182,9 @@ public class DB
 	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
 															 + "	NOT DISPLAY=? AND USERNAME=? ORDER BY DATE ASC";
 	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
-	private String SELECT_SENDER_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
+	//private String SELECT_SENDER_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
 	private String INSERT_USER_MESSAGE = 	"INSERT INTO "   +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
+	//private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
 	private String HIDE_MESSAGE = 			"UPDATE " 		 + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? WHERE USERDATE=?";
 	private String INCOMING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND USERNAME=? ORDER BY DATE ASC";
 	private String OUTGOING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? ORDER BY DATE ASC";
@@ -1391,7 +1390,7 @@ public class DB
 	public int insertImage(String imgName, String user, Blob image)
 	{
 		int result = -1;
-		int index = 0;
+		//int index = 0;
 		PreparedStatement insert = null;
 		PreparedStatement max = null;
 		ResultSet rs = null;
@@ -1530,8 +1529,63 @@ public class DB
 		return result;
 		
 	}
+	public String getOrder1(int orderId)
+	{
+		String result = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Order order = new Order();
+		try
+		{
+			// 0. connect
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return null;
+			}	
+			
+			// 1. create the orders list
+			ps = this.connection.prepareStatement(SELECT_ORDER);
+			ps.setInt(1, orderId);
+			System.out.printf("%n%-15s %s%n", "DB >>", "get order with id: " + orderId);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				order.setIndex(rs.getInt(1));				// index
+				order.setDate(rs.getLong(2));				// date
+				order.setCustomer(rs.getString(3));			// customer
+				order.setAddress(rs.getString(4));			// ship address
+				order.setIsSupplied(rs.getBoolean(5));		// supplied
+				order.setTotal(rs.getFloat(6));				// total
+				order.setComment(rs.getString(7));			// comment
+				String[] products = rs.getString(8).split(";", 0);
+				order.setProducts(products);				// products
+				order.print();
+				result = this.order2String(order);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if(rs != null) rs.close();
+				if(ps != null) ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}	
+		
+		return result;
+	}
 	
- 	
+	
  	/*
  	 * 	get all the orders related to specific user
  	 * 	@param	user	a string represent user name
@@ -1941,7 +1995,7 @@ public class DB
  		PreparedStatement ps = null;
 	 	try
 	 	{
-	 		Blob blob;
+	 		//Blob blob;
 			if(this.connect() < 0)
 			{
 				System.out.println("DB >> cannot connect to database.. aborting");
@@ -2293,7 +2347,7 @@ public class DB
 		String result = "";
 		Map<String,String> map = new HashMap<String,String>();
 		
-        Field[] fields = ((Class)clas).getDeclaredFields();
+        Field[] fields = ((Class<?>)clas).getDeclaredFields();
         System.out.printf("%d fields:%n", fields.length);
         try 
     	{
@@ -2313,13 +2367,6 @@ public class DB
 		}
         
         return result;
-	}
-	
-	private String order2JSON(Order order) {
-		String result = "";
-		
-		
-		return result;
 	}
 	
 
