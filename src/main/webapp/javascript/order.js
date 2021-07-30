@@ -54,14 +54,13 @@ function loadUserOrders(sync){
 
 
 /*********************************************************************************
-*	this function upload an order to the users orders list. this function get a 
+*	this function adds an order to the users orders list. this function get a 
 *	json object of an order and append a new row to the orders table in the page 
-*	@param:		order, a JSON object that holds order details
+*	@param:		orderObj, a JSON object that holds order details
 *	return:		null
 *********************************************************************************/
 function addUserOrder(orderObj){
-	var order			= JSON.parse(orderObj);
-	
+	var order			= JSON.parse(orderObj);	
 	var table			= document.getElementById('order-table');
 	var row				= document.createElement('tr');
 	var tdIdx			= document.createElement('td');
@@ -89,7 +88,13 @@ function addUserOrder(orderObj){
 }
 
 
-
+/*********************************************************************************
+*	this function handles the 'clicked' event of an order in the users past orders
+*	table. function gather order details from the user past orders table and sends
+*	a request to the server for all order details, and displays it in the 'order-modal'
+*	@param:		row, HTMLElement that exist in the user past orders table 
+*	return:		null
+*********************************************************************************/
 function orderRowClicked(row)
 {
 	var customer		= sessionStorage.getItem('username');
@@ -126,10 +131,38 @@ function orderRowClicked(row)
     async: 			true,
     success: function(response){
     		var orderObj	= JSON.parse(response);
-    		var order	= JSON.parse(orderObj);
-    		console.log('order:' + order);
+    		var order		= JSON.parse(orderObj);
+    		var prodsStr	= new String((order.products));
+    		var jsonReg		= /\{.*?\}/g;
+    		var products	= prodsStr.match(jsonReg);
+    		var form		= document.getElementById('user-order-form');
+    		var exstProds	= form.getElementsByClassName('user-order-products'); 
+    		
+    		console.log('existing products in order: ' + exstProds.length);
+    		
     		document.getElementById('user-order-shipping-address').value = order.address;
-    		document.getElementById('user-order-comment').value  = order.comment;
+    		document.getElementById('user-order-comment').value  = order.comment; 		
+    		
+    		for( var i = exstProds.length; i > 0; i--)
+    			exstProds[i-1].remove();
+    				
+    		for(var i = 0; i < products.length; i++)
+    		{
+    			var product = JSON.parse(products[i]);
+    			var img		= localStorage.getItem('img-' + product.type);
+    			var imgElem	= document.createElement('img');
+    			var div		= document.createElement('div');
+    			var label	= document.createElement('label');
+    			
+    			imgElem.src	= img;
+    			imgElem.setAttribute('class', 'thumb');
+    			label.innerHTML = 'length: ' + product.length;
+    			div.setAttribute('class', 'user-order-products');
+    			div.appendChild(imgElem);
+    			div.appendChild(label);
+    			document.getElementById('user-order-form').appendChild(div);
+    			
+    		}
     	}
     });
 }
@@ -208,30 +241,25 @@ function sendNewOrder(){
 	for(var i = 0; i < length; i++){
 				 
 		var id			= products[i].id;
+		var image		= products[i].getElementsByClassName('img');
 		var type		= id.split('-')[2];
 		var lengthElem	= document.getElementById('length-lbl-' + type);
 		var productLen	= lengthElem.innerHTML;	
 		var plen		= new String(productLen).split(':')[1];
-		var product		= getLocalProduct(type);
-		var	ordrdPrdct	= {'type': type, 'length': plen};
-		//total			= total + Number(plen) * Number(product.price);
-		ordrdPrdLst[i] 	= JSON.stringify(ordrdPrdct);
-		
-		//console.log('product: ' + products[i].id);
-		
-		//console.log('new order: ' + '\nproduct type: ' + type + '\nprice: ' + product.price + '\nproduct length: ' + plen + '\ntotal: ' + total);
+		var	ordrdPrdct	= { 'type': type, 'length': plen };
+		ordrdPrdLst.push(ordrdPrdct);
 	}
 	
 	totalElem.innerHTML	= total;
-	formdata.append("code", "1");
-	formdata.append("index", "");
-	formdata.append("date", date);
+	formdata.append("code", 	"1");
+	formdata.append("index", 	"");
+	formdata.append("date", 	date);
 	formdata.append("customer", user); 
-	formdata.append("address", address);
+	formdata.append("address", 	address);
 	formdata.append("supplied", false);
-	formdata.append("total", total);
-	formdata.append("comment", comment);
-	formdata.append("products", ordrdPrdLst);
+	formdata.append("total", 	total);
+	formdata.append("comment", 	comment);
+	formdata.append("products", JSON.stringify(ordrdPrdLst));
 	
 	
 	$.ajax({    

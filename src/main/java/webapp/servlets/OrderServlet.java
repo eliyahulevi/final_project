@@ -2,6 +2,7 @@ package webapp.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -94,9 +95,10 @@ public class OrderServlet extends HttpServlet {
 					long date			= Long.valueOf(dateStr);
 					boolean supplied 	= Boolean.valueOf(supplyStr);
 					float total 		= Float.valueOf(totalStr);
-					String[] products	= productsStr.split(";", 0); 
+					//String[] products	= productsStr.split(";", 0); 
+					//List<String> prods	= Arrays.asList(products);
 					System.out.printf("%n%-15s %s%n","order servlet >> ", "order total: " + total);
-					Order order 	= new Order(customer, date, address, supplied, total, comment, products);
+					Order order 	= new Order(customer, date, address, supplied, total, comment, productsStr);
 					db.insertOrder(order);
 					System.out.println("order servlet >> add order ");
 					order.print();

@@ -1,5 +1,6 @@
 package model.order;
 
+import java.util.List;
 
 public class Order 
 {	
@@ -10,7 +11,7 @@ public class Order
 	boolean 		supplied;
 	float			total;
 	String 			comment;
-	String[]		products;
+	String	products;
 	
 	/*
 	 *  constructors *
@@ -19,7 +20,7 @@ public class Order
 	{
 		
 	}
-	public Order(String user, long date, String shipAddress, boolean supplied, float total, String comment, String[] products)
+	public Order(String user, long date, String shipAddress, boolean supplied, float total, String comment, String products)
 	{
 		this.customer 		= user;
 		this.date 			= date;
@@ -29,7 +30,7 @@ public class Order
 		this.products 		= products;
 		this.total 			= total;
 	}
-	public Order(int index, String user, long date, String shipAddress, boolean supplied, String[] products)
+	public Order(int index, String user, long date, String shipAddress, boolean supplied, String products)
 	{
 		this.index = index;
 		this.customer = user;
@@ -66,7 +67,7 @@ public class Order
 	public void setTotal(float f)			{ this.total = f;	}
 	//public void addProduct(Product p) 		{ this.products.add(p); }
 	public void setComment(String s) 		{ this.comment = s; }
-	public void setProducts(String[] p) 	{ this.products = p; }
+	public void setProducts(String p) { this.products = p; }
 	
 	/*
 	 * getters
@@ -78,5 +79,5 @@ public class Order
 	public float 			getTotal()		{ return this.total; }	
 	public boolean 			getIsSupplied() { return this.supplied; }
 	public String 			getComment() 	{ return this.comment; }
-	public String[] 		getProducts() 	{ return this.products; }
+	public String 			getProducts() 	{ return this.products; }
 }

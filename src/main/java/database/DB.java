@@ -7,6 +7,7 @@ package database;
 
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.io.File;
@@ -29,7 +30,11 @@ import model.users.*;
 import model.message.*;
 import model.order.Order;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
+
+import com.google.gson.Gson;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -572,7 +577,7 @@ public class DB
 	*	USER related code here: (insert, update, get all, etc. )
 	*************************************************************************/		
 	
-	/*
+	/**
 	 *	converts User instance to string in JSON format
 	 *	@param	user	instance of User class
 	 *	return	String	the user object fields in a JSON format 
@@ -597,8 +602,10 @@ public class DB
 		return result;
 	}
 	
-	/*
-	 *  get all users names
+	/**
+	 *  get all users names from the database, this function uses
+	 *  prepared statement and class connection. 
+	 *  On failure function print the stack trace.
 	 *  @param	null
 	 *  return	List<string>	a list of strings of registered users names only
 	 */
@@ -1557,8 +1564,9 @@ public class DB
 				order.setIsSupplied(rs.getBoolean(5));		// supplied
 				order.setTotal(rs.getFloat(6));				// total
 				order.setComment(rs.getString(7));			// comment
-				String[] products = rs.getString(8).split(";", 0);
-				order.setProducts(products);				// products
+				//String[] products = rs.getString(8).split(";", 0);
+				//List<String> prods	= Arrays.asList(products);
+				order.setProducts(rs.getString(8));			// products
 				order.print();
 				result = this.order2String(order);
 			}
@@ -1619,8 +1627,9 @@ public class DB
 				order.setIsSupplied(rs.getBoolean(5));		// supplied
 				order.setTotal(rs.getFloat(6));				// total
 				order.setComment(rs.getString(7));			// comment
-				String[] products = rs.getString(8).split(";", 0);
-				order.setProducts(products);				// products
+				//String[] products = rs.getString(8).split(";", 0);
+				//List<String> prods	= Arrays.asList(products);
+				order.setProducts(rs.getString(8));			// products
 				//String s = this.order2JSON(order);
 				// TODO: erase later
 				//System.out.println("DB >> msgs: " + s);
@@ -1681,8 +1690,9 @@ public class DB
 				order.setIsSupplied(rs.getBoolean(5));		// supplied
 				order.setTotal(rs.getFloat(6));				// total
 				order.setComment(rs.getString(7));			// comment
-				String[] products = rs.getString(8).split(";", 0);
-				order.setProducts(products);				// products
+				//String[] products = rs.getString(8).split(";", 0);
+				//List<String> prods	= Arrays.asList(products);
+				order.setProducts(rs.getString(8));			// products
 				result.add(order2String(order));
 			}
 			
@@ -1789,21 +1799,30 @@ public class DB
  	 * convert an order to a string
  	 */
  	private String order2String(Order order)
- 	{
- 		String result = "";
- 		//Blob blob = order.getPhoto();//.getImage();
-		Map<String,String> map = new HashMap<String,String>();
-		//System.out.printf("%-15s %s%n","DB>>", message.getUser());
+  	{
+ 		String result			= "";
+ 		String products			= "";
+ 		//List<String> prods		= order.getProducts();
+ 		//String prodStr			= new Gson().toJson(prods);
+		Map<String,String> map 	= new HashMap<String,String>();
+		
 		try
 		{
-			map.put("index", String.valueOf(order.getIndex()));
+			/*
+			for( int i = 0; i < prods.size(); i++)
+			{
+				String prodJson =  JSONValue.toJSONString(map);
+				prodStr.concat(prodJson);
+			}
+			*/
+			map.put("index", 	String.valueOf(order.getIndex()));
 			map.put("customer", order.getCustomerName());
-			map.put("address", order.getShipAddess());
-			map.put("date", Long.toString(order.getDate()));
+			map.put("address", 	order.getShipAddess());
+			map.put("date", 	Long.toString(order.getDate()));
 			map.put("supplied", Boolean.toString(order.getIsSupplied()));	
-			map.put("comment", String.valueOf(order.getComment()));
+			map.put("comment", 	String.valueOf(order.getComment()));
 			map.put("products", String.valueOf(order.getProducts()));
-			map.put("total", String.valueOf(order.getTotal()));
+			map.put("total", 	String.valueOf(order.getTotal()));
 		}
 		catch(Exception e)
 		{
@@ -1811,7 +1830,7 @@ public class DB
 		}
 		
 		result = JSONValue.toJSONString(map);
- 		
+		System.out.printf("\n%-15s %s%n ", "DB >> ", "order products string: " + result);
  		
  		return result;
  	}
