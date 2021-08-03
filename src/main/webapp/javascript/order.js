@@ -148,7 +148,10 @@ function orderRowClicked(row)
     				
     		for(var i = 0; i < products.length; i++)
     		{
-    			var product = JSON.parse(products[i]);
+				
+    			var prodStr =  (new String(products[i])).replace('/\\/g', '');
+				var product = JSON.parse(prodStr); 
+				console.log('product: ' + i + ' ' + product);
     			var img		= localStorage.getItem('img-' + product.type);
     			var imgElem	= document.createElement('img');
     			var div		= document.createElement('div');
