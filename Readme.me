@@ -1,10 +1,41 @@
-how to use:
-1. clone to your machine "master" branch, let's call it PROJ_DIR
-2. open cmd
-3. navigate to PROJ_DIR (where pom.xml exist)
-4. type "mvn clean packsge"
-5. start eclipse
-6. file->import->maven project
-7. browse to PROJ_DIR and hit enter
-8. right click on project and choose "run as" -> "run on server"
-9. if no "server" exist, choose tomcat server version 9.0 and in "installation directory" go to TOMCAT_DIR\bin
+apache-tomcat(server):
+1. download apache-tomcat-9.0.41 'core' from https://tomcat.apache.org/download-90.cgi according to your OS
+	for example: 64-bitWindows zip
+2. unzip to apache-tomcat-9.0.41 folder under C:\
+
+
+apache-tomcat(database):
+1. download db-apache-derby-10_15_2_0-bin.zip 'core' from https://db.apache.org/derby/releases/release-10_15_2_0.cgi according to your OS
+2. unzip to apache-tomcat-10.15.2.0 folder under C:\
+3. follow installation according to: https://db.apache.org/derby/papers/DerbyTut/install_software.html
+4. confirm installation
+
+
+apache-maven(build tool):
+if yopu already have JAVA_HOME environment variable skip to step #3, else:
+1. download JDK16 from: https://www.oracle.com/java/technologies/javase-jdk16-downloads.html
+2. set system environment variable "JAVA_HOME" to point to java/jdk-16.0.2 folder,
+	for example, on windows, open cmd and type: set %JAVA_HOME%=C:\Program Files\Java\jdk-16.0.2
+3. download apache-maven 3.8.1 from https://maven.apache.org/download.cgi
+4. extract to apache-maven-3.8.1 under C:\
+5. add bin folder to path
+6. confirm installation: on windows: cmd=> type mvn -v => installations details
+
+
+*****************		deploy		******************
+1. clone git repository
+2. create .war file from project
+3. navigate to apache-tomcat-10.15.2.0\webapps, copy .war file in here
+4. navigate to apache-tomcat-10.15.2.0\bin and type: startup.bat and enter
+5. to shut server down type: shutdown.bat and enter
+
+
+***********  for developers only *****************
+1. clone git repository, master branch
+2. in console, navigate to cloned repository, type: mvn clean package
+3. install eclipse by download installer from: https://www.eclipse.org/downloads/packages/file/56836
+4. in installation choose: EE product for web developement 
+5. after installation: open eclipse IDE, File->Import->Maven->Existing Maven Projects->Next
+6. in Root Directory navigate to cloned repository folder and click finish
+
+
