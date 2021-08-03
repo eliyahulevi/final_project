@@ -182,10 +182,20 @@
 	</div>
 	<!-- /projects -->	
 	
-	<!-- orders -->
+	<!-- ************************************************************************
+	--								orders area
+	--		orders area has a 'new' button to create a new order, this button opens
+	--		up the 'new-order-modal' from the 'modal' area below. aside from that, 
+	--		the orders area has only a single row (tr) that contains a table header
+	--		(th) that holds all the table fields to be displayed.
+	--		orders are filled on demand (either on page load event, or by .js file)
+	--		only user orders are displayed, except for 'admin' which has ALL
+	--		orders displayed and the ability to edit them. such a change is saved 
+	--		to the log  
+	--	
+	-- **************************************************************************-->
 	<br>
 	<br>
-	<!-- onclick="openOrderModal()" -->
 	<img alt="" src="resources/order-icon.png" class="messages-icon">
 	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 	
 	<div class="container">
@@ -332,7 +342,7 @@
 	
 	
 	<!-- ************************************************************************
-	--		MODALS AREA HERE. Modals are the element that opens up on full page, 
+	--		MODALS AREA. Modals are the element that opens up on full page, 
 	--		to handle the uploading details of product, order, messages, user etc.
 	--		each modal has its own functionality in the respected .js file. all 
 	--		modals are hidden elements that displays on request.
