@@ -182,6 +182,8 @@
 	</div>
 	<!-- /projects -->	
 	
+	
+	
 	<!-- ************************************************************************
 	--								orders area
 	--		orders area has a 'new' button to create a new order, this button opens
@@ -191,7 +193,8 @@
 	--		orders are filled on demand (either on page load event, or by .js file)
 	--		only user orders are displayed, except for 'admin' which has ALL
 	--		orders displayed and the ability to edit them. such a change is saved 
-	--		to the log  
+	--		to console.log
+	--		note: ALL orders related .js code can be found in the ortder.js file
 	--	
 	-- **************************************************************************-->
 	<br>
@@ -213,6 +216,9 @@
 		</table>
 	</div>
 	<!-- /orders -->
+
+
+
 
 	<!-- messages -->
 	<br>
@@ -248,6 +254,8 @@
 	</div>
 	<!-- end of main body -->
 	
+	
+	<!-- new message area -->
 	<div class="container" id="new-msg">
 	</div>
 		
@@ -463,14 +471,20 @@
 					    <label>total for order:</label>
 					    <input type="text" id="user-order-total" disabled/>
 					</div>
-					
 				</div>
 				<div class="modal-footer">
-
+					<p>
+						<span style="float:left;">
+							<button type="button" id="order-edit-btn" class="btn btn-success" style="display:none;" onclick="editOrder()">edit</button>
+						</span>
+						<span style="float:right; padding-right:0px; ">
+							<button type="button" id="order-update-btn" class="btn btn-danger" data-dismiss="modal" style="display:none;" onclick="updateOrder()">update</button>
+						</span>		
+					</p>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- /Modal new order -->
+ 	<!-- /Modal new order -->
 
 </body>

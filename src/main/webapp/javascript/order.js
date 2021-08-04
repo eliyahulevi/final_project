@@ -137,8 +137,17 @@ function orderRowClicked(row)
     		var products	= prodsStr.match(jsonReg);
     		var form		= document.getElementById('user-order-form');
     		var exstProds	= form.getElementsByClassName('user-order-products'); 
+			var editBtn		= document.getElementById('order-edit-btn');
+			var updateBtn	= document.getElementById('order-update-btn');
+
+			if(sessionStorage.getItem('username') === 'admin'){
+				editBtn.style.display = 'block';
+				updateBtn.style.display = 'block';
+				
+			}
     		
-    		console.log('existing products in order: ' + exstProds.length);
+    		//console.log('existing products in order: ' + exstProds.length);
+			//console.log('user: ' + sessionStorage.getItem('username'));
     		
     		document.getElementById('user-order-shipping-address').value = order.address;
     		document.getElementById('user-order-comment').value  = order.comment; 		
@@ -148,23 +157,28 @@ function orderRowClicked(row)
     				
     		for(var i = 0; i < products.length; i++)
     		{
-				
     			var prodStr =  (new String(products[i])).replace('/\\/g', '');
 				var product = JSON.parse(prodStr); 
-				console.log('product: ' + i + ' ' + product);
     			var img		= localStorage.getItem('img-' + product.type);
     			var imgElem	= document.createElement('img');
     			var div		= document.createElement('div');
     			var label	= document.createElement('label');
+				var remove	= document.createElement('a');
     			
     			imgElem.src	= img;
     			imgElem.setAttribute('class', 'thumb');
     			label.innerHTML = 'length: ' + product.length;
+				remove.setAttribute('class', 'user-order-product-remove');
+				remove.setAttribute('href', '#user-order-products');
+				remove.setAttribute('onclick', 'removeProductFromOrder()');
+				remove.setAttribute('style', 'padding-left:10px;');
+				remove.innerHTML = 'remove';
     			div.setAttribute('class', 'user-order-products');
+				div.setAttribute('id', 'user-order-products');
     			div.appendChild(imgElem);
     			div.appendChild(label);
+				div.appendChild(remove);
     			document.getElementById('user-order-form').appendChild(div);
-    			
     		}
     	}
     });
@@ -527,7 +541,6 @@ function optionClicked(option){
 *	return:		modal, a 'div' HTML element that holds all order fields
 *********************************************************************************/
 function openOrderModal(){
-	
 	var formdata 		= new FormData();
 	
 	formdata.append("code", 	"0");
@@ -552,8 +565,7 @@ function openOrderModal(){
         			var products 		= JSON.parse(response);
 					var dropDown		= document.getElementById('new-order-dropdown-menu');
 					var existProducts	= dropDown.getElementsByClassName('box');
-        		    
-					console.log('number of prducts: ' + products.length);
+					
 					// remove all previous products
 					if(existProducts.length > 0){
 						for(var i = existProducts.length - 1; i >= 0 ; i--)
@@ -587,4 +599,20 @@ function closeNewOrder(){
 	console.log('close order modal');
 }
 
+
+function editOrder(){
+	var shipping		= document.getElementById('user-order-shipping-address');
+	var comment			= document.getElementById('user-order-comment');
+	var total			= document.getElementById('user-order-total');
+	
+	shipping.disabled 	= false;
+	comment.disabled 	= false;
+	total.disabled 		= false;
+	console.log('edit order');
+}
+
+
+function updateOrder(){
+	console.log('update order');
+}
 
