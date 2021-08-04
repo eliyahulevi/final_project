@@ -143,11 +143,8 @@ function orderRowClicked(row)
 			if(sessionStorage.getItem('username') === 'admin'){
 				editBtn.style.display = 'block';
 				updateBtn.style.display = 'block';
-				
+				updateBtn.setAttribute('style', 'float:right;');
 			}
-    		
-    		//console.log('existing products in order: ' + exstProds.length);
-			//console.log('user: ' + sessionStorage.getItem('username'));
     		
     		document.getElementById('user-order-shipping-address').value = order.address;
     		document.getElementById('user-order-comment').value  = order.comment; 		
@@ -163,11 +160,17 @@ function orderRowClicked(row)
     			var imgElem	= document.createElement('img');
     			var div		= document.createElement('div');
     			var label	= document.createElement('label');
+				var input	= document.createElement('input');
 				var remove	= document.createElement('a');
     			
     			imgElem.src	= img;
     			imgElem.setAttribute('class', 'thumb');
-    			label.innerHTML = 'length: ' + product.length;
+    			label.innerHTML = 'length: ';
+				input.value	=  product.length;
+				input.disabled = true;
+				input.setAttribute('class', 'user-order-product-length');
+				input.setAttribute('style', 'border:0px; width: 40px;');
+				input.setAttribute('id', 'user-order-product-length-' + product.type);
 				remove.setAttribute('class', 'user-order-product-remove');
 				remove.setAttribute('href', '#user-order-products');
 				remove.setAttribute('onclick', 'removeProductFromOrder()');
@@ -177,6 +180,7 @@ function orderRowClicked(row)
 				div.setAttribute('id', 'user-order-products');
     			div.appendChild(imgElem);
     			div.appendChild(label);
+				div.appendChild(input);
 				div.appendChild(remove);
     			document.getElementById('user-order-form').appendChild(div);
     		}
@@ -332,15 +336,18 @@ function addProductToOrder(addBtnName){
 	var colLength	= document.createElement('div');
 	var colImage	= document.createElement('div');
 	var colEdRem	= document.createElement('div');
-
 	var totalElem	= document.getElementById('order-total');
-	var total		= Number(totalElem.innerHTML);
-	
+	var total		= Number(totalElem.innerHTML);	
 	total			= total + Number(inputs[0].value) * Number(product.price);
+	
+	
+	if(localStorage.getItem('currentLength-' + product.catalog) == inputs[0].value )
+	{
+		alert('product already exist.. change length or product type');
+		return;	
+	}
+	
 	totalElem.innerHTML = total;
-	
-	console.log('length input: ' + inputs[0].value + ' price: ' + product.price + 'total: ' + total);
-	
 	row.setAttribute('class', 'row');	
 	colColor.setAttribute('class', 'new-order-product');
 	colLength.setAttribute('class', 'new-order-product');
@@ -600,14 +607,32 @@ function closeNewOrder(){
 }
 
 
-function editOrder(){
+
+/*********************************************************************************
+*	this function allows the user (admin) to edit an orders, product length, or
+*	remove a product all together, and also change the shipping address, comment
+*	and total (in case of a discount).
+*	@param:		editBtn, the edit button element that was clicked
+*	return:		null
+*********************************************************************************/
+function editOrder(editBtn){
+	//var	footer			= editBtn.parentElement;
+	var form			= document.getElementById('user-order-form');
+	var lengths			= document.getElementById('user-order-product-length');
+	var products		= form.getElementsByClassName('user-order-products');
 	var shipping		= document.getElementById('user-order-shipping-address');
 	var comment			= document.getElementById('user-order-comment');
+	var length			= document.getElementById('user-order-product-length-');
 	var total			= document.getElementById('user-order-total');
 	
 	shipping.disabled 	= false;
 	comment.disabled 	= false;
+	//length.disabled 	= false;
 	total.disabled 		= false;
+	for(var i = 0; i < lengths.length; i++)
+	{
+		lengths[i].disabled = false;
+	}
 	console.log('edit order');
 }
 

@@ -341,7 +341,6 @@
 			</p>
 		</form>		
 		</div>
-	</p>
 	<!-- /end of personal detail -->
 	
 	
@@ -473,14 +472,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<p>
-						<span style="float:left;">
-							<button type="button" id="order-edit-btn" class="btn btn-success" style="display:none;" onclick="editOrder()">edit</button>
-						</span>
-						<span style="float:right; padding-right:0px; ">
-							<button type="button" id="order-update-btn" class="btn btn-danger" data-dismiss="modal" style="display:none;" onclick="updateOrder()">update</button>
-						</span>		
-					</p>
+					<button type="button" id="order-edit-btn" class="btn btn-success" style="display:none; float:left;" onclick="editOrder()">edit</button>
+					<button type="button" id="order-update-btn" class="btn btn-danger" data-dismiss="modal" style="display:none;" onclick="updateOrder(this)">update</button>
 				</div>
 			</div>
 		</div>
