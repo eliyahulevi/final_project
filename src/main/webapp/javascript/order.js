@@ -636,7 +636,7 @@ function closeNewOrder(){
 *	@return:	null
 *********************************************************************************/
 function editOrder(editBtn){
-	//var	footer			= editBtn.parentElement;
+	alert('select address, comment, or products to edit and press "update" ');
 	var form			= document.getElementById('user-order-form');
 	var lengths			= document.getElementsByClassName('user-order-product-length');
 	var products		= form.getElementsByClassName('user-order-products');
@@ -647,7 +647,6 @@ function editOrder(editBtn){
 	
 	shipping.disabled 	= false;
 	comment.disabled 	= false;
-	//length.disabled 	= false;
 	total.disabled 		= false;
 	for(var i = 0; i < lengths.length; i++)
 	{
