@@ -7,7 +7,6 @@ package database;
 
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.io.File;
@@ -23,22 +22,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import model.product.AlternativeProduct;
 import model.product.Product;
 import model.users.*;
 import model.message.*;
 import model.order.Order;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-
-import com.google.gson.Gson;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.sql.rowset.serial.SerialBlob;
 import utilities.Utils;
 
@@ -135,7 +127,7 @@ public class DB
 			+ "ORDER_ID int PRIMARY KEY,"
 			+ "DATE bigint,"
 			+ "USERNAME varchar(40),"
-			+ "SHIPADDREDD varchar(100),"
+			+ "SHIPADDRESS varchar(100),"
 			+ "STATUS boolean," 
 			+ "TOTAL float," 
 			+ "COMMENT varchar(200),"
@@ -172,6 +164,13 @@ public class DB
 	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE ORDER_ID=?";
 	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE USERNAME=?";
+	private String EDIT_USERS_ORDERS =		"UPDATE "	 	 + tables_str[tables.ORDERS.value] + " SET "
+																							   + "SHIPADDRESS=?, "
+																							   + "STATUS=?, "
+																							   + "TOTAL=?, "
+																							   + "COMMENT=?, "
+																							   + "PRODUCTS=? "
+																							   + "WHERE ORDER_ID=?";
 	
 	/************************************************************************
 	 *	 					user	
@@ -843,7 +842,7 @@ public class DB
 	*	MESSAGE related code here:  (insert, update, get all, etc. )
 	*************************************************************************/	
 	
-	/*
+	/**
 	 *  convert message to JSON format
 	 *  @param	Message message, a Message instance
 	 *	return String, the message details in a JSON format  	
@@ -882,7 +881,7 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 *  get messages (of a given user)
 	 *  @param	String	user, the user name
 	 *  return	List<String>	a list of strings that holds all of the user
@@ -1033,7 +1032,7 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 *  insert a new message into MESSAGES table. primary key
 	 *  of each message is the 'sender' name concatenated with 'date'
 	 *  @param	Message	message, a message instance to be inserted
@@ -1086,7 +1085,7 @@ public class DB
 		return result;
 	}
 
-	/*
+	/**
 	 * 	update 'message' clicked field of a specific user. function finds
 	 * 	the message with the signature string 'user''date' (concatenated) 
 	 * 	@param	String	user, user name
@@ -1131,7 +1130,7 @@ public class DB
 		return result;
 	}
 
-	/*
+	/**
 	 * 	hides specific message, identified by the user-date string,
 	 *  from displaying mode in the user page. this function
 	 *  actually updates the message 'display' field to 'false'.
@@ -1180,7 +1179,7 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 *  resets the display field for specific user, in ALL messages
 	 *  @param:	user,	String that represent the user to which the
 	 *  				query applies
@@ -1230,7 +1229,7 @@ public class DB
 		return result;
 	}
 
-	/*
+	/**
 	 *  get outgoing messages only: messages sent by user
 	 *  @param:		String, user: the name of the user
 	 *  return 		void
@@ -1305,7 +1304,7 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 *  get outgoing messages only: messages sent by user
 	 *  @param:		String, user: the name of the user
 	 *  return 		void
@@ -1382,12 +1381,13 @@ public class DB
 	}
 	
 	
+	
 	/************************************************************************
 	*	IMAGE related code here:  (insert, update, get all, etc. ), this 
 	*	section might by unified with MESSAGE section
 	*************************************************************************/	
  	
-	/*
+	/**
  	 * 	inserting an image with name, by specific user and source
  	 * 	@param	imgName String	file name
  	 * 	@param	user	String	the name of the user that uploaded
@@ -1447,7 +1447,7 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 * 	extract an image from the DB, in form of array of bytes
 	 * 	@param	name	String	the name of the image
 	 * 	return			Byte[]	the image source
@@ -1494,8 +1494,7 @@ public class DB
 		
 	/************************************************************************
 	*	ORDER related code here:  (insert, update, get all, etc. )
-	*************************************************************************/		
- 	
+	*************************************************************************/			
 	public AlternativeProduct getOrder(int orderID) {
 		AlternativeProduct result = new AlternativeProduct();
 		ResultSet res = null;
@@ -1594,10 +1593,10 @@ public class DB
 	}
 	
 	
- 	/*
+ 	/**
  	 * 	get all the orders related to specific user
  	 * 	@param	user	a string represent user name
- 	 * 	return			a list of orders objects
+ 	 * 	@return			a list of orders objects
  	 */
 	public List<Order> getOrders(String user) 
 	{
@@ -1657,10 +1656,10 @@ public class DB
 		return result;
 	}
 	
-	/*
+	/**
 	 * get orders for a specific user
 	 * @param:	customer, String that represent the customer name
-	 * return:	result, List of Strings	
+	 * @return:	result, List of Strings	
 	 */
 	public List<String> getOrders1(String customer) 
 	{
@@ -1717,10 +1716,10 @@ public class DB
 		return result; 
 	}
  	
-	/*
+	/**
 	 * 	inserts a new order instance to DB
 	 * 	@param	Order	order that holds all the info
-	 * 	return			null	
+	 * 	@return			null	
 	 */
  	public int insertOrder(Order order)
  	{
@@ -1795,7 +1794,7 @@ public class DB
 	 	return result;
  	}
 	
- 	/*
+ 	/**
  	 * convert an order to a string
  	 */
  	private String order2String(Order order)
@@ -1835,12 +1834,64 @@ public class DB
  		return result;
  	}
  	
+ 	/**
+ 	 * this function edits the order given to the function. 
+ 	 * @param 	order an Order object that holds the details of the updated order
+ 	 * @return	result non-negative int if successful, negative int else 
+ 	 */
+ 	public int editOrder(Order order) 
+ 	{
+ 		int result = -1;		
+ 		PreparedStatement ps = null;
+		String productsList = String.join(";", order.getProducts()); 
+
+	 	try
+	 	{
+	 		// 0. open connection
+			if(this.connect() < 0)
+			{
+				System.out.println("cannot connect to database.. aborting");
+				return result;
+			}
+						
+	 		// 3. fire up the insert query
+			ps = this.connection.prepareStatement(EDIT_USERS_ORDERS);
+			ps.setString(1, order.getShipAddess());					// address
+			ps.setBoolean(2, order.getIsSupplied());				// supplied
+			ps.setFloat(3, order.getTotal());						// total
+			ps.setString(4, order.getComment());					// comment
+			ps.setString(5, productsList);							// products
+			ps.setInt(6, order.getIndex());							// products
+			result = ps.executeUpdate();
+			this.connection.commit();
+			System.out.printf("%-15s %s%n", "DB >>", ps.getParameterMetaData());
+	 	}
+	 	catch(Exception e)
+	 	{
+	 		e.printStackTrace();
+	 	}
+	 	finally
+	 	{
+			try
+			{
+				if(ps != null) ps.close();
+				this.disconnect();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+	 	}
+ 		
+ 		return result;
+ 	}
  	
-	/************************************************************************
+	
+ 	/************************************************************************
 	*	PRODUCT related code here:  (insert, update, get all, etc. )
-	*************************************************************************/	
+	*************************************************************************/
  	
- 	/*
+ 	/**
  	 *  loadProducts create Product records out of all the entries in the path,
  	 *  each entry is an image (picture) file that holds the product details in
  	 *  the file name. The file name has the following format: 
@@ -1848,7 +1899,7 @@ public class DB
  	 *  'color'(string);'cross-section'(string). Note: the delimiter ';' must be
  	 *  used!! for example: "10;pine;10.5;20.2;light_grey;5X5type.jpg"
  	 *  @param:		String path, the directory where the files exist
- 	 *  return:		int, non-negative on success, negative otherwise
+ 	 *  @return:		int, non-negative on success, negative otherwise
  	 */
  	public int loadProducts(String path)
  	{
@@ -1946,10 +1997,10 @@ public class DB
  		return result;
  	}
  	
- 	/*
+ 	/**
  	 * 	insert a new product to DB
  	 * 	@param	product	Product	a product object
- 	 * 	return			int		non negative upon success, negative else	
+ 	 * 	@return			int		non negative upon success, negative else	
  	 */
  	public int insertProduct(Product product)
  	{
@@ -2003,10 +2054,10 @@ public class DB
  	}
  	
  	
- 	/*
+ 	/**
  	 *  delete a product from the products list
  	 *  @param:		catalog, int the product unique identifier
- 	 *  return		int, non-negative upon success, negative, else
+ 	 *  @return		int, non-negative upon success, negative, else
  	 */
  	public int deleteProduct(int catalog)
  	{
@@ -2047,11 +2098,11 @@ public class DB
  		return result;
  	}
  	
- 	/*
+ 	/**
  	 * 	insert ordered product. ordered product is a table that binds a product
  	 * 	to a specific ordered length. 
  	 * 	@param	product		Product object that holds the product info
- 	 * 	return				null
+ 	 * 	@return				null
  	 */
  	public void insertOrderedProduct(Product product)
  	{
@@ -2093,12 +2144,12 @@ public class DB
 	 	}
  	}
  	
- 	/*
+ 	/**
  	 * 	gets a string like: "product1qty1, product2qty2,..." parse it into
  	 * 	product1qty1, product2qty2,.. extracts the product key for each
  	 * 	product-quantity key and creates the appropriate product object 
  	 * 	@param	list	a string of the form "product1qty1,product2qty2,.."
- 	 * 	return			a list of products according to product1, product2,..
+ 	 * 	@return			a list of products according to product1, product2,..
  	 */
  	private List<Product> productsFromList(String list)
  	{
@@ -2163,12 +2214,12 @@ public class DB
  		
  		return result;
  	}
- 	//private String[] 
+
  		
- 	/*
+ 	/**
  	 * 	get ALL the products from the DB
  	 * 	@param	null
- 	 * 	return 			a list of Product objects
+ 	 * 	@return 			a list of Product objects
  	 */
  	public List<Product> getProducts()
  	{
@@ -2322,8 +2373,10 @@ public class DB
 	*	general methods
 	***************************************************************************/ 
 	
-	/*
+	/**
 	 * shut down the database
+	 * @param	null
+	 * @return	non-negative integer if successful, negative else
 	 */
 	public int shutDown()
 	{

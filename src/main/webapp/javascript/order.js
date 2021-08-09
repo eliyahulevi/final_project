@@ -12,7 +12,7 @@
 /*********************************************************************************
 *	this function load all the users orders (past and present) from the server DB
 *	@param:		sync, boolean whether the action should be synchronous or not.
-*	return:		result, an array of orders in JSON format
+*	@return:		result, an array of orders in JSON format
 *********************************************************************************/
 function loadUserOrders(sync){
 		var date = new Date().getTime();
@@ -57,7 +57,7 @@ function loadUserOrders(sync){
 *	this function adds an order to the users orders list. this function get a 
 *	json object of an order and append a new row to the orders table in the page 
 *	@param:		orderObj, a JSON object that holds order details
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function addUserOrder(orderObj){
 	var order			= JSON.parse(orderObj);	
@@ -93,11 +93,11 @@ function addUserOrder(orderObj){
 *	table. function gather order details from the user past orders table and sends
 *	a request to the server for all order details, and displays it in the 'order-modal'
 *	@param:		row, HTMLElement that exist in the user past orders table 
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function orderRowClicked(row)
 {
-	var customer		= sessionStorage.getItem('username');
+	
 	var columns			= row.getElementsByTagName('td');
 	var orderId			= document.getElementById('user-order-index');
 	var orderTotal		= document.getElementById('user-order-total');
@@ -112,7 +112,7 @@ function orderRowClicked(row)
 	formdata.append("code", 	"3");
 	formdata.append("index", 	orderId.innerHTML);
 	formdata.append("date", 	orderDate.innerHTML);
-	formdata.append("customer", customer); 
+	formdata.append("customer", ""); 
 	formdata.append("address", 	"");
 	formdata.append("supplied", "");
 	formdata.append("total", 	"");
@@ -139,6 +139,7 @@ function orderRowClicked(row)
     		var exstProds	= form.getElementsByClassName('user-order-products'); 
 			var editBtn		= document.getElementById('order-edit-btn');
 			var updateBtn	= document.getElementById('order-update-btn');
+			var customer	= document.getElementById('user-order-customer');
 
 			if(sessionStorage.getItem('username') === 'admin'){
 				editBtn.style.display = 'block';
@@ -146,6 +147,8 @@ function orderRowClicked(row)
 				updateBtn.setAttribute('style', 'float:right;');
 			}
     		
+    		console.log('order for: ' + order.customer); 
+    		customer.value = order.customer;
     		document.getElementById('user-order-shipping-address').value = order.address;
     		document.getElementById('user-order-comment').value  = order.comment; 		
     		
@@ -171,13 +174,14 @@ function orderRowClicked(row)
 				input.setAttribute('class', 'user-order-product-length');
 				input.setAttribute('style', 'border:0px; width: 40px;');
 				input.setAttribute('id', 'user-order-product-length-' + product.type);
+				remove.setAttribute('id', 'user-order-product-remove-' + product.type);
 				remove.setAttribute('class', 'user-order-product-remove');
 				remove.setAttribute('href', '#user-order-products');
-				remove.setAttribute('onclick', 'removeProductFromOrder()');
+				remove.setAttribute('onclick', 'removeProductFromOrder(this)');
 				remove.setAttribute('style', 'padding-left:10px;');
 				remove.innerHTML = 'remove';
     			div.setAttribute('class', 'user-order-products');
-				div.setAttribute('id', 'user-order-products');
+				div.setAttribute('id', 'user-order-product-' + product.type);
     			div.appendChild(imgElem);
     			div.appendChild(label);
 				div.appendChild(input);
@@ -190,10 +194,26 @@ function orderRowClicked(row)
 
 
 /*********************************************************************************
+*	this function remove an order from a given order. the function gets as an 
+*	argument the button that was clicked, get the button parent element and extract
+*	the correct product to remove. this function remove the product ELEMENT (from the
+*	modal) and NOT from the server.
+*	@param:		removeBtn, the button that was clicked to remove a product from
+*				a given order.
+*	@return:	null
+*********************************************************************************/
+function removeProductFromOrder(removeBtn){
+	var parent		= removeBtn.parentElement;
+	parent.remove();
+	console.log('remove product: ' + parent + ' from product');
+}
+
+
+/*********************************************************************************
 *	this function upload a product to the application localStorage memory
 *	@param:		product, a javascript object that holds products details
 *	@param:		id, a unique product identifier
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function setLocalProduct(product, id){
 	localStorage.setItem('catalog-' + id, product.catalog);
@@ -211,7 +231,7 @@ function setLocalProduct(product, id){
 /*********************************************************************************
 *	this function download a product from the application localStorage memory
 *	@param:		id, a unique product identifier
-*	return:		product, a javascript object that holds products details
+*	@return:		product, a javascript object that holds products details
 *********************************************************************************/
 function getLocalProduct(id){
 	console.log('get product: ' + id);
@@ -238,9 +258,9 @@ function getLocalProduct(id){
 *	type (catalog), length and color, bundle to an array objects of the following
 *	form: [{'catalog':<catalog>, 'length': <length>, 'color': <color>},..]
 *	@param:		null
-*	return:		null
+*	@return:	null
 *********************************************************************************/
-function sendNewOrder(){
+function sendOrder(){
 	var form		= document.getElementById('new-order-form');
 	var products	= form.getElementsByClassName('order-product')	
 	var length		= products.length;
@@ -311,7 +331,7 @@ function sendNewOrder(){
 *	in the modal.
 *	@param:		addBtnName, the HTMLElement (button) that triggered the 'add'
 *							operation 
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function addProductToOrder(addBtnName){
 	var type		= new String(addBtnName.id).split('add-new-product-')[1];
@@ -409,7 +429,7 @@ function addProductToOrder(addBtnName){
 *	this function removes a selected item (product) from the 'cart' (products list)
 *	by finding the correct item: item id is the catalog concat. with chosen length.
 *	@param:		null
-*	return:		result, div the created element
+*	@return:		result, div the created element
 *********************************************************************************/
 function removeOrderProduct(productID){
 	var str			= new String(productID.id);
@@ -428,7 +448,7 @@ function removeOrderProduct(productID){
 *	list). it opens the items dialog with parameters to be altered.
 *	TODO: complete functionality
 *	@param:		null
-*	return:		result, div the created element
+*	@return:		result, div the created element
 *********************************************************************************/
 function editOrderProduct(productID){	
 	try{
@@ -451,7 +471,7 @@ function editOrderProduct(productID){
 *	this function creates new selected product option in the product selection
 *	drop-down
 *	@param:		product, a JSON object that holds all the products details
-*	return:		option, div the created element
+*	@return:		option, div the created element
 *********************************************************************************/
 function createNewProductOption(product){
 
@@ -526,7 +546,7 @@ function createNewProductOption(product){
 *	this function saves the last 'known' chosen length for each product with each
 *	time the user clicked on the product div element.
 *	@param:		option, the div element containing the product details
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function optionClicked(option){
 	var inputs		= option.getElementsByTagName('input');
@@ -545,7 +565,7 @@ function optionClicked(option){
 /*********************************************************************************
 *	this function creates an order modal as HTML element and return to caller
 *	@param:		null
-*	return:		modal, a 'div' HTML element that holds all order fields
+*	@return:		modal, a 'div' HTML element that holds all order fields
 *********************************************************************************/
 function openOrderModal(){
 	var formdata 		= new FormData();
@@ -593,7 +613,7 @@ function openOrderModal(){
 /*********************************************************************************
 *	this function closes the new order modal, through the DOM
 *	@param:		null
-*	return:		null
+*	@return:		null
 *********************************************************************************/
 function closeNewOrder(){
 	/*
@@ -613,12 +633,12 @@ function closeNewOrder(){
 *	remove a product all together, and also change the shipping address, comment
 *	and total (in case of a discount).
 *	@param:		editBtn, the edit button element that was clicked
-*	return:		null
+*	@return:	null
 *********************************************************************************/
 function editOrder(editBtn){
 	//var	footer			= editBtn.parentElement;
 	var form			= document.getElementById('user-order-form');
-	var lengths			= document.getElementById('user-order-product-length');
+	var lengths			= document.getElementsByClassName('user-order-product-length');
 	var products		= form.getElementsByClassName('user-order-products');
 	var shipping		= document.getElementById('user-order-shipping-address');
 	var comment			= document.getElementById('user-order-comment');
@@ -637,7 +657,71 @@ function editOrder(editBtn){
 }
 
 
+/*********************************************************************************
+*	this function update the order displayed in the user-order Modal. the function  
+*	gather all the details in the Modal: address, comment. total and products
+*	type (catalog), length and color, bundle to an array objects of the following
+*	form: [{'catalog':<catalog>, 'length': <length>, 'color': <color>},..]
+*	@param:		null
+*	@return:	null
+*********************************************************************************/
 function updateOrder(){
-	console.log('update order');
+	
+	var form		= document.getElementById('user-order-form');
+	var products	= form.getElementsByClassName('user-order-products')	
+	var length		= products.length;
+	var index		= document.getElementById('user-order-index').innerHTML;
+	var date		= new Date().getTime();
+	var formdata	= new FormData();
+	var	customer	= document.getElementById('user-order-customer').value;
+	var ordrdPrdLst	= [];
+	var address		= document.getElementById('user-order-shipping-address').value;
+	var comment		= document.getElementById('user-order-comment').value;
+	var total		= document.getElementById('user-order-total').value;
+
+	
+	for(var i = 0; i < length; i++){
+			 
+		var id			= products[i].id;
+		var image		= products[i].getElementsByClassName('img');
+		var type		= id.split('-')[3];
+		console.log('product i type: ' + type);	
+		console.log('product type: ' + type);
+		var lengthElem	= document.getElementById('user-order-product-length-' + type);
+		//var productLen	= lengthElem.innerHTML;	
+		//var plen		= new String(productLen).split(':')[1];
+		var	ordrdPrdct	= { 'type': type, 'length': lengthElem.value };
+		ordrdPrdLst.push(ordrdPrdct);
+	}
+	
+
+	formdata.append("code", 	"5");
+	formdata.append("index", 	index);
+	formdata.append("date", 	date);
+	formdata.append("customer", customer); 
+	formdata.append("address", 	address);
+	formdata.append("supplied", false); 
+	formdata.append("total", 	total);
+	formdata.append("comment", 	comment);
+	formdata.append("products", JSON.stringify(ordrdPrdLst));
+	
+	console.log('update order'); 
+	
+	$.ajax({    
+    url: 			'OrderServlet', 	
+    dataType: 		'text',  		
+    cache: 			false,
+    contentType:	false,
+    processData:	false,
+    data: 			formdata,                         
+    type: 			'post',
+    async: 			true,
+    success: function(response){
+    		if(response > 0)
+    		{
+    			closeNewOrder()
+    		}
+    	}
+    });   
 }
 

@@ -58,7 +58,7 @@ public class OrderServlet extends HttpServlet {
 	{
 		
 		String code 			= request.getParameter("code");
-		String index			= request.getParameter("index");
+		String indexStr			= request.getParameter("index");
 		String dateStr	 		= request.getParameter("date");
 		String customer 		= request.getParameter("customer");
 		String address 			= request.getParameter("address");
@@ -67,7 +67,7 @@ public class OrderServlet extends HttpServlet {
 		String comment			= request.getParameter("comment");
 		String productsStr		= request.getParameter("products");
 		
-		System.out.printf("%n%-15s %s%n","order servlet >> ", "total: " + totalStr);
+		System.out.printf("%n%-15s %s%n","order servlet >> ", "code: " + code);
 		
 		try 
 		{
@@ -122,11 +122,11 @@ public class OrderServlet extends HttpServlet {
 					String order = "";
 					
 					 
-					order 		= db.getOrder1(Integer.valueOf(index));
+					order 		= db.getOrder1(Integer.valueOf(indexStr));
 					json 		= new Gson().toJson(order);
 					response.getWriter().write(json);
 					
-					System.out.printf("%n%-15s %s%n", "order servlet >>", "get order with id: " + index);
+					System.out.printf("%n%-15s %s%n", "order servlet >>", "get order with id: " + indexStr);
 					break;
 				}
 				 
@@ -146,7 +146,20 @@ public class OrderServlet extends HttpServlet {
 					 
 					break;
 				}
-				 
+				
+				case "5":		// edit order
+				{
+					long date			= Long.valueOf(dateStr);
+					boolean supplied 	= Boolean.valueOf(supplyStr);
+					float total 		= Float.valueOf(totalStr);
+					int index			= Integer.valueOf(indexStr);
+					Order order 		= new Order(index, customer, date, address, supplied, total, comment, productsStr);
+					db.editOrder(order);
+					System.out.println("order servlet >> edit order ");
+					order.print();
+					writer.println(1);
+					break;
+				}
 				default:
 					break;
 			}
