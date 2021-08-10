@@ -35,22 +35,26 @@
     font-weight: 600;
     margin-bottom: 30px;
   }
+  
   h4 {
     font-size: 19px;
     line-height: 1.375em;
     color: #303030;
     font-weight: 400;
     margin-bottom: 30px;
-  }  
+  } 
+   
   .jumbotron {
     background-color: #02e8fb;
     color: #000000;
     padding: 100px 25px;
     font-family: Montserrat, sans-serif;
   }
+  
   .container-fluid {
     padding: 60px 50px;
   }
+  
   .bg-grey {
     background-color: #8080ff;
   }
@@ -58,11 +62,13 @@
     color: #f4511e;
     font-size: 50px;
   }
+  
   .logo {
     color: #511e;
     font-size: 200px;
     padding-left: 30%;
   }
+  
   .thumbnail {
     padding: 0 0 15px 0;
     border: none;
@@ -73,6 +79,11 @@
     height: 100%;
     margin-bottom: 10px;
   }
+  .icon-thumbnail{
+  	width: 2%;
+  	height: 2%;
+  }
+  
   .carousel-control.right, .carousel-control.left {
     background-image: none;
     color: #f4511e;
