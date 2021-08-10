@@ -43,8 +43,8 @@
     margin-bottom: 30px;
   }  
   .jumbotron {
-    background-color: #f11530;
-    color: #1ff;
+    background-color: #02e8fb;
+    color: #000000;
     padding: 100px 25px;
     font-family: Montserrat, sans-serif;
   }
@@ -52,7 +52,7 @@
     padding: 60px 50px;
   }
   .bg-grey {
-    background-color: #456;
+    background-color: #8080ff;
   }
   .logo-small {
     color: #f4511e;
@@ -61,6 +61,7 @@
   .logo {
     color: #511e;
     font-size: 200px;
+    padding-left: 30%;
   }
   .thumbnail {
     padding: 0 0 15px 0;
@@ -128,11 +129,11 @@
   .panel-footer .btn {
     margin: 15px 0;
     background-color: #f4511e;
-    color: #fff;
+    color: #00ff00;
   }
   .navbar {
     margin-bottom: 0;
-    background-color: #f4511e;
+    background-color: #00ffff;
     z-index: 9999;
     border: 0;
     font-size: 12px !important;
@@ -142,11 +143,12 @@
     font-family: Montserrat, sans-serif;
   }
   .navbar li a, .navbar .navbar-brand {
+  	border-radius: 3px;
     color: #fff !important;
   }
   .navbar-nav li a:hover, .navbar-nav li.active a {
-    color: #f4511e !important;
-    background-color: #fff !important;
+    color: #000000! important;
+    background-color: #c0c0c0 !important;
   }
   .navbar-default .navbar-toggle {
     border-color: transparent;
@@ -155,7 +157,7 @@
   footer .glyphicon {
     font-size: 20px;
     margin-bottom: 20px;
-    color: #f4511e;
+    color: #ffffff;
   }
   .slideanim {visibility:hidden;}
   .slide {
