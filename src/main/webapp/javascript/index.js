@@ -9,7 +9,8 @@
 *********************************************************************************/
 $(document).ready(function(){
 
-	loadProducts();
+	loadStoreProducts();
+	
 	
 // Add smooth scrolling to all links in navbar + footer link
   $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
@@ -45,6 +46,7 @@ $(document).ready(function(){
   });
 })
 
+/*
 function click(){
 	
 	alert();
@@ -67,9 +69,9 @@ function change_page_to_login_test(){
 	  window.location.href = "login_test.html";
 	} 
 
+*/
 
 
-
-function loadProduct(){
-	
+function loadStoreProducts(){
+	console.log('page load..');
 }
