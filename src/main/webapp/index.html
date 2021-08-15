@@ -20,7 +20,7 @@
 </head>
 
 	
-<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60" onload="onBodyLoad(this)">
 
 
 	
@@ -40,7 +40,7 @@
 		        		<li><a href="#about">ABOUT</a></li>
 		        		<li><a href="#services">SERVICES</a></li>
 		        		<li><a href="#portfolio">PORTFOLIO</a></li>
-		        		<li><a href="#products">PRODUCTS</a></li>
+		        		<li><a href="#products" style="offset: 60px;">PRODUCTS</a></li>
 		        		<li><a href="/final-project/store.html">STORE</a></li>
 		        		<li><a href="#contact">CONTACT</a></li>
 		      		</ul>
@@ -285,10 +285,12 @@
 <!-- Container (Products Section) -->
 <div id="products" class="container container-fluid">
         <div class="text-center">
-            <h2>Products</h2>
+            <h2>Products</h2> 
             <h4>Choose the type you need, length and quantity</h4>
         </div>
-        <div class="row slideanim">
+        
+        <!-- 
+        <div class="row slideanim" id="row-slideanim">
             <div class="col-sm-4 col-xs-12">
                 <div class="panel panel-default text-center">
                     <div class="panel-body">
@@ -414,9 +416,9 @@
                 </div>
             </div>
         </div>
+		 -->
 
-
-    </div>
+</div>
 
 <!-- Container (Contact Section) -->
 <div id="contact" class="container-fluid bg-grey">

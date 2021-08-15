@@ -248,9 +248,9 @@ function loadProducts(sync){
         				var product 		= JSON.parse(products[i]);
         				var del				= document.createElement("input");
         				del.setAttribute("type", "checkbox"); 
-	    			    var edit		= document.createElement("a");
-    			    	var remove		= document.createElement("a");
-    			    	var span_re_del	= document.createElement("span");
+	    			    var edit			= document.createElement("a");
+    			    	var remove			= document.createElement("a");
+    			    	var span_re_del		= document.createElement("span");
         				
         				var tr				= document.createElement("tr");
         				var td_cat 			= document.createElement("td");
