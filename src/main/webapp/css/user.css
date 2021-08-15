@@ -1,6 +1,12 @@
 @charset "UTF-8";
 
-
+tr:hover{
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+	transition:  0.4s;
+	transition-timing-function: linear;
+}
 
 .upload-image /*label*/
 {
@@ -31,17 +37,14 @@
 
 
 .image{
-	width: 100px;
-	height:100px;
-	background-color:gray;
+	width: 70px;
+	height:70px;
 	border-radius: 2px; 
+	padding: 5px;
 	/*vertical-align:middle;*/
 	/*float:right;*/
 }
-.image:hover{
-	background-color:blue;
-	padding: 20px;
-}
+
 .separator{
 	height:2px;
 	border-width:0;
