@@ -25,6 +25,7 @@ public class Product
 	float 	price;
 	float 	length;
 	String 	color;
+	String 	crossSection;
 	Blob 	image;
 	
 	/**
@@ -36,30 +37,31 @@ public class Product
 	}
 	public Product(String type, float price, byte[] image)// InputStream image) 
 	{
-		this.catalog = 0;
-		this.type = type;
-		this.price = price;
-		this.length = 0;
-		this.color = "";
+		this.catalog 		= 0;
+		this.type 			= type;
+		this.price 			= price;
+		this.length 		= 0;
+		this.color 			= "";
 		
 	}
 	public Product(String type, float price, Blob image)// InputStream image) 
 	{
-		this.catalog = 0;
-		this.type = type;
-		this.price = price;
-		this.length = 0;
-		this.color = "";
-		this.image = image;
+		this.catalog 		= 0;
+		this.type 			= type;
+		this.price 			= price;
+		this.length 		= 0;
+		this.color 			= "";
+		this.image 			= image;
 	}
-	public Product(int catalog, String type, float price, float length, String color, Blob image)// InputStream image) 
+	public Product(int catalog, String type, float price, float length, String color, String crosssection, Blob image)// InputStream image) 
 	{
-		this.catalog = catalog;
-		this.type = type;
-		this.price = price;
-		this.length = length;
-		this.color = color;
-		this.image = image;
+		this.catalog 		= catalog;
+		this.type 			= type;
+		this.price 			= price;
+		this.length 		= length;
+		this.color 			= color;
+		this.crossSection 	= crosssection;
+		this.image 			= image;
 	}
 	
 	public void print()
@@ -70,6 +72,7 @@ public class Product
 		System.out.printf("%n%-15s %f", "", this.price);		// price
 		System.out.printf("%n%-15s %f", "", this.length);		// length
 		System.out.printf("%n%-15s %s", "", this.color);		// color
+		System.out.printf("%n%-15s %s", "", this.crossSection);	// color
 		System.out.printf("%n%-15s %s", "", this.image);		// image
 	}
 	
@@ -78,6 +81,7 @@ public class Product
 	public void setPrice(float p) 		{ this.price = p; }
 	public void setLength(float l) 		{ this.length = l; }
 	public void setColor(String c) 		{ this.color = c; }
+	public void setCS(String c) 		{ this.crossSection = c; }
 	public void setImage(Blob image) 	{ this.image = image;}
 
 	public int getCatalog() 			{ return this.catalog; }
@@ -85,5 +89,6 @@ public class Product
 	public float getPrice() 			{ return this.price; }
 	public float getLength()			{ return this.length; }
 	public String getColor()			{ return this.color; }
+	public String getCS()				{ return this.crossSection; }
 	public Blob getImage()         		{ return this.image;}
 }

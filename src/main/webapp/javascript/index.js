@@ -4,46 +4,6 @@
  ********************************************************************************/
 
 
-function onBodyLoad(body){
-	/*
-	
-	// Add smooth scrolling to all links in navbar + footer link
-  	$(".navbar a, footer a[href='#myPage'], #index-products").on('click', function(event) {
-    	// Make sure this.hash has a value before overriding default behavior
-    	if (this.hash !== "") {
-	      	// Prevent default anchor click behavior
-	      	event.preventDefault();
-	
-	      	// Store hash
-	      	var hash = this.hash;
-	
-	      	// Using jQuery's animate() method to add smooth page scroll
-	      	// The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
-	      	$('html, body').animate({
-	        	scrollTop: $(hash).offset().top
-	      	}, 900, function(){
-	   
-	        	// Add hash (#) to URL when done scrolling (default click behavior)
-	        	window.location.hash = hash;
-	      	});
-    	} // End if
-  	});
-
-	console.log('products: ' + document.getElementById('index-products'));
-  
-	$(window).scroll(function() {
-		$(".slideanim").each(function(){
-	    	var pos = $(this).offset().top;
-			var winTop = $(window).scrollTop();
-	        if (pos < winTop + 600) {
-	        	$(this).addClass("slide");
-	        }
-	    });
-	});
-	*/
-	
-}
-
 /*********************************************************************************
 *	this function handles loading images and products details into page
 *********************************************************************************/
@@ -88,12 +48,10 @@ $(document).ready(function(){
 })
 
 
-
-
 /*********************************************************************************
 *	this function loads products into the 'slideanim' element of the index.html
 *	page by creating the element for each product, loaded from the DB
-*	@param		null
+*	@parameter	null
 *	@return 	null 
 *********************************************************************************/
 function loadStoreProducts(){
@@ -159,7 +117,7 @@ function createStoreProducts(product){
 	for (var property in product) {
 	  output += property + ': ' + product[property]+'; ';
 	}
-	//console.log('product: ' + output);
+	console.log('product: ' + output);
 	
 	var panel			= document.createElement('div');
 	var panelBody		= document.createElement('div');
@@ -193,6 +151,7 @@ function createStoreProducts(product){
 	addBtn.setAttribute('name', 'addBtn');
 	addBtn.setAttribute('id', 'add-to-cart-btn');
 	addBtn.setAttribute('style', 'margin-top: 5px;');
+	addBtn.innerHTML = 'add to cart';
 	span.setAttribute('id', 'id-add-to-cart');
 	h3.innerHTML = product.type;
 	h4.innerHTML = product.price + '$ per meter';

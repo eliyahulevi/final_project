@@ -86,6 +86,7 @@ public class ProductServlet extends HttpServlet
 		String priceString 		= request.getParameter("price");
 		String lengthString 	= request.getParameter("length"); 
 		String color 			= request.getParameter("color");
+		String crossSection 	= request.getParameter("crossSection");
 		String image			= request.getParameter("image");
 		
 		
@@ -121,7 +122,7 @@ public class ProductServlet extends HttpServlet
 					int cat			= Integer.valueOf(catalog);
 					float price 	= Float.valueOf(priceString);
 					float length 	= Float.valueOf(lengthString);
-					Product product = new Product(cat, type, price, length, color, img);
+					Product product = new Product(cat, type, price, length, color,crossSection, img);
 					db.insertProduct(product);
 					System.out.println("product servlet >> add product");
 					product.print();

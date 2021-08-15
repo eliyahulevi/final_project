@@ -121,6 +121,7 @@ public class DB
 			+ "PRICE float(10),"
 			+ "LENGTH float(10),"
 			+ "COLOR varchar(30),"
+			+ "CROSSSECTION varchar(20),"
 			+ "IMAGE BLOB"
 			+ ")"; 
 	private final String CREATE_ORDER_TABLE = "CREATE TABLE " + tables_str[tables.ORDERS.value] + "("
@@ -204,7 +205,7 @@ public class DB
 	 ***********************************************************************/
 	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
 	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?)";
+	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
 	private String REMOVE_PRODUCT	=		"DELETE FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
@@ -1929,7 +1930,8 @@ public class DB
 			for( File filePath : paths)
 			{
 				int lastIndex			= (filePath.toString()).lastIndexOf('\\');
-				String f				= (filePath.toString()).substring(lastIndex + 1); 
+				int lastDotIndex		= (filePath.toString()).lastIndexOf('.');
+				String f				= (filePath.toString()).substring(lastIndex + 1, lastDotIndex); 
 				String[] productDetails = (f.toString()).split(";");
 				Path p					= Paths.get(filePath.toString());
 				
@@ -1937,12 +1939,12 @@ public class DB
 				
 				Optional<String> extn	= Utils.getExtensionByStringHandling(f);
 				String codedPrefix		= coded_prefx + extn.get() + coded_suffx;
-				byte[] codePrefxBytes	= codedPrefix.getBytes();
+				byte[] codedPrefxBytes	= codedPrefix.getBytes();
 				byte[] fileBytes 		= Files.readAllBytes(p); 
-				byte[] allBytes			= new byte[codePrefxBytes.length + fileBytes.length];
+				byte[] allBytes			= new byte[codedPrefxBytes.length + fileBytes.length];
 				
 				System.arraycopy(fileBytes, 0, allBytes, 0, fileBytes.length);
-				System.arraycopy(codePrefxBytes, 0, allBytes, fileBytes.length, codePrefxBytes.length); 
+				System.arraycopy(codedPrefxBytes, 0, allBytes, fileBytes.length, codedPrefxBytes.length); 
 				
 				imageString				= Base64.getEncoder().encodeToString(allBytes);
 				blob					= new SerialBlob((codedPrefix + imageString).getBytes());
@@ -1955,7 +1957,8 @@ public class DB
 				ps.setFloat(3, Float.valueOf(productDetails[2]));		// price
 				ps.setFloat(4, Float.valueOf(productDetails[3]));		// length
 				ps.setString(5, productDetails[4]);						// color
-				ps.setBlob(6, blob); 
+				ps.setString(6, productDetails[5]);						// cross section
+				ps.setBlob(7, blob);									// image 
 				result = ps.executeUpdate();
 				
 				//if (result > 0)
@@ -2218,8 +2221,8 @@ public class DB
  		
  	/**
  	 * 	get ALL the products from the DB
- 	 * 	@param	null
- 	 * 	@return 			a list of Product objects
+ 	 * 	@parameter		null
+ 	 * 	@return 		a list of Product objects
  	 */
  	public List<Product> getProducts()
  	{
@@ -2300,7 +2303,8 @@ public class DB
 				product.setPrice(rs.getFloat(3));				// price
 				product.setLength(rs.getFloat(4));				// length
 				product.setColor(rs.getString(5));				// color
-				product.setImage(rs.getBlob(6));				// image
+				product.setCS(rs.getString(6));					// cross section
+				product.setImage(rs.getBlob(7));				// image
 				String s = product2JSON(product);
 				result.add(s);
 			}
@@ -2350,6 +2354,7 @@ public class DB
 			map.put("price", String.valueOf(product.getPrice()));	
 			map.put("length", String.valueOf(product.getLength()));
 			map.put("color", product.getColor());
+			map.put("crossSection", product.getCS());
 
 			if(blob == null)
 				map.put("image", "");
