@@ -73,7 +73,7 @@ function onOpen(event) {
 *	this function handles the event when a message comes in from the server 
 *	endpoint. 
 *	@parameter 		event: 	holds the message data
-*	@return:			null
+*	@return:		null
 *********************************************************************************/
 function onMessage(event) {	
 	
@@ -153,7 +153,7 @@ function addImage(image){
 
 /*********************************************************************************
 *	this function edit product
-*	@param:			num, the product number in the table
+*	@parameter:			num, the product number in the table
 *	@return:		null
 *********************************************************************************/
 function editProduct(num){
@@ -164,7 +164,7 @@ function editProduct(num){
 
 /*********************************************************************************
 *	this function remove a product given its number in the table
-*	@param:			num, the product number in the table
+*	@parameter:			num, the product number in the table
 *	@return:		null
 *********************************************************************************/
 function removeProduct(num){
@@ -206,8 +206,8 @@ function removeProduct(num){
 
 /*********************************************************************************
 *	this function loads all available product from DB
-*	@param:			sync, boolean weather the function executes in/out of sync
-*	@return:		null
+*	@parameter:			sync, boolean weather the function executes in/out of sync
+*	@return:			null
 *********************************************************************************/
 function loadProducts(sync){
 		var formdata = new FormData();
@@ -247,14 +247,13 @@ function loadProducts(sync){
         			
         				var product 		= JSON.parse(products[i]);
         				var del				= document.createElement("input");
-        				del.setAttribute("type", "checkbox"); 
 	    			    var edit			= document.createElement("a");
     			    	var remove			= document.createElement("a");
     			    	var span_re_del		= document.createElement("span");
-        				
         				var tr				= document.createElement("tr");
         				var td_cat 			= document.createElement("td");
         				var td_type 		= document.createElement("td");
+						var td_cs	 		= document.createElement("td");
         				var td_price 		= document.createElement("td");
         				var td_len 			= document.createElement("td");
         				var td_clr 			= document.createElement("td");
@@ -262,6 +261,7 @@ function loadProducts(sync){
         				var img				= document.createElement("img");
         				var td_del 			= document.createElement("td");
         				
+						del.setAttribute("type", "checkbox"); 
         				edit.innerHTML		= 'edit';
         				edit.setAttribute('onclick', 'editProduct(' + i + ')');
         				remove.innerHTML	= 'remove';
@@ -273,6 +273,7 @@ function loadProducts(sync){
         				
         				td_cat.innerHTML 	= product.catalog;
         				td_type.innerHTML 	= product.type;
+						td_cs.innerHTML 	= product.crossSection;
         				td_price.innerHTML 	= product.price;
         				td_len.innerHTML 	= product.length;
         				td_clr.innerHTML 	= product.color;
@@ -283,6 +284,7 @@ function loadProducts(sync){
         				
         				tr.appendChild(td_cat);
         				tr.appendChild(td_type);
+						tr.appendChild(td_cs);
         				tr.appendChild(td_price);
         				tr.appendChild(td_len);
         				tr.appendChild(td_clr);
@@ -300,7 +302,7 @@ function loadProducts(sync){
 *	this function send added product to the server, thus allowing to upload a new
 *	product to the server\DB. if one of the fields is missing the function prompts
 *	a message urging user to complete the product form
-*	@param:			null
+*	@parameter:			null
 *	@return: 		null		
 *********************************************************************************/
 function addNewProduct(){
@@ -370,7 +372,7 @@ function cancelAddProduct(){
 
 /*********************************************************************************
 *	this function displays admin functionality: add product..
-*	@param		null
+*	@parameter		null
 *	@return		null
 *********************************************************************************/
 function showAddProduct(){
@@ -490,7 +492,7 @@ function showAddProduct(){
 
 /*********************************************************************************
 *	this function displays the file upload module in the 'new product' area
-*	@param:		null
+*	@parameter:		null
 *	@return 	null
 *********************************************************************************/
 function showProductImageUpload(){
@@ -532,7 +534,7 @@ function onTextChange(){
 
 /*********************************************************************************
 *	this function load all users messages from the server for the registered user 
-*	@param	sync boolean, if the adding of messages will be synchronous or not
+*	@parameter	sync boolean, if the adding of messages will be synchronous or not
 *	@return	null
 *********************************************************************************/
 function loadUserMessages(sync){
@@ -586,8 +588,8 @@ function loadUserMessages(sync){
 
 /*********************************************************************************
 *	this function inserts a new message element into messages displayed area
-*	@param: messages,		an array of already parsed messages in JSON format
-*	@param: index,			the index of the message in the array 
+*	@parameter: messages,		an array of already parsed messages in JSON format
+*	@parameter: index,			the index of the message in the array 
 *********************************************************************************/
 function insertMessage(message){
 	
@@ -642,8 +644,8 @@ function insertMessage(message){
 
 /*********************************************************************************
 *	this function inserts a message element into the document tree
-*	@param		messages, an array of all messages
-*	@param		index, int, the index of desired message to insert in the array
+*	@parameter		messages, an array of all messages
+*	@parameter		index, int, the index of desired message to insert in the array
 *	@return		null
 *********************************************************************************/
 function insertRepliedMessages(messages, index){
@@ -669,7 +671,7 @@ function insertRepliedMessages(messages, index){
 /*********************************************************************************
 *	this function search for a specific user name 'sender' in the user select 
 *	drop-down menu given by the element 'user-list'. 
-*	@param		user, string the name of the user to find
+*	@parameter		user, string the name of the user to find
 *	@return		result, the name of the user found
 *********************************************************************************/
 function userExist(user){
@@ -688,7 +690,7 @@ function userExist(user){
 
 /*********************************************************************************
 *	this function takes a message in JSON format and create an option 'sender'
-*	@param		message, a JSON object that holds all of the message details
+*	@parameter		message, a JSON object that holds all of the message details
 *	@return		result, an 'option' tag element with value and innerHTML of the user
 *********************************************************************************/
 function createSender(message){
@@ -715,7 +717,7 @@ function createSender(message){
 *		1. remove '"[' from the beginning and '"]"' from the end
 *		2. split on 'data:image/png;base64,'
 *		3. for each source string remove the '","' tail end 
-*	@param		message, a JSON object that holds all of the message details
+*	@parameter		message, a JSON object that holds all of the message details
 *	@return		newMessage, a 'div' element that holds all of the new message details
 *				including text, date, sending and recieving parties and images
 *********************************************************************************/
@@ -860,7 +862,7 @@ function createMessage1(message){
 
 /*********************************************************************************
 *	this function shows outgoing messages only
-*	@param:		long, date a unique identifier for the user clicked
+*	@parameter:		long, date a unique identifier for the user clicked
 *	@return:	null
 *********************************************************************************/
 function userClick(date){
@@ -884,7 +886,7 @@ function userClick(date){
 *	user of a specific message and sends a request for the server so the message
 *	will not be displayed on the users messages feed anymore. the function also 
 *	remove the message element from the user page. 
-*	@param		id, string a unique identifier for an 'a' tag in the message   
+*	@parameter		id, string a unique identifier for an 'a' tag in the message   
 *	@return		null
 *********************************************************************************/
 function hideMessage(id){
@@ -900,7 +902,7 @@ function hideMessage(id){
 /*********************************************************************************
 *	this function handles message element being clicked, notify server that message
 *	was clicked and changes the message element background color.
-*	@param		p, string a unique identifier of a given message
+*	@parameter		p, string a unique identifier of a given message
 *	@return		null 
 *********************************************************************************/
 function messageClicked(p){
@@ -940,7 +942,7 @@ function messageClicked(p){
 *	this function is fired up when the reply hyper link to specific message is 
 *	clicked. reply area is being added to page under the chosen message and 
 *	'message clicked' is sent.
-*	@param:		p,	unique identifier (date of creation)
+*	@parameter:		p,	unique identifier (date of creation)
 *	@return:	null
 *********************************************************************************/
 function replyClicked(p){
@@ -973,7 +975,7 @@ function replyClicked(p){
 
 /*********************************************************************************
 *	this function create the file upload area as an html element and return it.
-*	@param:		p, unique identifier
+*	@parameter:		p, unique identifier
 *	@return:	null
 *********************************************************************************/
 function createImageUploadArea(p){
@@ -992,11 +994,11 @@ function createImageUploadArea(p){
 
 /*********************************************************************************
 *	this function create the message text area as an html element and return it.
-*	@param:		p, 		unique identifier
-*	@param:		user, 	a specific user name to be replied to. if @user is empty,
+*	@parameter:		p, 		unique identifier
+*	@parameter:		user, 	a specific user name to be replied to. if @user is empty,
 *						the first option of users is displayed, i.e. NO REPLY: 
 *						fresh new message
-*	@param:		users, 	an array of users names
+*	@parameter:		users, 	an array of users names
 *	@return:	div, 	the element created which holds the functionality
 *********************************************************************************/
 function createMsgTextArea(msgNumber, users, user){
@@ -1086,7 +1088,7 @@ function createMsgTextArea(msgNumber, users, user){
 *	this function send a message in JSON format to the server to be inserted into
 *	the DB: format is: { user: 'user', sender: 'sender', text: 'text', date: 'date',
 *						 offset:'offset',  }
-*	@param		jmessage, the message JSON object
+*	@parameter		jmessage, the message JSON object
 *	@return		null
 *********************************************************************************/
 function sendReplyMessage(jmessage){
@@ -1116,7 +1118,7 @@ function sendReplyMessage(jmessage){
 /*********************************************************************************
 *	this function gather 'pop up' text area text, user ,sender etc. and send the
 *	message through websocket via binary option
-*	@param:		p, the message unique identifier (its date) 
+*	@parameter:		p, the message unique identifier (its date) 
 *	@return		null
 *********************************************************************************/
 function replyMessage(p){
@@ -1150,7 +1152,7 @@ function replyMessage(p){
 
 /*********************************************************************************
 *	this function resets the images chosen
-*	@param		p, string a unique identifier 
+*	@parameter		p, string a unique identifier 
 *	@return		null
 *********************************************************************************/
 function cancel(p){
@@ -1162,8 +1164,8 @@ function cancel(p){
 /*********************************************************************************
 *	this function notify the server that the message with 'user' and 'data'
 *	was clicked
-*	@param		user, string the user name
-*	@param		date, string the string representation of a long number
+*	@parameter		user, string the user name
+*	@parameter		date, string the string representation of a long number
 *	@return		null
 *********************************************************************************/
 function notifyMessageClicked(user, date){
@@ -1191,7 +1193,7 @@ function notifyMessageClicked(user, date){
 /*********************************************************************************
 *	this function sends the updated user details to the server, after 'update'
 *	button was clicked on the user page and send to the server the new details.
-*	@param		null
+*	@parameter		null
 *	@return		null
 *********************************************************************************/
 function pt_update(){
@@ -1207,7 +1209,7 @@ function pt_update(){
 /*********************************************************************************
 *	this function DISABLES all fields in 'personal details' section and HIDES 
 *	'update' and 'cancel' buttons
-*	@param		null
+*	@parameter		null
 *	@return		null
 *********************************************************************************/
 function pt_cancel(){
@@ -1224,7 +1226,7 @@ function pt_cancel(){
 /*********************************************************************************
 *	this function enables all fields in 'personal details' section and shows 
 *	'update' and 'cancel' buttons
-*	@param		null
+*	@parameter		null
 *	@return		null
 *********************************************************************************/
 function edit(){	
@@ -1240,7 +1242,7 @@ function edit(){
 /*********************************************************************************
 *	this function is fired up when a reply to a message was pressed, iterate over 
 *	all images, checked if chosen and sent to the sendMessage function
-*	@param:		p, unique identifier
+*	@parameter:		p, unique identifier
 *	@return:	null
 *********************************************************************************/
 function upload(p){
@@ -1263,7 +1265,7 @@ function upload(p){
 /*********************************************************************************
 *	this function creates a JSON object of 'Message' type,  iterate over all images, 
 *	checked if chosen and sent to server
-*	@param		number, REDUNDENT
+*	@parameter		number, REDUNDENT
 *	@return		null
 *********************************************************************************/
 function uploadMessage(number){
@@ -1281,7 +1283,7 @@ function uploadMessage(number){
 
 /*********************************************************************************
 *	this function gathers all selected images for a specific message
-*	@param		number, REDUNDENT
+*	@parameter		number, REDUNDENT
 *	@return		arr, an array of all selected ('checked') images
 *********************************************************************************/
 function getSelectedImages(number){
@@ -1300,7 +1302,7 @@ function getSelectedImages(number){
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload,
 *	after removing all existing messages
-*	@param:		null
+*	@parameter:		null
 *	@return:	null
 *********************************************************************************/
 function showOutgoingMsgArea(){
@@ -1324,7 +1326,7 @@ function showOutgoingMsgArea(){
 
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload
-*	@param:		null
+*	@parameter:		null
 *	@return:	null
 *********************************************************************************/
 function cancelMsgText(){
@@ -1340,7 +1342,7 @@ function cancelMsgText(){
 /*********************************************************************************
 *	this function handles product image upload event, display the selected imnage
 *	to the 'addNewProduct' area
-*	@param:		input, the selected file from file-upload dialog
+*	@parameter:		input, the selected file from file-upload dialog
 *	@return		null
 *********************************************************************************/
 function onProductAdded(input){
@@ -1358,8 +1360,8 @@ function onProductAdded(input){
 
 /*********************************************************************************
 *	this function does the same as the following but for 'browsing option'
-*	@param:		p, long a unique identifier
-*	@param:		input, the file upload selections
+*	@parameter:		p, long a unique identifier
+*	@parameter:		input, the file upload selections
 *	@return:	null
 *********************************************************************************/
 function onChange(p, input){
@@ -1382,7 +1384,7 @@ function onChange(p, input){
 /*********************************************************************************
 *	this function handles the drop event of the files upload element,
 *	simply places the chosen images in the output element
-*	@param:		event, handle the object that holds the 'drop' file-upload event 
+*	@parameter:		event, handle the object that holds the 'drop' file-upload event 
 *	@return:	null
 *********************************************************************************/
 function drop(event){
@@ -1414,8 +1416,8 @@ function drop(event){
 *								<img/>
 *							</label>
 *						</div>
-*	@param:		source, the source of the file uploaded
-*	@param:		name, the name of the file uploaded
+*	@parameter:		source, the source of the file uploaded
+*	@parameter:		name, the name of the file uploaded
 *	@return:	newDiv, the created element
 *********************************************************************************/
 function createCheckedImage(source, name){
@@ -1453,7 +1455,7 @@ function createCheckedImage(source, name){
 *	this function loads the registered user details into:
 *	1. the page header
 *	2. the page 'Personal DEtails' section 
-*	@param:		null
+*	@parameter:		null
 *	@return:	null
 *********************************************************************************/
 function loadUserDetails(){
@@ -1488,7 +1490,7 @@ function loadUserDetails(){
 *	this function loads registered user from db and add to the list of users
 *	to choose from while sending a new message, and return the users as string
 *	array.
-*	@param:		sync, boolean, whether the function should run in parallel or not  
+*	@parameter:		sync, boolean, whether the function should run in parallel or not  
 *	@return:	result, a string array of users names
 *********************************************************************************/
 function loadUsers(sync){
@@ -1539,7 +1541,7 @@ function loadUsers(sync){
 *	this function sends a request message to the server to get all messages for the
 *	user name, as kept in the sessionStorage memory. after this, the function call
 *	the loadUserMessages with the false argument to indicate asynchronous action
-*	@param:		null
+*	@parameter:		null
 *	@return:	null
 *********************************************************************************/
 function showAllMessages(){
@@ -1554,8 +1556,8 @@ function showAllMessages(){
 
 /*********************************************************************************
 *	this function sends a new message to a specific user
-*	@param:		images,		an array that contains all the images uploaded by the user
-*	@param:		msgNumber	int, a unique identifier (time stamp)
+*	@parameter:		images,		an array that contains all the images uploaded by the user
+*	@parameter:		msgNumber	int, a unique identifier (time stamp)
 *	@return:	null  
 *********************************************************************************/
 function sendMessage(images, msgNumber){
@@ -1614,7 +1616,7 @@ function sendMessage(images, msgNumber){
 /*********************************************************************************
 *	this function handles message actions requests from the user: reset messages 
 *	to show the last view, show all, incoming or outgoing messages
-*	@param:		select,		the select element that holds the users required action
+*	@parameter:		select,		the select element that holds the users required action
 *	@return:	null  
 *********************************************************************************/
 function messagesAction(select){
