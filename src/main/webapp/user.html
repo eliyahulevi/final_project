@@ -22,12 +22,9 @@
 	<script src="javascript/order.js"></script>		<!-- DO NOT change order of script files !! -->
 	<script src="javascript/user.js"></script>		<!-- DO NOT change order of script files !! -->
 	<!-- script src="javascript/websocket2.js"></script>		<!-- DO NOT change order of script files !! -->
-
-
-
 </head>
 
-<body onload="" id="userPage" data-target=".navbar" data-offset="100">
+<body id="userPage" data-target=".navbar" data-offset="0">
 
 <!-- navigation bar -->
 <div class="container">
@@ -35,8 +32,9 @@
 		<div class="row">
 			<div class="col-sm-3"><a class="navbar-brand" href="index.html">Home</a></div>
 		
-			<div class="col-sm-5" align="center" >
+			<div class="col-sm-7" align="center" >
 				<ul class="nav navbar-nav" id="nav-bar-items">
+					<li><a href="#card">User Visitor Card</a></li>
 					<li><a href="#products">Products</a></li>
 					<li><a href="#projects">Projects</a></li>
 					<li><a href="#orders">Orders</a></li>
@@ -45,7 +43,7 @@
 				</ul>
 			</div>
 		
-			<div class="col-sm-4" style="text-align: right; ">
+			<div class="col-sm-2" style="text-align: right; ">
 					you're connected as:
 					<a href="#personal" id="user-details-header" style="display: inline-block;"></a>
 					<a href="" id="user-sign-out">sign out</a>
@@ -56,19 +54,18 @@
 <!-- /navigation bar -->
 
 <div class="main-body" id='main-body'>
-
-	<div class="row gutters-sm"  >
+	<div class="row gutters-sm" id="card" >
 		<div class="container-fluid">
 			<div class="main body">
-			<!-- Main component for a primary marketing message or call to action -->
-				<!--div class="jumbotron text-center">
-					<h1>Navbar example</h1>
-					<p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-					<p>To see the difference between static and fixed top navbars, just scroll.</p>
-					<p id="test-images">
-					  <a class="btn btn-lg btn-primary" href="#" role="button" onclick="testMessages()">Test Messages WS</a>
-					</p>
-				</div -->
+				<br>
+				<br>
+				<div class="card">
+					<img id="card-image" src="img_avatar.png" alt="Avatar" style="width:20%">
+				  	<div class="container">
+				    	<h4><b id="card-name"></b></h4>
+				    	<p id="card-description"></p>
+				  	</div>
+				</div>
 			</div>
 		</div> <!-- /container -->
 	</div>
@@ -252,47 +249,7 @@
 	  		</div>  		
   		</div>
 
-
-	</div>
-	<!-- end of main body -->
-	
-	
-	<!-- new message area -->
-	<div class="container" id="new-msg">
-	</div>
-		
-	<!-- upload files -->
-	<div class="container" id="file-upload-area" style="display:none;">
-		<p>upload a picture</p>
-		<form>
-			<input id="file" type="file" name='filename' accept=".jpeg, .jpg, .png" ondrop="drop()" onchange="onChange(this)" multiple/>
-		</form>	
-	</div>
-	
-	<!-- write message text -->
-	<div class="container" id="msg-text-upload">
-	
-		<p>user</p>
-       	<select name="users" id="users"></select>
-		<textarea id="msg-txt" name="msg-txt" onkeypress="onTextChange()" placeholder="enter text here..."></textarea>		
-		
-		<form id="output" action="upload" method="post" enctype="multipart/form-data">
-			<p>
-				<span style="display:inline-block;">
-					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
-				</span>
-				<span style="float:right; padding-right:0px; ">
-					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancelMsgText()">cancel</button>
-				</span>		
-			</p>
-		</form>	
-	</div>	
-	<!-- / end of write messages -->
-	
-	
-	
-	
-	<!-- personal detail --> 
+			<!-- personal detail --> 
 	<br>
 	<br>
 	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a></p>
@@ -344,6 +301,47 @@
 		</form>		
 		</div>
 	<!-- /end of personal detail -->
+
+	</div>
+	<!-- end of main body -->
+	
+	
+	<!-- new message area -->
+	<div class="container" id="new-msg">
+	</div>
+		
+	<!-- upload files -->
+	<div class="container" id="file-upload-area" style="display:none;">
+		<p>upload a picture</p>
+		<form>
+			<input id="file" type="file" name='filename' accept=".jpeg, .jpg, .png" ondrop="drop()" onchange="onChange(this)" multiple/>
+		</form>	
+	</div>
+	
+	<!-- write message text -->
+	<div class="container" id="msg-text-upload">
+	
+		<p>user</p>
+       	<select name="users" id="users"></select>
+		<textarea id="msg-txt" name="msg-txt" onkeypress="onTextChange()" placeholder="enter text here..."></textarea>		
+		
+		<form id="output" action="upload" method="post" enctype="multipart/form-data">
+			<p>
+				<span style="display:inline-block;">
+					<button type="button" id="upload-file-btn" class="btn btn-success" style="display:none;" onclick="upload()">upload</button>
+				</span>
+				<span style="float:right; padding-right:0px; ">
+					<button type="button" id="cancel-file-btn" class="btn btn-danger" style="display:none;" onclick="cancelMsgText()">cancel</button>
+				</span>		
+			</p>
+		</form>	
+	</div>	
+	<!-- / end of write messages -->
+	
+	
+	
+	
+
 	
 	
 	

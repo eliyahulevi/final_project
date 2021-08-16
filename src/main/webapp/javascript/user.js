@@ -44,8 +44,8 @@ $(document).ready(function(){
 	
 	      	// Using jQuery's animate() method to add smooth page scroll
 	      	// The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
-	      	$('html, body').animate({
-	        	scrollTop: $(hash).offset().top
+	      	$('html, body').stop().animate({
+	        	scrollTop: $(hash).offset().top + 10
 	      	}, 900, function(){
 	   
 	        	// Add hash (#) to URL when done scrolling (default click behavior)
@@ -1489,9 +1489,9 @@ function createCheckedImage(source, name){
 /*********************************************************************************
 *	this function loads the registered user details into:
 *	1. the page header
-*	2. the page 'Personal DEtails' section 
+*	2. the page 'Personal Details' and 'card' sections 
 *	@parameter:		null
-*	@return:	null
+*	@return:		null
 *********************************************************************************/
 function loadUserDetails(){
 	
@@ -1514,6 +1514,10 @@ function loadUserDetails(){
 	document.getElementById("pt-email").disabled = true;
 	document.getElementById("pt-address").value = address;
 	document.getElementById("pt-address").disabled = true;
+	
+	document.getElementById("card-name").innerHTML = name;
+	document.getElementById("card-description").innerHTML = nickname;
+	document.getElementById("card-image").src = name;
 	//TODO: add phone detail
 	//document.getElementById("pt-user-name").value = phone;
 	//document.getElementById("pt-user-name").disabled = true;

@@ -3,8 +3,8 @@
 tr:hover{
 	outline: none;
     border-color: #9ecaed;
-    box-shadow: 0 0 10px #9ecaed;
-	transition:  0.4s;
+    box-shadow: 0 0 15px #9ecaed;
+	transition:  0.3s;
 	transition-timing-function: linear;
 }
 
@@ -37,10 +37,10 @@ tr:hover{
 
 
 .image{
-	width: 70px;
-	height:70px;
+	width: 60px;
+	height:60px;
 	border-radius: 2px; 
-	padding: 5px;
+	padding: 10px;
 	/*vertical-align:middle;*/
 	/*float:right;*/
 }
@@ -90,21 +90,7 @@ textarea {
 .thumb:hover {
   box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
-/*
-input#file {
-  display: inline-block;
-  width: 100%;
-  padding: 120px 0 0 0;
-  height: 100px;
-  overflow: hidden;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  background: url('https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png') center center no-repeat #e4e4e4;
-  border-radius: 20px;
-  background-size: 60px 60px;
-}
-*/
+
 
 
 .space {
@@ -125,27 +111,20 @@ input#file {
 	position: relative;
 }
 
-/*
-.message{
-	width: 90%;
-	background-color: #00ff00;
-    border-radius: 5px;
-    border: 1px solid #000000;
-}
-*/
+
 .messages-icon{
 	width:4%;
 	float: left;
 }
 
 body{
-    margin-top:20px;
+    /*margin-top:20px;*/
     color: #1a202c;
     text-align: left;
     background-color: #e2e8f0;    
 }
 .main-body {
-    padding: 15px;
+  /* padding: 15px;*/
 }
 
 
