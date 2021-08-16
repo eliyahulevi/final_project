@@ -65,8 +65,8 @@ $(document).ready(function(){
 	});
 	
 	// hide the 'update' button in 'personal-details' section
-	document.getElementById("pt-update").style.display = "none";
-	document.getElementById("msg-text-upload").style.display = "none"; 
+	//document.getElementById("pt-update").style.display = "none";
+	//document.getElementById("msg-text-upload").style.display = "none"; 
 	
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
@@ -77,8 +77,15 @@ $(document).ready(function(){
 	loadUserMessages(false);
 
 	// load users to 'send-message' modal
-	$("#send-Message-Modal").on('show.bs.modal', function(){
-		loadUsers(false);
+	$("#send-message-modal").on('show.bs.modal', function(){
+		
+		var usersArray		= loadUsers(false);
+		var fileUploadArea	= document.getElementById('file-upload-area');
+		var length			= usersArray.length;		
+		
+		fileUploadArea.appendChild(createImageUploadArea(length));
+		fileUploadArea.appendChild(createMsgTextArea(length, usersArray, ''));
+	
 	});
 	
 	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages2");
@@ -1019,7 +1026,7 @@ function createImageUploadArea(p){
 	div.setAttribute('id', 'upload-image' + p);
 	div.setAttribute('class', 'upload-image');
 	div.innerHTML 	=  	"<label for='file-input' >" +
-						"<img class='file-image' src='https://icon-library.net/images/upload-photo-icon/upload-photo-icon-21.jpg'/>" +
+						"<img class='file-image' src='resources/upload-icon.svg'/>" +
 						"</label>" +
 						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'>";
 	return div;
@@ -1282,8 +1289,8 @@ function edit(){
 *********************************************************************************/
 function upload(p){
 
-	var imgReplyEle		= document.getElementById('upload-image' + p);
 	let imgs 		  	= [];
+	var imgReplyEle		= document.getElementById('upload-image' + p);
 	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
 	var images 		  	= document.getElementById('upload-image' + p).getElementsByTagName("img");
 
@@ -1341,6 +1348,7 @@ function getSelectedImages(number){
 *	@return:	null
 *********************************************************************************/
 function showOutgoingMsgArea(){
+	console.log('out going message'); 
 	var users		= loadUsers(false);
 	var messages	= document.getElementsByClassName('message');
 	var uploadImg	= document.getElementsByClassName('upload-image');
@@ -1351,7 +1359,7 @@ function showOutgoingMsgArea(){
 	var fileUpload	= null;
 
 	for(var i = 0; i < upldLength; i++){
-		uploadImg[i].remove();
+		uploadImg[i].remove(); 
 	}
 	
 	newMessage.appendChild(createImageUploadArea(msgLength));
@@ -1560,7 +1568,6 @@ function loadUsers(sync){
         success: function(data){
         			
 		            var count;		
-					//var data = xhr.responseText;
 					var array = JSON.parse(data);
 					
 					if ( (count = array.length) > 0) 
@@ -1662,10 +1669,12 @@ function messagesAction(select){
 
 	switch (select.selectedIndex) {
 	  case 1:
-	 	showOutgoingMsgArea();
+	 	console.log('open modal');
+		$('#send-message-modal').modal('show'); //open modal
+		//showOutgoingMsgArea();
 	    break;
 	  case 2:
-	 	resetMessages();
+	 	//resetMessages();
 	    break;
 	  case 3:
 	  	showAllMessages()
@@ -1679,6 +1688,7 @@ function messagesAction(select){
 	  default:
     	alert('selection not supported, contact @support');
     }
+	select.selectedIndex = 0;
 }
 
 

@@ -27,8 +27,8 @@ tr:hover{
 
 .close {
   cursor: pointer; 
-  position: absolute;
-  padding: 12px 16px;  
+  /*position: absolute;
+  padding: 12px 16px;*/  
   transform: translate(0%, -50%);  
 }
 
@@ -124,7 +124,7 @@ body{
     background-color: #e2e8f0;    
 }
 .main-body {
-  /* padding: 15px;*/
+    padding: 15px;
 }
 
 
