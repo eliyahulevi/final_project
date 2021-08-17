@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+.file-image{
+	width: 30%;
+	height: 30%;
+}
+
 tr:hover{
 	outline: none;
     border-color: #9ecaed;

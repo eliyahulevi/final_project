@@ -82,6 +82,14 @@ $(document).ready(function(){
 		var usersArray		= loadUsers(false);
 		var fileUploadArea	= document.getElementById('file-upload-area');
 		var length			= usersArray.length;		
+		var uploadImage		= fileUploadArea.getElementsByClassName('upload-image');
+		var uploadTxt		= fileUploadArea.getElementsByClassName('msg-area');
+		
+		if(uploadImage.length > 0)
+			uploadImage[0].remove();
+			
+		if(uploadTxt.length > 0)
+			uploadTxt[0].remove();
 		
 		fileUploadArea.appendChild(createImageUploadArea(length));
 		fileUploadArea.appendChild(createMsgTextArea(length, usersArray, ''));
@@ -1023,12 +1031,12 @@ function replyClicked(p){
 function createImageUploadArea(p){
 
 	var div			= document.createElement('div');
-	div.setAttribute('id', 'upload-image' + p);
-	div.setAttribute('class', 'upload-image');
 	div.innerHTML 	=  	"<label for='file-input' >" +
-						"<img class='file-image' src='resources/upload-icon.svg'/>" +
+						"<img class='file-image' src='resources/upload-icon.png'/>" +
 						"</label>" +
 						"<input id='file-input' type='file' style='display:none;' ondrop='drop()' onchange='onChange(" + p + ",this)'>";
+	div.setAttribute('id', 'upload-image' + p);
+	div.setAttribute('class', 'upload-image');						
 	return div;
 }
 
@@ -1096,13 +1104,16 @@ function createMsgTextArea(msgNumber, users, user){
 	btnUpload.setAttribute('id', 'upload-file-btn' + msgNumber);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
+	//btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
+	btnUpload.setAttribute('onclick', 'upload(this)');
+	btnUpload.setAttribute('data-dismiss', 'modal');
 	btnUpload.innerHTML = 'upload';
 	
 	btnCancel.setAttribute('id', 'cancel-file-btn' + msgNumber);
 	btnCancel.setAttribute('type', 'button');
 	btnCancel.setAttribute('class', 'btn btn-danger');
 	btnCancel.setAttribute('onclick', 'cancelMsgText()');
+	btnCancel.setAttribute('data-dismiss', 'modal');
 	btnCancel.innerHTML = 'cancel';
 	
 	span1.appendChild(btnUpload);
@@ -1287,7 +1298,7 @@ function edit(){
 *	@parameter:		p, unique identifier
 *	@return:	null
 *********************************************************************************/
-function upload(p){
+function upload(uploadBtn){
 
 	let imgs 		  	= [];
 	var imgReplyEle		= document.getElementById('upload-image' + p);
