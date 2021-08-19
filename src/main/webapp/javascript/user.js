@@ -142,7 +142,8 @@ function onMessage(event) {
     if (message.action === "message") {
 		
 		var messageSrc 	= message.src;	
-		insertMessage(JSON.parse(messageSrc))
+		//insertMessage(JSON.parse(messageSrc))
+		window.location.reload(true);  
     }
     if (message.action === "messages") {
     	var messages 	= (message.src);  
@@ -1398,7 +1399,8 @@ function showOutgoingMsgArea(){
 
 
 /*********************************************************************************
-*	this function simply shows the hidden elements to allow message text upload
+*	this function remove all chosen images and text from message modal uploading
+*	area and then closes the new message modal
 *	@parameter:		null
 *	@return:	null
 *********************************************************************************/

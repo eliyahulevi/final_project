@@ -207,7 +207,7 @@ public class WebSocket
 	                msg = (JsonObject) provider.createObjectBuilder().add("action", "message")
 																				.add("src", jsonArray)
 																				.build(); 
-					sh.sendToSession(userSession, msg);
+					//sh.sendToSession(userSession, msg);
 					sh.sendToSession(senderSession, msg); 
 	            	break;
 	            }
