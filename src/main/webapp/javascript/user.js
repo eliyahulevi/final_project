@@ -143,7 +143,7 @@ function onMessage(event) {
 		
 		var messageSrc 	= message.src;	
 		//insertMessage(JSON.parse(messageSrc))
-		window.location.reload(true);  
+		window.location.reload(true); 
     }
     if (message.action === "messages") {
     	var messages 	= (message.src);  
@@ -1269,7 +1269,7 @@ function notifyMessageClicked(user, date){
 *	@parameter		null
 *	@return		null
 *********************************************************************************/
-function pt_update(){
+function updatePersonalDetails(){
 	var name = 	document.getElementById("pt-user-name").value;
 	var password = document.getElementById("pt-password").value;
 	var nickname = document.getElementById("pt-nickname").value;
@@ -1285,12 +1285,13 @@ function pt_update(){
 *	@parameter		null
 *	@return		null
 *********************************************************************************/
-function pt_cancel(){
+function cancelPersonalDetails(){
 	document.getElementById("pt-user-name").disabled = true;
 	document.getElementById("pt-password").disabled = true;
 	document.getElementById("pt-nickname").disabled = true;
 	document.getElementById("pt-email").disabled = true;
 	document.getElementById("pt-address").disabled = true;
+	document.getElementById("edit-personal-details").style.display = "none";
 	document.getElementById("pt-update").style.display = "none";
 	document.getElementById("pt-cancel").style.display = "none";	
 }
@@ -1302,12 +1303,13 @@ function pt_cancel(){
 *	@parameter		null
 *	@return		null
 *********************************************************************************/
-function edit(){	
+function editPersonalDetails(){	
 	document.getElementById("pt-user-name").disabled = false;
 	document.getElementById("pt-password").disabled = false;
 	document.getElementById("pt-nickname").disabled = false;
 	document.getElementById("pt-email").disabled = false;
 	document.getElementById("pt-address").disabled = false;
+	document.getElementById("edit-personal-details").style.display = "block";
 	document.getElementById("pt-update").style.display = "block";
 	document.getElementById("pt-cancel").style.display = "block";		
 }

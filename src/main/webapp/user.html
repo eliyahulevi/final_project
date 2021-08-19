@@ -199,8 +199,7 @@
 	<br>
 	<div class="container" id="orders">
 		<img alt="" src="resources/order-icon.png" class="messages-icon">
-		<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 	
-	
+		<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 		
 		<table class="Table">
 			<thead>
 			<tr>
@@ -217,13 +216,11 @@
 	<!-- /orders -->
 
 
-
-
 	<!-- messages -->
 	<br>
 	<br>
-	<div class="container">
-		<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
+	<div class="container"  id="messages">
+		<p ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
 			<select id="select-more-actions" style="display:inline;" onchange="messagesAction(this);">
 				<option selected>more..</option>
@@ -252,51 +249,59 @@
 	<br>
 	<br>
 	<div class="container" id="personal">
-		<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> update</a></p>
+		<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="editPersonalDetails()"> update</a></p>
 		<br>
 		<form>
-			  <div class="form-row">
-			    <div class="form-group col-md-6">
-			      <label for="user-name" >User name</label>
-			      <input type="email" class="form-control" id="pt-user-name"  style="display:inline;">
-			    </div>
-			    <div class="form-group col-md-6">
-			      <label for="pt-password">Password</label>
-			      <input type="password" class="form-control" id="pt-password" >
-			    </div>
-			  </div>
-			  <div class="form-row">
-			  <div class="form-group col-md-6">
-			    <label for="pt-nickname">Nickname</label>
-			    <input type="text" class="form-control" id="pt-nickname" >
-			  </div>
-			  <div class="form-group col-md-6">
-			    <label for="pt-address">Address</label>
-			    <input type="text" class="form-control" id="pt-address">
-			  </div>
-			  </div>
-			  <div class="form-row">
-			    <div class="form-group col-md-6">
-			      <label for="pt-email">E-mail</label>
-			      <input type="text" class="form-control" id="pt-email">
-			    </div>
-			    <div class="form-group col-md-4">
-			      <label for="pt-phone">Phone</label>
-			      <input type="text" class="form-control" id="pt-phone">
-			    </div>
-			    <div class="form-group col-md-2">
-			      <label for="inputZip">Zip</label>
-			      <input type="text" class="form-control" id="inputZip">
-			    </div>
-			  </div>			
-				<p>
-					<span style="display:inline-block;">
-						<button type="button" id="pt-update" class="btn btn-success" style="display:none;" onclick="pt_update()">update</button>
-					</span>
-					<span style="float:right; padding-right:0px; ">
-						<button type="button" id="pt-cancel" class="btn btn-danger" style="display:none;" onclick="pt_cancel()">cancel</button>
-					</span>		
-				</p>
+			<div class="form-row">
+				<div class="form-group col-md-6">
+				  <label for="user-name" >User name</label>
+				  <input type="email" class="form-control" id="pt-user-name"  style="display:inline;">
+				</div>
+				<div class="form-group col-md-6">
+				  <label for="pt-password">Password</label>
+				  <input type="password" class="form-control" id="pt-password" >
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-md-6">
+				  <label for="pt-nickname">Nickname</label>
+				  <input type="text" class="form-control" id="pt-nickname" >
+				</div>
+				<div class="form-group col-md-6">
+				  <label for="pt-address">Address</label>
+				  <input type="text" class="form-control" id="pt-address">
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-md-6">
+				  <label for="pt-email">E-mail</label>
+				  <input type="text" class="form-control" id="pt-email">
+				</div>
+				<div class="form-group col-md-4">
+				  <label for="pt-phone">Phone</label>
+				  <input type="text" class="form-control" id="pt-phone">
+				</div>
+				<div class="form-group col-md-2">
+				  <label for="inputZip">Zip</label>
+				  <input type="text" class="form-control" id="inputZip">
+				</div>
+			</div>			
+			<p>
+				<div class="upload-image" id="edit-personal-details" style="display:none;">
+					<h4>upload image</h4>
+					<label for="upload-user-image">
+						<img class='file-image' src='resources/upload-icon.png'/>
+					</label>
+					<input id="upload-user-image" type="file" style="display:none;" ondrop='drop()' onchange='onChange(this)'>
+				</div>
+				<br>
+				<span style="display:inline-block;">
+					<button type="button" id="pt-update" class="btn btn-success" style="display:none;" onclick="updatePersonalDetails()">update</button>
+				</span>
+				<span style="float:right; padding-right:0px; ">
+					<button type="button" id="pt-cancel" class="btn btn-danger" style="display:none;" onclick="cancelPersonalDetails()">cancel</button>
+				</span>		
+			</p>
 			</form>		
 	</div>
 	<!-- /end of personal detail -->
