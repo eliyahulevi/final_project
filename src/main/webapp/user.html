@@ -17,11 +17,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	<script src="javascript/register.js"></script>
 	<script src="javascript/message.js"></script> 	<!-- DO NOT change order of script files !! -->
-	<!-- script src="javascript/websocket.js"></script> <!-- DO NOT change order of script files !! -->
 	<script src="javascript/utils.js"></script> 	<!-- DO NOT change order of script files !! -->
 	<script src="javascript/order.js"></script>		<!-- DO NOT change order of script files !! -->
 	<script src="javascript/user.js"></script>		<!-- DO NOT change order of script files !! -->
-	<!-- script src="javascript/websocket2.js"></script>		<!-- DO NOT change order of script files !! -->
 </head>
 
 <body id="userPage" data-target=".navbar" data-offset="0">
@@ -54,6 +52,7 @@
 <!-- /navigation bar -->
 
 <div class="main-body" id='main-body'>
+
 	<div class="row gutters-sm" id="card" >
 		<div class="container-fluid">
 			<div class="main body">
@@ -73,11 +72,12 @@
 	<!-- products -->
 	<br>
 	<br>
-	<p><img alt="" src="resources/product-icon.png" class="messages-icon">
+	<div class="container" id="products">
+		<p><img alt="" src="resources/product-icon.png" class="messages-icon">
 		<h3 style="display:inline;color:#1F618D">Products(<span id="number-of-products">3</span>)</h3>
 		<a href="#" onclick="showAddProduct()"> new</a>
-	</p>
-	<div class="container" id="products">
+		</p>
+	
 		<form id="existing-products-form">
 			<p> <b>existing products</b></p>
 			<hr class="separator">
@@ -95,7 +95,6 @@
 				</tr>
 				</thead>
 				<tbody id="product-table-body">
-	      
 				</tbody>
 			</table>
 		</form>
@@ -106,10 +105,10 @@
 	<!-- projects -->
 	<br>
 	<br>
-	<p><img alt="" src="resources/project-icon2.jpeg" class="messages-icon"><h3 style="display:inline;color:#1F618D">Projects</h3><a href=""> new</a>
-	<p></p>
-	<div class="row gutters-sm">	
-		<div class="container" id="projects">
+	<div class="container" id="projects">
+		<p><img alt="" src="resources/project-icon2.jpeg" class="messages-icon"><h3 style="display:inline;color:#1F618D">Projects</h3><a href=""> new</a>
+		<p></p>
+		<div class="row gutters-sm">	
 			<table class="table table-striped table-dark" >	
 				<tbody>
 					<tr>
@@ -198,9 +197,10 @@
 	-- **************************************************************************-->
 	<br>
 	<br>
-	<img alt="" src="resources/order-icon.png" class="messages-icon">
-	<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 	
 	<div class="container" id="orders">
+		<img alt="" src="resources/order-icon.png" class="messages-icon">
+		<h3 style="display:inline;color:#1F618D"> Orders</h3><a href="#Comment-Modal" data-toggle="modal" data-target="#new-order-Modal1" onclick="openOrderModal()"> new</a> 	
+	
 		<table class="Table">
 			<thead>
 			<tr>
@@ -222,7 +222,8 @@
 	<!-- messages -->
 	<br>
 	<br>
-	<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
+	<div class="container">
+		<p id="messages" ><img alt="" src="resources/messages-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D; "> Messages</h3>
 		<span style="display:inline-block;">
 			<select id="select-more-actions" style="display:inline;" onchange="messagesAction(this);">
 				<option selected>more..</option>
@@ -232,29 +233,27 @@
 				<option>show outgoing messages</option>
 				<option>show incoming messages</option>
 			</select>
-		</span>
-
-  		<div class="container">
+		</span>	
+    	<div class="row">
+    		<span>
+    			showing (<label id="numberOfMessages"></label>) messages
+    			out of <label id="totalNumberOfMessages"></label>
+    		</span>
+    	</div>
 	    	<div class="row">
-	    		<span>
-	    			showing (<label id="numberOfMessages"></label>) messages
-	    			out of <label id="totalNumberOfMessages"></label>
-	    		</span>
-	    	</div>
-		    	<div class="row">
-	   				<form id="msg-display" class="msg-form">
-					</form>
-		    	</div> 
-  			<div class="row" id="msg-area">
-	  		</div>  		
-  		</div>
+   				<form id="msg-display" class="msg-form">
+				</form>
+	    	</div> 
+ 			<div class="row" id="msg-area">
+  		</div>  		
+	</div>
 
-			<!-- personal detail --> 
+	<!-- personal detail --> 
 	<br>
 	<br>
-	<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> edit</a></p>
 	<div class="container" id="personal">
-
+		<p><img alt="" src="resources/personal-icon.png" class="messages-icon"><h3 style="display:inline;color:#1F618D"> Personal Details</h3><a href="#personal" onclick="edit()"> update</a></p>
+		<br>
 		<form>
 			  <div class="form-row">
 			    <div class="form-group col-md-6">
@@ -299,7 +298,7 @@
 					</span>		
 				</p>
 			</form>		
-		</div>
+	</div>
 	<!-- /end of personal detail -->
 
 	</div>
