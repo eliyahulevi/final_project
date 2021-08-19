@@ -25,6 +25,7 @@ import javax.servlet.http.Part;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 //import javax.swing.JOptionPane;
+import javax.websocket.Session;
 
 import com.google.gson.Gson;
 /*import com.google.gson.JsonArray;
@@ -46,7 +47,8 @@ import model.order.Order;
 public class UserServlet extends HttpServlet 
 {
 	static final long serialVersionUID = 1L;
-	Set<HttpSession> sessions = new LinkedHashSet<HttpSession>();
+	final static Set<HttpSession> sessions = new LinkedHashSet<HttpSession>();
+	final static Map<String, HttpSession> map  = new HashMap<String, HttpSession>();
 	DB db;
 	
 	
@@ -87,15 +89,11 @@ public class UserServlet extends HttpServlet
 		
 		try 
 		{
+			if(!map.containsKey(sender))
+				map.put(user, request.getSession());
+				
+			printMessage(code, user, sender, msg, dateString, offset, repliedTo);
 			
-			System.out.printf("\n%-15s %s%n ", "user servlet >> ", "imcoming message:");
-			System.out.printf("%-15s %s%n", "code: ", code); 
-			System.out.printf("%-15s %s%n", "user: ", user); 
-			System.out.printf("%-15s %s%n", "sender: ", sender); 
-			System.out.printf("%-15s %s%n", "message: ", msg); 
-			System.out.printf("%-15s %s%n", "date: ", dateString); 
-			System.out.printf("%-15s %s%n", "offset: ", offset); 
-			System.out.printf("%-15s %s%n", "replied to: ", repliedTo);
 			switch(code)
 			 {
 			 	case "0":		// get all users
@@ -220,6 +218,28 @@ public class UserServlet extends HttpServlet
 		}
 		
 	
+	}
+
+	/**
+	 * 
+	 * @param code
+	 * @param user
+	 * @param sender
+	 * @param msg
+	 * @param dateString
+	 * @param offset
+	 * @param repliedTo
+	 */
+	private void printMessage(String code, String user, String sender, String msg, String dateString, String offset,String repliedTo) 
+	{
+		System.out.printf("\n%-15s %s%n ", "user servlet >> ", "imcoming message:");
+		System.out.printf("%-15s %s%n", "code: ", code); 
+		System.out.printf("%-15s %s%n", "user: ", user); 
+		System.out.printf("%-15s %s%n", "sender: ", sender); 
+		System.out.printf("%-15s %s%n", "message: ", msg); 
+		System.out.printf("%-15s %s%n", "date: ", dateString); 
+		System.out.printf("%-15s %s%n", "offset: ", offset); 
+		System.out.printf("%-15s %s%n", "replied to: ", repliedTo);
 	}		
 
 }

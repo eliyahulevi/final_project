@@ -119,11 +119,12 @@ function createSocketMessageByteArray(code, sender, user, msg, date, clckd, imgs
 	for(var i = 0; i < msgByteArr.length; i++){
 		messageArray[i] = message.charCodeAt(i);
 	}
-	/* 		
-	alert('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
+	/*	
+	console.log('sent message \ncode:' + code + '\nsender:' + sender + '\nuser: ' + user +
 						'\nmessage:' + msg + '\ndate: ' + date + '\nclicked: ' + clckd +
 						'\nimage: ' + imgs + '\noffset: ' + offset + '\nreplied to: ' + repliedTo);
 	*/
+	console.log('message size: ' + messageArray.length + 'bytes'); 
 	return messageArray;
 }
 

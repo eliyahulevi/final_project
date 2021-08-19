@@ -54,7 +54,7 @@ import websocket.WebSocketServer;
 
 @ApplicationScoped
 @ServerEndpoint("/messages2")
-@MultipartConfig
+@MultipartConfig(maxRequestSize = 209715200)
 public class WebSocket 
 {
 	private DB db = new DB(); 

@@ -64,10 +64,6 @@ $(document).ready(function(){
 	    });
 	});
 	
-	// hide the 'update' button in 'personal-details' section
-	//document.getElementById("pt-update").style.display = "none";
-	//document.getElementById("msg-text-upload").style.display = "none"; 
-	
 	if( sessionStorage.getItem('username') == 'admin' ){
 		displayAdmin();
 	}
@@ -78,22 +74,7 @@ $(document).ready(function(){
 
 	// load users to 'send-message' modal
 	$("#send-message-modal").on('show.bs.modal', function(){
-		
-		var usersArray		= loadUsers(false);
-		var fileUploadArea	= document.getElementById('file-upload-area');
-		var length			= usersArray.length;		
-		var uploadImage		= fileUploadArea.getElementsByClassName('upload-image');
-		var uploadTxt		= fileUploadArea.getElementsByClassName('msg-area');
-		
-		if(uploadImage.length > 0)
-			uploadImage[0].remove();
-			
-		if(uploadTxt.length > 0)
-			uploadTxt[0].remove();
-		
-		fileUploadArea.appendChild(createImageUploadArea(length));
-		fileUploadArea.appendChild(createMsgTextArea(length, usersArray, ''));
-	
+			loadMessageModal();
 	});
 	
 	wsocket 			= new WebSocket("ws://localhost:8080/final-project/messages2");
@@ -103,6 +84,31 @@ $(document).ready(function(){
 	wsocket.onmessage 	= onMessage;
   
 });
+
+
+
+/*********************************************************************************
+*	this function handles the event a web socket is being started at the client
+*	side. 
+*	@parameter 		event: 	holds the socket data(?)
+*	@return:		null
+*********************************************************************************/
+function loadMessageModal(){
+	var usersArray		= loadUsers(false);
+	var fileUploadArea	= document.getElementById('file-upload-area');
+	var length			= usersArray.length;		
+	var uploadImage		= fileUploadArea.getElementsByClassName('upload-image');
+	var uploadTxt		= fileUploadArea.getElementsByClassName('msg-area');
+	
+	if(uploadImage.length > 0)
+		uploadImage[0].remove();
+		
+	if(uploadTxt.length > 0)
+		uploadTxt[0].remove();
+	
+	fileUploadArea.appendChild(createImageUploadArea(length));
+	fileUploadArea.appendChild(createMsgTextArea(length, usersArray, ''));
+}
 
 
 /*********************************************************************************
@@ -627,8 +633,10 @@ function loadUserMessages(sync){
   					
   					// append all relevant messages
         			for(var i = 0 ; i < length; i++){
-        				//form.appendChild(msgs[i]);
-        				form.appendChild(createMessage1(JSON.parse(messages[i])));
+        				var msg		= createMessage1(JSON.parse(messages[i]));
+						var imgs	= msg.getElementsByTagName('img');
+        				form.appendChild(msg);
+						
         			}
         			numOfMsgs.innerHTML = length;
         		}
@@ -643,6 +651,7 @@ function loadUserMessages(sync){
 *********************************************************************************/
 function insertMessage(message){
 	
+	console.log('message added');
 	var msgDisplay	= document.getElementById('msg-display');
 	var msgElement 	= createMessage1(message);
 	var messages	= document.getElementsByClassName('message');
@@ -651,23 +660,27 @@ function insertMessage(message){
 	var display		= message.display;
 	var msg			= null;
 	var offset		= Number(message.offset);
+	var img			= document.createElement('img');
 	
-		
-	alert(	'insert message with offset bigger than 0:' +
+	img.src			= message.image;
+	
+	msgElement.appendChild(img);
+	/*
+	console.log(	'insert message with offset bigger than 0:' +
 	'\nmessage: ' 	+ message.message + 
 	'\nreply to: ' 	+ message.repliedTo + 
 	'\nuser: ' 		+ message.user +
 	'\nsender: ' 	+ message.sender +
 	'\noffset: ' 	+ message.offset +
 	'\nimages: ' 	+ message.image);	 
-	
+	*/
 	
 	if(message.offset === '0' ){
-		alert('insert message with offset = 0');
+		//alert('insert message with offset = 0');
 		msgDisplay.appendChild(msgElement);		
 	}
 	else if( message.offset > 0 ){
-		alert('insert message with offset > 0');
+		//alert('insert message with offset > 0');
 		msgDisplay.appendChild(msgElement);
 	}
 	else{
@@ -803,6 +816,9 @@ function createMessage1(message){
 	var br	  		= document.createElement("div");
 	
 	
+	
+	
+	
 	del.setAttribute('id', 'delete' + date);
 	del.setAttribute('href', '#delete' + date);
 	del.setAttribute('style', 'color:red; padding-right:' + offset + 'px;');
@@ -852,31 +868,35 @@ function createMessage1(message){
 	pDate.appendChild(reply);
 	pDate.appendChild(del);
 		
-
+	
+	
 	if( images != '{}' )
-	{	
-		imagesSrc	= images.slice(2, images.length - 4);	
-		splitImg	= imagesSrc.split( 'data:image/png;base64,' );
-
+	{		
+		imagesSrc	= new String(images.slice(2, images.length - 4));	
+		var regex	= new RegExp(/data:image\/[a-z]+\;base64,|data:image\/[a-z]+\;/g);
+	
+		splitImg	= imagesSrc.split( regex );
+		
 		for(var i = 1; i < splitImg.length; i++){	
 			if( splitImg[i] === "") { continue; }		
 			if( i < splitImg.length ){
 				src	= splitImg[i].replace('","', '');
 			}
 			var img 	= document.createElement("img"); 
-			img.src 	= 'data:image/png;base64,' + src;
+			img.src 	= 'data:image/png;base64,' +  src;
 			img.setAttribute('class', 'image');
-			imgsFrame.appendChild(img);
+			imgsFrame.appendChild(img);	
 		}
 	}
 	
 	
-	frame.setAttribute('class', 'message');
+	//frame.setAttribute('class', 'message');
 	frame.setAttribute('id', 'messageElement' + date);
 	frame.setAttribute("onclick", 'messageClicked(' + date + ')' );
 	frame.appendChild(p);
 	frame.appendChild(imgsFrame);
 	
+	newMessage.setAttribute('class',   'message');
 	newMessage.setAttribute.innerHTML = message.message;
 	newMessage.setAttribute('style',   'width:' + width + '				\
 										border: 1px solid black;		\
@@ -957,6 +977,7 @@ function hideMessage(id){
 *********************************************************************************/
 function messageClicked(p){
 
+	console.log('message: ' + p + ' clicked');
 	var click 		= document.getElementById('clicked' + p);
 	var user 		= document.getElementById('user-tag' + p).innerHTML;
 	var formData 	= new FormData();
@@ -1104,8 +1125,8 @@ function createMsgTextArea(msgNumber, users, user){
 	btnUpload.setAttribute('id', 'upload-file-btn' + msgNumber);
 	btnUpload.setAttribute('type', 'button');
 	btnUpload.setAttribute('class', 'btn btn-success');
-	//btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
-	btnUpload.setAttribute('onclick', 'upload(this)');
+	btnUpload.setAttribute('onclick', 'upload(' + msgNumber+ ')');
+	//btnUpload.setAttribute('onclick', 'upload(this)');
 	btnUpload.setAttribute('data-dismiss', 'modal');
 	btnUpload.innerHTML = 'upload';
 	
@@ -1298,7 +1319,7 @@ function edit(){
 *	@parameter:		p, unique identifier
 *	@return:	null
 *********************************************************************************/
-function upload(uploadBtn){
+function upload(p){
 
 	let imgs 		  	= [];
 	var imgReplyEle		= document.getElementById('upload-image' + p);
@@ -1645,7 +1666,6 @@ function sendMessage(images, msgNumber){
 	if(msgElement !== null ){
 		offsetCalc = window.getComputedStyle(msgElement, null).getPropertyValue("margin-left");
 		offset = parseInt(offsetCalc) + offsetStep;
-		
 	}
 	
 	/*
@@ -1656,17 +1676,9 @@ function sendMessage(images, msgNumber){
 			'\nsender: ' + sender+
 			'\nreply to: ' + replyTo);
 	*/
-	var message 		= createSocketMessage("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, "");	
-	var msgByteArr		= [...message];
-	var msgBuffer		= new ArrayBuffer(message.length);
-	var messageArray	= new Uint8Array(msgBuffer);
-	
-	for(var i = 0; i < msgByteArr.length; i++){
-		messageArray[i] = message.charCodeAt(i);
-	}
-	
+	var message 		= createSocketMessageByteArray("2", sender, usr, msg, date.getTime(), clicked, images, offset, replyTo, "");	
 	cancelMsgText();
-	wsocket.send(messageArray);
+	wsocket.send(message);
 }
 
 
