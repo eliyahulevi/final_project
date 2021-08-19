@@ -1286,6 +1286,20 @@ function updatePersonalDetails(){
 *	@return		null
 *********************************************************************************/
 function cancelPersonalDetails(){
+	var PersonalImgs	= document.getElementById('edit-personal-details');
+	var imgs			= PersonalImgs.getElementsByClassName('image-checkbox');
+	
+	for(var i = imgs.length; i > 0; i--)
+	{
+		console.log('number of remove checked image: ' + imgs.length);
+		imgs[i - 1].remove();
+	}
+	/*
+	while (imgs.firstChild) {
+		
+		imgs.removeChild(imgs.lastChild);
+	}
+	*/
 	document.getElementById("pt-user-name").disabled = true;
 	document.getElementById("pt-password").disabled = true;
 	document.getElementById("pt-nickname").disabled = true;
@@ -1322,8 +1336,7 @@ function editPersonalDetails(){
 *********************************************************************************/
 function upload(p){
 
-	let imgs 		  	= [];
-	var imgReplyEle		= document.getElementById('upload-image' + p);
+	var imgs 		  	= [];
 	var ckbx 		  	= document.getElementById('upload-image' + p).getElementsByTagName("input");
 	var images 		  	= document.getElementById('upload-image' + p).getElementsByTagName("img");
 
@@ -1340,7 +1353,7 @@ function upload(p){
 /*********************************************************************************
 *	this function creates a JSON object of 'Message' type,  iterate over all images, 
 *	checked if chosen and sent to server
-*	@parameter		number, REDUNDENT
+*	@parameter	number, REDUNDENT
 *	@return		null
 *********************************************************************************/
 function uploadMessage(number){
@@ -1358,7 +1371,7 @@ function uploadMessage(number){
 
 /*********************************************************************************
 *	this function gathers all selected images for a specific message
-*	@parameter		number, REDUNDENT
+*	@parameter	number, REDUNDENT
 *	@return		arr, an array of all selected ('checked') images
 *********************************************************************************/
 function getSelectedImages(number){
@@ -1377,7 +1390,7 @@ function getSelectedImages(number){
 /*********************************************************************************
 *	this function simply shows the hidden elements to allow message text upload,
 *	after removing all existing messages
-*	@parameter:		null
+*	@parameter:	null
 *	@return:	null
 *********************************************************************************/
 function showOutgoingMsgArea(){
@@ -1444,19 +1457,33 @@ function onProductAdded(input){
 *	@return:	null
 *********************************************************************************/
 function onChange(p, input){
-
-	var url 	= $(input).val();
+	
 	var file 	= input.files[0];
 	var name 	= file.name;
 	var parent 	= document.getElementById('upload-image' + p);	
-	var src		= null;
 	
-	var reader = new FileReader();
+	
     reader.onload = function (event) {
     					var newImg	=	createCheckedImage(event.target.result, name);
 				    	parent.appendChild(newImg);			    	
 				    };
     reader.readAsDataURL(file);
+}
+
+
+function onPersonalDetailsChange(upload){
+	var file	= upload.files[0];
+	var name 	= file.name;
+	var reader 	= new FileReader();
+	
+    reader.onload = function (event) {
+					var newImg	=	createCheckedImage(event.target.result, name);
+			    	document.getElementById('edit-personal-details').appendChild(newImg);	
+					console.log('added file: ' + upload.files[0]);		    	
+			    };
+	reader.readAsDataURL(file);
+
+	console.log('presonal details changed' + upload.files[0]);
 }
 
 
