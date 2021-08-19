@@ -39,8 +39,6 @@ $(document).ready(function(){
 	
 	      	// Store hash
 	      	var hash = this.hash;
-
-			console.log(hash);
 	
 	      	// Using jQuery's animate() method to add smooth page scroll
 	      	// The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
@@ -1411,6 +1409,8 @@ function cancelMsgText(){
 	// erase all other reply messages text AND images upload from page 
 	for(var i = txtReplies.length - 1; i >= 0; --i){ txtReplies[i].remove(); } 
 	for(var i = 0; i < imgReplies.length; i++){ imgReplies[i].remove(); }
+	
+	$('#send-message-modal').modal('hide');
 } 
 
 
