@@ -1,8 +1,13 @@
 package model.users;
 
 import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-import appConstants.AppConstants;
+import javax.sql.rowset.serial.SerialException;
+
+import org.json.simple.JSONValue;
 
 public class User 
 {
@@ -12,11 +17,12 @@ public class User
 	private String phone;
 	private String address;
 	private String password; 
-	private String description = "";
-	private Blob   photo;
+	private String description;
+	private Blob photo;
 	int Age;
 	
 	public User() {}
+	
 	public User(String name, String password, String nickName, String address, Blob photo, String email, String desc)
 	{
 		this.setName(name);
@@ -27,7 +33,8 @@ public class User
 		this.setAddress(address);
 		this.setPhoto(photo);
 	}
-	public User(String name, String password, String nickName, String email, String address, String phone, String... description )
+	
+	public User(String name, String password, String nickName, String address, String photo, String email, String description, String phone)
 	{
 		this.setName(name);
 		this.setEmail(email);
@@ -35,19 +42,65 @@ public class User
 		this.setPassword(password);
 		this.setNickName(nickName);
 		this.setPhone(phone); 
-		this.setDescription(description[0]);
+		this.setDescription(description);
+		Blob blob 			= null;
+		try {
+			blob = new javax.sql.rowset.serial.SerialBlob(photo.getBytes());
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		this.photo = blob;
 	}
 	
+	/**
+	 * prints the User class fiels to console
+	 * @return null
+	 */
 	public void print()
 	{
+		System.out.printf("%-15s %s%n", "\nuser class>>", "print");
 		System.out.printf("%-15s %s%n", "user >>", "print");
 		System.out.printf("%-15s %s%n", "user name: ", this.name);
 		System.out.printf("%-15s %s%n", "nick name: ", this.nickName);
-		System.out.printf("%-15s %s%n", "emaile: ", this.email);
+		System.out.printf("%-15s %s%n", "email: ", this.email);
 		System.out.printf("%-15s %s%n", "phone: ", this.phone);
 		System.out.printf("%-15s %s%n", "address: ", this.address);
 		System.out.printf("%-15s %s%n", "password: ", this.password);
 		System.out.printf("%-15s %s%n", "description: ", this.description);
+	}
+	
+	/**
+	 * convert the User class to Json string object
+	 * @return	result, String, the json object built
+	 */
+	public String toJson()
+	{
+		String result = "";
+		Blob blob = this.getPhoto();
+		Map<String,String> map = new HashMap<String,String>();
+		try
+		{
+			map.put("name", this.name);
+			map.put("nickname", this.nickName);
+			map.put("email", this.email);
+			map.put("phone", this.phone);	
+			map.put("address", this.address);
+			map.put("password", this.password);
+			map.put("description", this.description);
+			if(blob == null)
+				map.put("image", "");
+			else 
+				map.put("image", new String(blob.getBytes(1, (int)blob.length())));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		} 
+		
+		result = JSONValue.toJSONString(map);
+		return result;
 	}
 	
 	/*

@@ -117,7 +117,7 @@ function createStoreProducts(product){
 	for (var property in product) {
 	  output += property + ': ' + product[property]+'; ';
 	}
-	console.log('product: ' + output);
+	//console.log('product: ' + output);
 	
 	var panel			= document.createElement('div');
 	var panelBody		= document.createElement('div');

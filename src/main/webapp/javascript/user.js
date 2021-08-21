@@ -1265,17 +1265,70 @@ function notifyMessageClicked(user, date){
 
 /*********************************************************************************
 *	this function sends the updated user details to the server, after 'update'
-*	button was clicked on the user page and send to the server the new details.
+*	button was clicked on the user page and send to the server the new details. this
+*	function users the 'RegisterServlet' servlet, AND also set the sessioStorage
+*	fields of the current user. 
 *	@parameter		null
 *	@return		null
-*********************************************************************************/
+******************* **************************************************************/
 function updatePersonalDetails(){
-	var name = 	document.getElementById("pt-user-name").value;
-	var password = document.getElementById("pt-password").value;
-	var nickname = document.getElementById("pt-nickname").value;
-	var email = document.getElementById("pt-email").value;
-	var address = document.getElementById("pt-address").value;
-	//alert("name:" + name + " password:" + password + " nickname:" + nickname + " email:" +  email + " address" + address);
+	var name		= document.getElementById("pt-user-name").value;
+	var password	= document.getElementById("pt-password").value;
+	var nickname	= document.getElementById("pt-nickname").value;
+	var email		= document.getElementById("pt-email").value;
+	var address		= document.getElementById("pt-address").value;
+	var image		= "";		// optional
+	var description	= "";		// optional
+	var phone		= "";		// optional
+	var formData	= new FormData();
+	
+	console.log('register new user: ' +
+				'\nname: ' 		+ name +
+				'\npassword: ' 	+ password + 
+				'\nnickname: ' 	+ nickname +
+				'\nemail: ' 	+ email + 
+				'\naddress: ' 	+ address +
+				'\nimage: ' 	+ image +
+				'\nphone: ' 	+ phone );
+	
+	formData.append("code", "1");
+	formData.append("user", name);
+	formData.append("nickname", nickname);
+	formData.append("password", password);  
+	formData.append("email", email);
+	formData.append("address", address);
+	formData.append("image", image);
+	formData.append("date", new Date().getTime());
+	formData.append("phone", phone);
+	formData.append("description", description);
+	
+    $.ajax({
+        url: 'RegisterServlet', 	// point to server-side
+        dataType: 'text',  		// what to expect back from the server if anything
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formData,                         
+        type: 'post',
+        async: false,
+        success: function(data){
+					sessionStorage.removeItem('username');
+					sessionStorage.removeItem('password');
+					sessionStorage.removeItem('nickname');
+					sessionStorage.removeItem('email');
+					sessionStorage.removeItem('phone');
+					sessionStorage.removeItem('address');
+					
+					sessionStorage.setItem('username', 	name);
+					sessionStorage.setItem('password', 	password);
+					sessionStorage.setItem('nickname', 	nickname);
+					sessionStorage.setItem('email', 	email);
+					sessionStorage.setItem('phone', 	phone);
+					sessionStorage.setItem('address', 	address);
+		            loadUserDetails();
+					cancelPersonalDetails();
+        		}
+     });
 }
 
 
@@ -1290,16 +1343,8 @@ function cancelPersonalDetails(){
 	var imgs			= PersonalImgs.getElementsByClassName('image-checkbox');
 	
 	for(var i = imgs.length; i > 0; i--)
-	{
-		console.log('number of remove checked image: ' + imgs.length);
 		imgs[i - 1].remove();
-	}
-	/*
-	while (imgs.firstChild) {
-		
-		imgs.removeChild(imgs.lastChild);
-	}
-	*/
+
 	document.getElementById("pt-user-name").disabled = true;
 	document.getElementById("pt-password").disabled = true;
 	document.getElementById("pt-nickname").disabled = true;
@@ -1566,6 +1611,7 @@ function createCheckedImage(source, name){
 *********************************************************************************/
 function loadUserDetails(){
 	
+	console.log('register new user');
 	let name	   = sessionStorage.getItem('username');
 	let password   = sessionStorage.getItem('password');
 	let nickname   = sessionStorage.getItem('nickname');

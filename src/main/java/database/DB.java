@@ -162,60 +162,67 @@ public class DB
 	/************************************************************************
 	 *	 					order	
 	 ***********************************************************************/
-	private String INSERT_ORDER = 			"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_ORDER = 			"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE ORDER_ID=?";
-	private String SELECT_USERS_ORDERS =	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE USERNAME=?";
-	private String EDIT_USERS_ORDERS =		"UPDATE "	 	 + tables_str[tables.ORDERS.value] + " SET "
-																							   + "SHIPADDRESS=?, "
-																							   + "STATUS=?, "
-																							   + "TOTAL=?, "
-																							   + "COMMENT=?, "
-																							   + "PRODUCTS=? "
-																							   + "WHERE ORDER_ID=?";
+	private String INSERT_ORDER 		= 	"INSERT INTO " 	 + tables_str[tables.ORDERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_ORDER 		= 	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE ORDER_ID=?";
+	private String SELECT_USERS_ORDERS 	=	"SELECT * FROM " + tables_str[tables.ORDERS.value] + " WHERE USERNAME=?";
+	private String EDIT_USERS_ORDERS 	=	"UPDATE "	 	 + tables_str[tables.ORDERS.value] + " SET "
+																							   + " SHIPADDRESS=?, "
+																							   + " STATUS=?, "
+																							   + " TOTAL=?, "
+																							   + " COMMENT=?, "
+																							   + " PRODUCTS=? "
+																							   + " WHERE ORDER_ID=?";
 	
 	/************************************************************************
 	 *	 					user	
 	 ***********************************************************************/
-	private String INSERT_USER = 			"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-	//private String SELECT_USERS = 			"SELECT * FROM " + tables_str[tables.USERS.value] ;
-	private String SELECT_USERS_NAMES = 	"SELECT USERNAME FROM " + tables_str[tables.USERS.value];
-	private String SELECT_USER		=		"SELECT * FROM " + tables_str[tables.USERS.value] + " WHERE USERNAME=? AND PASSWORD=?";
+	private String INSERT_USER 			= 	"INSERT INTO "   + tables_str[tables.USERS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_USER 			= 	"SELECT * FROM " + tables_str[tables.USERS.value] + " WHERE USERNAME=? AND PASSWORD=?";
+	private String SELECT_USERS_NAMES 	= 	"SELECT USERNAME FROM " + tables_str[tables.USERS.value];
+	private String EDIT_USER			=	"UPDATE " 		 + tables_str[tables.USERS.value] 	+ " SET " 
+																								+ " PASSWORD= ? ,"
+																								+ " NICKNAME= ? ,"
+																								+ " ADDRESS= ? ,"
+																								+ " PHOTO= ? ,"
+																								+ " EMAIL= ? ,"
+																								+ " DESCRIPTION= ? "
+																								+ " WHERE USERNAME= ? ";
 	
 	/************************************************************************
 	 *	 					message
 	 ***********************************************************************/
-	private String SELECT_USER_MESSAGE=		"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
+	private String SELECT_USER_MESSAGE	=	"SELECT * FROM " + tables_str[tables.MESSAGES.value] + " WHERE NOT DISPLAY=? AND SENDER=? OR "
 															 + "	NOT DISPLAY=? AND USERNAME=? ORDER BY DATE ASC";
-	private String SELECT_USERS_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
+	private String SELECT_USERS_MESSAGE	=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE USERNAME=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
 	//private String SELECT_SENDER_MESSAGE=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND NOT DISPLAY LIKE ? ORDER BY DATE ASC";
-	private String INSERT_USER_MESSAGE = 	"INSERT INTO "   +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private String INSERT_USER_MESSAGE 	= 	"INSERT INTO "   +  tables_str[tables.MESSAGES.value] + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	//private String SELECT_MESSAGES = 		"SELECT * FROM " +  tables_str[tables.MESSAGES.value];
-	private String HIDE_MESSAGE = 			"UPDATE " 		 + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? WHERE USERDATE=?";
-	private String INCOMING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND USERNAME=? ORDER BY DATE ASC";
-	private String OUTGOING_MESSAGES =		"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? ORDER BY DATE ASC";
+	private String HIDE_MESSAGE 		= 	"UPDATE " 		 + tables_str[tables.MESSAGES.value] + " SET DISPLAY=? WHERE USERDATE=?";
+	private String INCOMING_MESSAGES 	=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? AND USERNAME=? ORDER BY DATE ASC";
+	private String OUTGOING_MESSAGES 	=	"SELECT * FROM " +  tables_str[tables.MESSAGES.value] + " WHERE SENDER=? ORDER BY DATE ASC";
 	
 	/************************************************************************
 	 *	 					image
 	 ***********************************************************************/
-	private String SELECT_IMAGE = 			"SELECT IMAGE FROM IMAGES WHERE";
-	private String INSERT_USER_IMAGE = 		"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
+	private String SELECT_IMAGE 		= 	"SELECT IMAGE FROM IMAGES WHERE";
+	private String INSERT_USER_IMAGE 	= 	"INSERT INTO USER_IMAGES VALUES (?, ?, ?)";
 	
 	/************************************************************************
 	 *	 					product
 	 ***********************************************************************/
-	private String INSERT_ORDERED_PRODUCT = "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
-	private String SELECT_ORDERED_PRODUCT = "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
-	private String INSERT_PRODUCT = 		"INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private String SELECT_PRODUCT = 		"SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
-	private String SELECT_ALL_PRODUCTS = 	"SELECT * FROM " + tables_str[tables.PRODUCTS.value];
-	private String REMOVE_PRODUCT	=		"DELETE FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
+	private String INSERT_ORDERED_PRODUCT 	= "INSERT INTO " + tables_str[tables.ORDERED_PRODUCT.value] + " VALUES (?, ?, ?, ?)";
+	private String SELECT_ORDERED_PRODUCT 	= "SELECT PRODUCT_ID FROM " + tables_str[tables.ORDERED_PRODUCT.value] + " WHERE ORDERED_PRODUCT=?";
+	private String INSERT_PRODUCT 			= "INSERT INTO " + tables_str[tables.PRODUCTS.value] + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private String SELECT_PRODUCT 			= "SELECT * FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
+	private String SELECT_ALL_PRODUCTS 		= "SELECT * FROM " + tables_str[tables.PRODUCTS.value];
+	private String REMOVE_PRODUCT			= "DELETE FROM " + tables_str[tables.PRODUCTS.value] + " WHERE PRODUCT_ID=?";
 	
 	/************************************************************************
 	 *	 					general app queries
 	 ***********************************************************************/
 	private String UPDATE_TABLE_CLICKED = 	"UPDATE MESSAGES SET CLICKED = ? WHERE USERDATE = ?";
 	private String SELECT_MAX_ORDER_IDX =	"SELECT MAX(ORDER_ID) FROM ORDERS";
-	private String ABORT_CONNECTION = 		"NO CONNECTION.. ABORTING";
+	private String ABORT_CONNECTION 	= 	"NO CONNECTION.. ABORTING";
 	private String REGISTER_REPLACE_FUNC=	"CREATE FUNCTION REPLACE(SRC VARCHAR(8000), SEARCH VARCHAR(8000), REP VARCHAR(8000) ) " + 
 											"RETURNS VARCHAR(8000) " + 
 											"LANGUAGE JAVA " +
@@ -837,7 +844,72 @@ public class DB
 		return result;
 	}
 	
-	
+	/**
+	 * updating users details, all but username, including password
+	 * @param 	user
+	 * @return 	result, non negative integer on success, negative, else
+	 */
+	public int updateUser(User user)
+	{
+		int result = -1;		
+		PreparedStatement state = null;
+			
+		try 
+		{
+			// connect to db
+			if (this.connect() < 0 )
+			{
+				System.out.printf("%-15s %s%n", "DB >>", "cannot connect to database.. aborting");
+				return result;
+			}
+			
+			user.print();
+			
+			System.out.printf("%-15s %s%n", "\nregister servlet >> " ,"incomming user:");
+			System.out.printf("%-15s %s%n", "name " 	,user.getName());
+			System.out.printf("%-15s %s%n", "nickname " ,user.getNickName());
+			System.out.printf("%-15s %s%n", "password " ,user.getPassword());
+			System.out.printf("%-15s %s%n", "email " 	,user.getEmail());
+			System.out.printf("%-15s %s%n", "address " 	,user.getAddress());
+			System.out.printf("%-15s %s%n", "image " 	,user.getPhoto());
+			System.out.printf("%-15s %s%n", "description " 	,user.getDescription());
+			System.out.printf("%-15s %s%n", "phone " 	,user.getPhone());
+			
+			// insert user			
+			state = this.connection.prepareStatement(EDIT_USER);
+			//state.setString(1, user.getName());			// name	
+			state.setString(1, user.getPassword());		// password
+			state.setString(2, user.getNickName());		// nickname
+			state.setString(3, user.getAddress());		// address
+			state.setBlob(4, user.getPhoto());			// photo
+			state.setString(5, user.getEmail());		// e-mail
+			state.setString(6, user.getDescription());	// description
+			state.setString(7, user.getName());			// where user name is
+			result = state.executeUpdate();
+			
+			if (result > 0)
+			{
+				System.out.printf("%-15s %s%n", "DB >>", "user " + user.getName() + " added");	
+			}
+						
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(state != null)
+				try {
+					state.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			disconnect();
+		}
+		
+		return result;
+	}
 	
 	/************************************************************************
 	*	MESSAGE related code here:  (insert, update, get all, etc. )

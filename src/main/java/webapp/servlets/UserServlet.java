@@ -171,14 +171,14 @@ public class UserServlet extends HttpServlet
 					 response.getWriter().write(json);
 					 break;
 				 }
-				 /*
-				 case "5":		// insert new message
+				 
+				 case "5":		// update user details
 				 {
-					 System.out.println("user servlet >> code:" + code);
-					 db.insertMessage(message); 
+					 System.out.printf("%-15s %s%n", "user servlet >> ", "code:" + code);
+					 //db.insertMessage(message); 
 					 break;
 				 }
-				 */
+				 
 				 default:
 					 break;
 			}

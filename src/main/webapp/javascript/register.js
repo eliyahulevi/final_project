@@ -11,24 +11,39 @@
  ********************************************************************************/
 function regNewUser(){
 	
+	console.log('register new user');
 	// get users info from form
-	var name = document.getElementById("reg-name").value;
-	var password = document.getElementById("reg-password").value;
-	var nickname = document.getElementById("reg-nick-name").value;
-	var email = document.getElementById("reg-email").value;
-	var address = document.getElementById("reg-address").value;
-	var requestString = JSON.stringify({ "name": name, "password": password, "nickname": nickname, "email": email, "address": address });
+	var name 			= document.getElementById("reg-name").value;
+	var password 		= document.getElementById("reg-password").value;
+	var nickname 		= document.getElementById("reg-nick-name").value;
+	var email 			= document.getElementById("reg-email").value;
+	var address 		= document.getElementById("reg-address").value;
+	var image			= "";		// optional
+	var description		= "";		// optional
+	var phone			= "";		// optional
+	var formData		= new FormData();
+	
+	formData.append("code", "0");
+	formData.append("user", name);
+	formData.append("nickname", nickname);
+	formData.append("password", password);  
+	formData.append("email", email);
+	formData.append("address", address);
+	formData.append("image", image);
+	formData.append("date", new Date().getTime());
+	formData.append("phone", phone);
+	formData.append("description", description);
 	
     $.ajax({
-	    url: 'RegisterServlet', 	// point to server-side 
-	    dataType: 'text',  		// what to expect back from the server, if anything
+	    url: 'RegisterServlet', 	 
+	    dataType: 'text',  		
 	    cache: false,
 	    contentType: false,
 	    processData: false,
-	    data: requestString,                         
+	    data: formData,                         
 	    type: 'post',
 	    success: function(response){
-	       			//alert("user: " + name + " registered successfully!"); 
+					console.log(response);
 	       			onUserRegistration(name, password, nickname, email, address);
     			}
  	});

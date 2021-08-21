@@ -130,7 +130,7 @@ public class Message
 	public String toJson()
 	{
 		String result 		= "";
-		StringBuilder sb 	= new StringBuilder();
+		//StringBuilder sb 	= new StringBuilder();
 		
 		/*
         Field[] fields = this.getClass().getDeclaredFields();
